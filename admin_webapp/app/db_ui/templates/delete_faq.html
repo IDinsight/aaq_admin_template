@@ -1,0 +1,95 @@
+{% extends 'bootstrap/base.html' %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+
+{% block styles %}
+{{ super() }}
+<style>
+    body {
+        background: #e8f1f9;
+    }
+
+    th {
+        padding-right: 20px;
+    }
+
+    td {
+        padding-right: 20px;
+    }
+
+    form {
+        display: inline;
+        padding-right: 20px;
+    }
+</style>
+{% endblock %}
+
+
+{% block title %}
+Delete FAQ
+{% endblock %}
+
+
+{% block scripts %}
+{{ super() }}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script type=text/javascript src="{{
+    url_for('.static', filename='js/add_tags.js') }}"></script>
+</script>
+{% endblock %}
+
+{% block content %}
+
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-10 col-lg-8 mx-lg-auto mx-md-auto">
+
+            <h1 class="pt-5 pb-2">Delete FAQ #{{ faq_to_delete.faq_id }}</h1>
+
+            <p class="lead">Are you sure you wish to delete this FAQ?</p>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}" role="alert"> {{ message }}</div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+
+            <table style="margin-bottom:50px;">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>Content to Send</th>
+                        <th>Tags</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="outline: thin solid">
+                        <td>{{ faq_to_delete.faq_id }}</td>
+                        <td>{{ faq_to_delete.faq_title }}</td>
+                        <td>{{ faq_to_delete.faq_content_to_send }}</td>
+                        <td>{{ faq_to_delete.faq_tags }}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <br />
+
+            <form method="POST" action="">
+                <input type="submit" class="btn btn-danger" value="Delete" name="Delete" />
+            </form>
+
+            <form method="GET" action="{{ url_for('.view_faqs') }}">
+                <input type="submit" class="btn btn-secondary" value="Go Back" name="Go Back" />
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}

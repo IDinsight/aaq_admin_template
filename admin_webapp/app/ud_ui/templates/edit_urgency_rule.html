@@ -1,0 +1,136 @@
+{% extends 'bootstrap/base.html' %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+
+{% block styles %}
+{{ super() }}
+<style>
+    body {
+        background: #e8f1f9;
+    }
+</style>
+{% endblock %}
+
+
+{% block title %}
+Edit Urgency Rule
+{% endblock %}
+
+
+{% block scripts %}
+{{ super() }}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script type=text/javascript src="{{
+    url_for('.static', filename='js/add_tags.js') }}"></script>
+</script>
+{% endblock %}
+
+{% include "includes/nav.html" %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-10 col-lg-8 mx-lg-auto mx-md-auto">
+
+            <h1 class="pt-5 pb-2">Edit Urgency Rule #{{ rule_to_edit.urgency_rule_id }}</h1>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}" role="alert"> {{ message }}</div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+
+            <form action="" method="POST" role="form" class="form" autocomplete="off">
+                {{ form.hidden_tag() }}
+
+                <label class="form-control-label"><b>Rule Author:</b></label>
+                <input class="form-control" style="margin-bottom:5px;" id="rule_author" name="rule_author" value="{{ rule_to_edit.urgency_rule_author }}">
+                <label class="form-control-label"><b>Rule Title:</b></label>
+                <input class="form-control" style="margin-bottom:5px;" id="rule_title" name="rule_title" value="{{ rule_to_edit.urgency_rule_title }}">
+
+                <div class="form-group"><label class="form-control-label"><b>Old Tags:</b></label>
+                    <div class="row">
+                    <div class="col col-sm">
+                        <label class="form-control-label">Include:</label>
+                        {% for tag in rule_to_edit.urgency_rule_tags_include %}
+                            <input class="form-control" style="margin-bottom:5px;" value="{{ tag }}" disabled>
+                        {% endfor %}
+                    </div>
+                    <div class="col col-sm">
+                        <label class="form-control-label">Exclude:</label>
+                        {% for tag in rule_to_edit.urgency_rule_tags_exclude %}
+                            <input class="form-control" style="margin-bottom:5px;" value="{{ tag }}" disabled>
+                        {% endfor %}
+                    </div>
+                </div>
+                </div>
+
+                <div class="form-group"><label class="form-control-label"><b>New Tags:</b></label>
+                    <div class="row">
+                    <div class="col col-sm">
+                        <label class="form-control-label">Include:</label>
+                        {% for tag in rule_to_edit.urgency_rule_tags_include %}
+                            {% if loop.index == 1 %}
+                                <input class="form-control" placeholder="Tag 1 (required)" required type="text"
+                                    style="margin-bottom:5px;" id="include_1" name="include_1"
+                                    value="{{ tag }}">
+                            {% else %}
+                            <input class="form-control" placeholder="Tag {{ loop.index }}" type="text"
+                                style="margin-bottom:5px;" id="include_{{ loop.index }}" name="include_{{ loop.index }}"
+                                value="{{ tag }}">
+                            {% endif %}
+                        {% endfor %}
+
+                        <div id="include_new_tags"></div>
+
+                        <input type="hidden" value="{{ rule_to_edit.urgency_rule_tags_include|length }}" id="include_total_tags">
+
+                        <input class="btn btn-secondary addinclude" type="button" value="+ Tag"
+                            style="margin-right:5px; margin-bottom:5px;">
+                        <input class="btn btn-secondary removeinclude" type="button" value="- Tag"
+                            style="margin-right:5px; margin-bottom:5px;">
+                    </div>
+
+                    <div class="col col-sm">
+                        <label class="form-control-label">Exclude:</label>
+                        {% if rule_to_edit.urgency_rule_tags_exclude|length == 0 %}
+                            <input class="form-control" placeholder="Tag 1" type="text"
+                                        style="margin-bottom:5px;" id="exclude_1" name="exclude_1">
+                            <div id="exclude_new_tags"></div>
+                            <input type="hidden" value="1" id="exclude_total_tags">
+
+                        {% else %}
+                            {% for tag in rule_to_edit.urgency_rule_tags_exclude %}
+                                <input class="form-control" placeholder="Tag {{ loop.index }}" type="text"
+                                    style="margin-bottom:5px;" id="exclude_{{ loop.index }}" name="exclude_{{ loop.index }}"
+                                    value="{{ tag }}">
+                            {% endfor %}
+                            <div id="exclude_new_tags"></div>
+
+                            <input type="hidden" value="{{ rule_to_edit.urgency_rule_tags_include|length }}" id="exclude_total_tags">
+                        {% endif %}
+
+                        <input class="btn btn-secondary addexclude" type="button" value="+ Tag"
+                            style="margin-right:5px; margin-bottom:5px;">
+                        <input class="btn btn-secondary removeexclude" type="button" value="- Tag"
+                            style="margin-right:5px; margin-bottom:5px;">
+                    </div>
+                    </div>
+                </div>
+
+                {{ wtf.form_field(form.submit) }}
+            </form>
+
+            <form method="GET" action="{{ url_for('.view_rules') }}" style="padding-bottom: 50px;">
+                <input type="submit" class="btn btn-warning" value="Go Back (Discard Edits)" style="margin-top:5px;" />
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}

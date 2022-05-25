@@ -1,0 +1,125 @@
+{% extends 'bootstrap/base.html' %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+
+{% block styles %}
+{{ super() }}
+<style>
+    body {
+        background: #e8f1f9;
+    }
+</style>
+{% endblock %}
+
+
+{% block title %}
+Add Urgency Rule
+{% endblock %}
+
+
+{% block scripts %}
+{{ super() }}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script type=text/javascript src="{{
+    url_for('.static', filename='js/add_tags.js') }}"></script>
+</script>
+{% endblock %}
+
+{% include "includes/nav.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-10 col-lg-8 mx-lg-auto mx-md-auto">
+
+            <h1 class="pt-5 pb-2">Add Urgency Rule</h1>
+            <p class="lead">Use this form to add urgency rules to the database. Remember to use the preprocessed versions of keywords.</p>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}" role="alert"> {{ message }}</div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+
+            <form style="padding-bottom: 50px;" action="" method="POST" role="form" class="form" autocomplete="off">
+                {{ form.hidden_tag() }}
+
+                {{ wtf.form_field(form.rule_author) }}
+                {{ wtf.form_field(form.rule_title) }}
+
+
+                <div class="row">
+                    <div class="col col-sm form-group"><label class="form-control-label"><b>Include:</b></label>
+                        {% if include_data_prefill is not none %}
+                            {% for tag in include_data_prefill %}
+                            <input class="form-control"
+                                   {% if loop.first %}
+                                   placeholder="Tag 1 (required)" required
+                                   {% else %}
+                                   placeholder="Tag {loop.index}"
+                                   {% endif %}
+                                   type="text" style="margin-bottom:5px;"
+                                id="include_{{ loop.index }}" name="include_{{ loop.index }}" value="{{ tag }}">
+                            {% endfor %}
+                            <input type="hidden" value="{{ include_data_prefill|length }}" id="include_total_tags">
+                        {% else %}
+                            <input class="form-control" placeholder="Tag 1" required type="text" style="margin-bottom:5px;"
+                                id="include_1" name="include_1"
+                                   {% if form.include_1.data is not none %}
+                                   value="{{ form.include_1.data }}"
+                                   {% endif %}>
+
+                            <input class="form-control" placeholder="Tag 2" type="text" style="margin-bottom:5px;"
+                                id="include_2" name="include_2" {% if form.include_2.data is not none %} value="{{ form.include_2.data }}" {%
+                                   endif %}>
+
+                            <input type="hidden" value="2" id="include_total_tags">
+                        {% endif %}
+                        <div id="include_new_tags"></div>
+
+                        <input class="btn btn-secondary addinclude" type="button" value="+ Tag"
+                            style="margin-right:5px; margin-bottom:5px;">
+                        <input class="btn btn-secondary removeinclude" type="button" value="- Tag"
+                            style="margin-right:5px; margin-bottom:5px;">
+                    </div>
+
+
+                    <div class="col col-sm form-group"><label class="form-control-label"><b>Exclude:</b></label>
+                        {% if exclude_data_prefill is not none %}
+                            {% for tag in exclude_data_prefill %}
+                            <input class="form-control"
+                                   placeholder="Tag {loop.index}"
+                                   type="text" style="margin-bottom:5px;"
+                                id="exclude_{{ loop.index }}" name="exclude_{{ loop.index }}" value="{{ tag }}">
+                            {% endfor %}
+                            <input type="hidden" value="{{ exclude_data_prefill|length }}" id="exclude_total_tags">
+                        {% else %}
+                            <input class="form-control" placeholder="Tag 1" type="text" style="margin-bottom:5px;"
+                                id="exclude_1" name="exclude_1" {% if form.exclude_1.data is not none %} value="{{ form.exclude_1.data }}" {%
+                                   endif %}>
+                            <input class="form-control" placeholder="Tag 2" type="text" style="margin-bottom:5px;"
+                                id="exclude_2" name="exclude_2" {% if form.exclude_2.data is not none %} value="{{ form.exclude_2.data }}" {%
+                                   endif %}>
+
+                            <input type="hidden" value="2" id="exclude_total_tags">
+                        {% endif %}
+                        <div id="exclude_new_tags"></div>
+
+                        <input class="btn btn-secondary addexclude" type="button" value="+ Tag"
+                            style="margin-right:5px; margin-bottom:5px;">
+                        <input class="btn btn-secondary removeexclude" type="button" value="- Tag"
+                            style="margin-right:5px; margin-bottom:5px;">
+                    </div>
+                </div>
+
+                {{ wtf.form_field(form.submit) }}
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}

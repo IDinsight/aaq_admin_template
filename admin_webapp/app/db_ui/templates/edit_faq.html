@@ -1,0 +1,90 @@
+{% extends 'bootstrap/base.html' %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+
+{% block styles %}
+{{ super() }}
+<style>
+    body {
+        background: #e8f1f9;
+    }
+</style>
+{% endblock %}
+
+
+{% block title %}
+Edit FAQ
+{% endblock %}
+
+
+{% block scripts %}
+{{ super() }}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script type=text/javascript src="{{
+    url_for('.static', filename='js/add_tags.js') }}"></script>
+</script>
+{% endblock %}
+
+{% block content %}
+
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-10 col-lg-8 mx-lg-auto mx-md-auto">
+
+            <h1 class="pt-5 pb-2">Edit FAQ #{{ faq_to_edit.faq_id }}</h1>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}" role="alert"> {{ message }}</div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+
+            <form action="" method="POST" role="form" class="form" autocomplete="off">
+                {{ form.hidden_tag() }}
+
+                {{ wtf.form_field(form.faq_author) }}
+                {{ wtf.form_field(form.faq_title) }}
+                {{ wtf.form_field(form.faq_content_to_send, rows='20') }}
+
+                <div class="form-group"><label class="form-control-label">Old Tags:</label>
+                    {% for tag in faq_to_edit.faq_tags %}
+                    <input class="form-control" style="margin-bottom:5px;" value="{{ tag }}" disabled>
+                    {% endfor %}
+                </div>
+
+                <div class="form-group  required"><label class="form-control-label">New Tags:</label>
+                    {% for tag in tag_data %}
+
+                    <input class="form-control" placeholder="Tag {{ loop.index }}" required type="text"
+                        style="margin-bottom:5px;" id="tag_{{ loop.index }}" name="tag_{{ loop.index }}"
+                        value="{{ tag }}">
+
+                    {% endfor %}
+
+                    <div id="new_tags"></div>
+
+                    <input type="hidden" value="{{ tag_data|length }}" id="total_tags">
+
+                    <input class="btn btn-secondary add" type="button" value="+ Tag"
+                        style="margin-right:5px; margin-bottom:5px;">
+                    <input class="btn btn-secondary remove" type="button" value="- Tag"
+                        style="margin-right:5px; margin-bottom:5px;">
+                </div>
+
+                {{ wtf.form_field(form.submit) }}
+            </form>
+
+            <form method="GET" action="{{ url_for('.view_faqs') }}" style="padding-bottom: 50px;">
+                <input type="submit" class="btn btn-warning" value="Go Back (Discard Edits)" style="margin-top:5px;" />
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}

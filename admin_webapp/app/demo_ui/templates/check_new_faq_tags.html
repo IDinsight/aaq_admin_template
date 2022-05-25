@@ -1,0 +1,123 @@
+{% extends 'bootstrap/base.html' %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+
+{% block styles %}
+{{ super() }}
+<style>
+    body {
+        background: #e6f3ff;
+    }
+</style>
+{% endblock %}
+
+
+{% block title %}
+Check New FAQ Tags
+{% endblock %}
+
+
+{% block scripts %}
+{{ super() }}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script type=text/javascript src="{{
+    url_for('static', filename='js/add_tags.js') }}"></script>
+</script>
+{% endblock %}
+
+{% include "includes/nav.html" %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-10 col-lg-8 mx-lg-auto mx-md-auto">
+
+            <h1 class="pt-5 pb-2">Check New FAQ Tags</h1>
+
+            <p class="lead">
+                Please enter the tags for a new FAQ, and five WhatsApp messages that should match this FAQ.<br /><br />
+                For each WhatsApp message, the results will show if your tags match successfully.
+            </p>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}" role="alert"> {{ message }}</div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+
+            <form action="" method="POST" role="form" class="form" autocomplete="off">
+                {{ form.hidden_tag() }}
+
+                <div class="form-group  required"><label class="form-control-label">Tags:</label>
+
+                    <input class="form-control" placeholder="Tag 1" required type="text" style="margin-bottom:5px;"
+                        id="tag_1" name="tag_1" {% if form.tag_1.data is not none %} value="{{ form.tag_1.data }}" {%
+                        endif %}>
+                    <input class="form-control" placeholder="Tag 2" required type="text" style="margin-bottom:5px;"
+                        id="tag_2" name="tag_2" {% if form.tag_2.data is not none %} value="{{ form.tag_2.data }}" {%
+                        endif %}>
+
+                    <input type="hidden" value="2" id="total_tags">
+                    <div id="new_tags"></div>
+
+                    <input class="btn btn-secondary add" type="button" value="+ Tag"
+                        style="margin-right:5px; margin-bottom:5px;">
+                    <input class="btn btn-secondary remove" type="button" value="- Tag"
+                        style="margin-right:5px; margin-bottom:5px;">
+                </div>
+
+
+                <div class="form-group  required"><label class="form-control-label">WhatsApp Messages (from
+                        users):</label>
+
+                    <input class="form-control" placeholder="Query 1" required type="text" style="margin-bottom:5px;"
+                        id="query_1" name="query_1" {% if form.query_1.data is not none %}
+                        value="{{ form.query_1.data }}" {% endif %}>
+                    <input class="form-control" placeholder="Query 2" required type="text" style="margin-bottom:5px;"
+                        id="query_2" name="query_2" {% if form.query_2.data is not none %}
+                        value="{{ form.query_2.data }}" {% endif %}>
+                    <input class="form-control" placeholder="Query 3" required type="text" style="margin-bottom:5px;"
+                        id="query_3" name="query_3" {% if form.query_3.data is not none %}
+                        value="{{ form.query_3.data }}" {% endif %}>
+                    <input class="form-control" placeholder="Query 4" required type="text" style="margin-bottom:5px;"
+                        id="query_4" name="query_4" {% if form.query_4.data is not none %}
+                        value="{{ form.query_4.data }}" {% endif %}>
+                    <input class="form-control" placeholder="Query 5" required type="text" style="margin-bottom:5px;"
+                        id="query_5" name="query_5" {% if form.query_5.data is not none %}
+                        value="{{ form.query_5.data }}" {% endif %}>
+                </div>
+
+                {{ wtf.form_field(form.submit) }}
+            </form>
+
+            <p class="pt-5">
+                <strong>Results:</strong>
+                <br /><br />
+                Your tags: {{ tags }}<br /><br />
+                {% for res in results %}
+                <u>{{ res[0] }}</u><br />
+                {% for match in res[1] %}
+                {{ match[0] }}<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;Tags: {{ match[1] }}<br />
+
+                {% endfor %}
+
+                {% if res[2] %}
+                <span style="color:green;font-weight:bold">Successfully Matched Tags</span>
+                {% else %}
+                <span style="color:red;font-weight:bold">Failed to Match Tags</span>
+                {% endif %}
+
+                <br /><br />
+                {% endfor %}
+            </p>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}

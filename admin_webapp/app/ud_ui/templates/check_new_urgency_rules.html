@@ -1,0 +1,268 @@
+{% extends 'bootstrap/base.html' %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+
+{% block styles %}
+{{ super() }}
+<style>
+    body {
+        background: #e6f3ff;
+    }
+</style>
+{% endblock %}
+
+
+{% block title %}
+Check New Urgency Rules
+{% endblock %}
+
+
+{% block scripts %}
+{{ super() }}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script type=text/javascript src="{{
+    url_for('static', filename='js/add_tags.js') }}"></script>
+</script>
+{% endblock %}
+
+{% include "includes/nav.html" %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-10 col-lg-8 mx-lg-auto mx-md-auto">
+
+            <h1 class="pt-5 pb-2">Check New Urgency Rule</h1>
+
+            <p class="lead">
+                Please enter up to 10 keywords that must be included or excluded for a new urgency rule, and up to five WhatsApp messages that should match this urgency rule.
+            </p>
+
+            <p><ul>
+              <li>This tool will check the presence and absence of the <i>preprocessed</i> keywords in the <i>preprocessed</i> WhatsApp messages. The keywords and the messages will be preprocessed in the same manner. </li>
+              <li>When adding a new rule, please copy and paste the preprocessed keywords.</li>
+              <li>Up to two words are allowed for a single keyword (e.g. "swollen face").</li>
+                <li>Irregular verbs such as "bleed" and "bled" must be added as separate rules.</li>
+                <li>Verbs and adjectives with the same root must be added as separate rules (e.g. "blurry", "blurring").</li>
+            </ul></p>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}" role="alert"> {{ message }}</div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+
+
+            <form action="" method="POST" role="form" class="form" autocomplete="off">
+                {{ form.hidden_tag() }}
+
+                <div class="row">
+                    <div class="col col-sm form-group"><label class="form-control-label"><b>Include:</b></label>
+                        <div class="row">
+                            <div class="col col-sm">
+                                <input class="form-control" placeholder="Tag 1 (required)" required type="text" style="margin-bottom:5px;"
+                                    id="include_1" name="include_1"
+                                       {% if form.include_1.data is not none %}
+                                       value="{{ form.include_1.data }}"
+                                       {% endif %}>
+                            </div>
+                            <div class="col col-sm">
+                                <span style="color:slategrey">{{ include[0] }}</span>
+                            </div>
+                        </div>
+                        {% set includeKeywordsData = [form.include_2.data, form.include_3.data, form.include_4.data, form.include_5.data, form.include_6.data, form.include_7.data, form.include_8.data, form.include_9.data, form.include_10.data] %}
+                        {% for data in includeKeywordsData %}
+                        <div class="row">
+                            <div class="col col-sm">
+                            <input class="form-control" placeholder="Tag {{ loop.index + 1 }}" type="text" style="margin-bottom:5px;"
+                                id="include_{{ loop.index + 1 }}" name="include_{{ loop.index + 1 }}"
+                                   {% if data is not none %}
+                                   value="{{ data }}"
+                                   {% endif %}>
+                            </div>
+                            <div class="col col-sm">
+                                <span style="color:slategrey">
+                                    {% if data is not none %}
+                                    {{ include[loop.index] }}
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+                        {% endfor %}
+
+                    </div>
+
+                    <div class="col col-sm form-group"><label class="form-control-label"><b>Exclude:</b></label>
+
+                        {% set excludeKeywordsData = [form.exclude_1.data, form.exclude_2.data, form.exclude_3.data, form.exclude_4.data, form.exclude_5.data, form.exclude_6.data, form.exclude_7.data, form.exclude_8.data, form.exclude_9.data, form.exclude_10.data] %}
+                        {% for data in excludeKeywordsData %}
+                        <div class="row">
+                            <div class="col col-sm">
+                            <input class="form-control" placeholder="Tag {{ loop.index  }}" type="text" style="margin-bottom:5px;"
+                                id="exclude_{{ loop.index }}" name="exclude_{{ loop.index }}"
+                                   {% if data is not none %}
+                                   value="{{ data }}"
+                                   {% endif %}>
+                            </div>
+                            <div class="col col-sm">
+                                <span style="color:slategrey">
+                                    {% if data is not none %}
+                                    {{ exclude[loop.index0] }}
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label"><b>WhatsApp Messages (from users):</b></label>
+
+                    <!-- Message 1 -->
+                    <div class="row">
+                        <div class="col col-md-8 text-wrap">
+                        <input class="form-control" placeholder="Query 1 (required)" required type="text" style="margin-bottom:5px;"
+                            id="query_1" name="query_1" {% if form.query_1.data is not none %}
+                            value="{{ form.query_1.data }}" {% endif %}>
+                            {% if results[0] %}
+                            <div class="pb-2 pl-2"><span style="color:slategrey">{{ results[0][0] }}</span></div>
+                            {% endif %}
+                        </div>
+                        <div class="col col-2 text-end">
+                            {% if results[0] %}
+                                {% if results[0][1] == 1.0 %}
+                                <span style="color:crimson;font-weight:bold">Urgent</span>
+                                {% else %}
+                                <span style="color:slategrey;font-weight:bold">Not Urgent</span>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Message 2 -->
+                    <div class="row">
+                        <div class="col col-md-8 text-wrap">
+                        <input class="form-control" placeholder="Query 2" type="text" style="margin-bottom:5px;"
+                            id="query_2" name="query_2" {% if form.query_2.data is not none %}
+                            value="{{ form.query_2.data }}" {% endif %}>
+                        {% if results|length > 1 %}
+                            <div class="pb-2 pl-2"><span style="color:slategrey">{{ results[1][0] }}</span></div>
+                        {% endif %}
+                        </div>
+                        <div class="col col-2 text-end">
+                            {% if results|length > 1 %}
+                                {% if results[1][1] == 1.0 %}
+                                <span style="color:crimson;font-weight:bold">Urgent</span>
+                                {% else %}
+                                <span style="color:slategrey;font-weight:bold">Not Urgent</span>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Message 3 -->
+                    <div class="row">
+                        <div class="col col-md-8 text-wrap">
+                    <input class="form-control" placeholder="Query 3" type="text" style="margin-bottom:5px;"
+                        id="query_3" name="query_3" {% if form.query_3.data is not none %}
+                        value="{{ form.query_3.data }}" {% endif %}>
+                            {% if results|length > 2 %}
+                            <div class="pb-2 pl-2"><span style="color:slategrey">{{ results[2][0] }}</span></div>
+                            {% endif %}
+                        </div>
+                        <div class="col col-2 text-end">
+                            {% if results|length > 2 %}
+                                {% if results[2][1] == 1.0 %}
+                                <span class="text-end" style="color:crimson;font-weight:bold">Urgent</span>
+                                {% else %}
+                                <span class="text-end" style="color:slategrey;font-weight:bold">Not Urgent</span>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+
+
+                    <!-- Message 4 -->
+                    <div class="row">
+                        <div class="col col-md-8 text-wrap">
+                        <input class="form-control" placeholder="Query 4" type="text" style="margin-bottom:5px;"
+                            id="query_4" name="query_4" {% if form.query_4.data is not none %}
+                            value="{{ form.query_4.data }}" {% endif %}>
+                        {% if results|length > 3 %}
+                            <div class="pb-2 pl-2"><span style="color:slategrey">{{ results[3][0] }}</span></div>
+                        {% endif %}
+                        </div>
+                        <div class="col col-2 text-end">
+                            {% if results|length > 3 %}
+                                {% if results[3][1] == 1.0 %}
+                                <span class="text-end" style="color:crimson;font-weight:bold">Urgent</span>
+                                {% else %}
+                                <span class="text-end" style="color:slategrey;font-weight:bold">Not Urgent</span>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Message 5 -->
+                    <div class="row">
+                        <div class="col col-md-8 text-wrap">
+                        <input class="form-control" placeholder="Query 5" type="text" style="margin-bottom:5px;"
+                            id="query_5" name="query_5" {% if form.query_5.data is not none %}
+                            value="{{ form.query_5.data }}" {% endif %}>
+                        {% if results|length > 4 %}
+                            <div class="pb-2 pl-2"><span style="color:slategrey">{{ results[4][0] }}</span></div>
+                        {% endif %}
+                        </div>
+                        <div class="col col-2 text-end">
+                            {% if results|length > 4 %}
+                                {% if results[4][1] == 1.0 %}
+                                <span style="color:crimson;font-weight:bold;max-width:60px">Urgent</span>
+                                {% else %}
+                                <span style="color:slategrey;font-weight:bold;max-width:60px">Not Urgent</span>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <table cellpadding="5">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <form method="POST" action="">
+                                    <input type="submit" class="btn btn-primary" value="Submit" name="Submit" />
+                                </form>
+                            </td>
+                            <td>
+                                <form method="POST" action="{{ url_for('.check_new_urgency_rules') }}"  style="margin-block-end:0">
+                                    <input type="submit" class="btn btn-secondary" value="Clear Form" name="Clear Form" />
+                                </form>
+                            </td>
+                            {% if include|length > 0 or exclude|length > 0 %}
+                            <td>
+                                <form method="POST" action="{{ url_for('.add_rule' ) }}" style="margin-block-end:0">
+                                    <input type="hidden" name="include" value="{{ include }}">
+                                    <input type="hidden" name="exclude" value="{{ exclude }}">
+                                    <input type="submit" class="btn btn-success" value="Add This Rule" name="Add This Rule" />
+                                </form>
+                            </td>
+                            {% endif %}
+                        </tr>
+                    </tbody>
+                </table>
+            </form>
+            <div class="row">
+            <div class="col"><p class="pt-30"></p></div></div>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}

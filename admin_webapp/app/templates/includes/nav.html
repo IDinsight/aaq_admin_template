@@ -1,0 +1,51 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="#">MomConnect AAQ Demo</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+          <a {% if request.path in ("/", "/home", "/demo") %}
+                class="nav-link active"
+            {% else %} class="nav-link" {% endif %}
+            href="/">Home 
+            {% if request.path == "/" %}
+              <span class="sr-only">(current)</span>
+            {% endif %}
+          </a>
+      </li>
+      <li class="nav-item">
+          <a {% if request.path == "/demo/check-new-faq-tags" %} 
+                class="nav-link active"
+            {% else %} class="nav-link" {% endif %}
+            href="/demo/check-new-faq-tags">Check New FAQ Tags
+            {% if request.path == "/demo/check-new-faq-tags" %}
+                <span class="sr-only">(current)</span>
+            {% endif %}
+          </a>
+      </li>
+      <li class="nav-item">
+          <a {% if request.path == "/demo/check-new-urgency-rules" %} 
+                class="nav-link active"
+            {% else %} class="nav-link" {% endif %}
+            href="/demo/check-new-urgency-rules">Check New Urgency Rule
+            {% if request.path == "/demo/check-new-urgency-rules" %}
+                <span class="sr-only">(current)</span>
+            {% endif %}
+          </a>
+      </li>
+        <li class="nav-item">
+          <a {% if request.path == "/demo/ud-rules/view" %} 
+                class="nav-link active"
+            {% else %} class="nav-link" {% endif %}
+            href="/demo/ud-rules/view">Manage Urgency Rules<span class="sr-only">(current)</span>
+            {% if request.path == "/demo/ud-rules/view" %}
+                <span class="sr-only">(current)</span>
+            {% endif %}
+          </a>
+      </li>
+    </ul>
+  </div>
+</nav>

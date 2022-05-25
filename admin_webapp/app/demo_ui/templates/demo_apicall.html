@@ -1,0 +1,79 @@
+{% extends 'bootstrap/base.html' %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+
+{% block styles %}
+{{ super() }}
+<style>
+    body {
+        background: #e6f3ff;
+    }
+</style>
+{% endblock %}
+
+
+{% block title %}
+[DEMO] Model Demo
+{% endblock %}
+
+{% include "includes/nav.html" %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-10 col-lg-8 mx-lg-auto mx-md-auto">
+
+            <h1 class="pt-5 pb-2">[DEMO] Model Demo</h1>
+
+            <p class="lead">This demonstrates how the model responds to a sample message.</p>
+
+            <form action="" method="POST" role="form" class="form">
+                {{ form.hidden_tag() }}
+
+                {{ wtf.form_field(form.submission_content, rows=2) }}
+                {{ wtf.form_field(form.submit) }}
+            </form>
+
+            {% if top_matches is not none %}
+            <p class="pt-5">
+                <strong>Top matches:</strong>
+                <br />
+                {% for match in top_matches %}
+                <u>{{ match[0] }}</u><br />
+                {{ match[1] }}<br /><br />
+                {% endfor %}
+            </p>
+            {% endif %}
+
+            {% if spell_corrected is not none %}
+            <p class="pt-5">
+                <strong>Spell corrected message:</strong>
+                <br />
+                {{ spell_corrected }}
+                <br /><br />
+                <i>* This is what the model parsed from the original message. The model ignores common words (like
+                    "the", "if", and "does"), and changes some phrases (e.g., "jab" to "vaccine").</i>
+            </p>
+            {% endif %}
+
+            {% if scoring is not none %}
+            <p class="pt-5">
+                <strong>Scoring:</strong>
+                <br />
+                {% for faq_id in scoring %}
+                <u>{{ faq_id }} / {{ scoring[faq_id]["faq_title"] }}</u><br />
+                {% for tag in scoring[faq_id]["tag_cs"] %}
+                {{ tag }} / {{ scoring[faq_id]["tag_cs"][tag] }}<br />
+                {% endfor %}
+                <br />
+                {% endfor %}
+            </p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}

@@ -1,0 +1,83 @@
+{% extends 'bootstrap/base.html' %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+
+{% block styles %}
+{{ super() }}
+<style>
+    body {
+        background: #e8f1f9;
+    }
+</style>
+{% endblock %}
+
+
+{% block title %}
+Add FAQ
+{% endblock %}
+
+
+{% block scripts %}
+{{ super() }}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script type=text/javascript src="{{
+    url_for('.static', filename='js/add_tags.js') }}"></script>
+</script>
+{% endblock %}
+
+{% block content %}
+
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-10 col-lg-8 mx-lg-auto mx-md-auto">
+
+            <h1 class="pt-5 pb-2">Add FAQ</h1>
+
+            <p class="lead">This form should be used to add FAQs to the matching database.</p>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}" role="alert"> {{ message }}</div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+
+            <form style="padding-bottom: 50px;" action="" method="POST" role="form" class="form" autocomplete="off">
+                {{ form.hidden_tag() }}
+
+                {{ wtf.form_field(form.faq_author) }}
+                {{ wtf.form_field(form.faq_title, placeholder='This will be displayed in the list of 3, for the user to'
+                ' choose from.') }}
+                {{ wtf.form_field(form.faq_content_to_send,
+                placeholder='This will be sent when the user selects this FAQ.', rows='20') }}
+
+                <div class="form-group  required"><label class="form-control-label">Tags:</label>
+
+                    <input class="form-control" placeholder="Tag 1" required type="text" style="margin-bottom:5px;"
+                        id="tag_1" name="tag_1" {% if form.tag_1.data is not none %} value="{{ form.tag_1.data }}" {%
+                        endif %}>
+                    <input class="form-control" placeholder="Tag 2" required type="text" style="margin-bottom:5px;"
+                        id="tag_2" name="tag_2" {% if form.tag_2.data is not none %} value="{{ form.tag_2.data }}" {%
+                        endif %}>
+
+                    <input type="hidden" value="2" id="total_tags">
+                    <div id="new_tags"></div>
+
+                    <input class="btn btn-secondary add" type="button" value="+ Tag"
+                        style="margin-right:5px; margin-bottom:5px;">
+                    <input class="btn btn-secondary remove" type="button" value="- Tag"
+                        style="margin-right:5px; margin-bottom:5px;">
+                </div>
+
+                {{ wtf.form_field(form.submit) }}
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}
