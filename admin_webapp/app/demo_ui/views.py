@@ -11,6 +11,7 @@ from .form_models import APICallDemoForm, CheckTagsForm
 
 
 @demo_ui.route("/apicall", methods=["GET", "POST"])
+@demo_ui.route("/", methods=["GET", "POST"])
 @auth.login_required
 def demo_enduser():
     """

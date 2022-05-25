@@ -1,5 +1,5 @@
 """
-Create and initialise the app. Uses Blueprints to define vie
+Create and initialise the app. Uses Blueprints to define views
 """
 import os
 
@@ -86,6 +86,7 @@ def setup_ud(app, config):
     app.UD_HOST = config["UD_HOST"]
     app.UD_PORT = config["UD_PORT"]
     app.UD_INBOUND_CHECK_TOKEN = config["UD_INBOUND_CHECK_TOKEN"]
+    app.config["UD_ENABLED"] = True
 
 
 def get_config_data(params):

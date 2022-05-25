@@ -15,6 +15,7 @@ from .form_models import AddFAQForm
 ##############################################################################
 
 
+@db_ui.route("/", methods=["GET"])
 @db_ui.route("/view", methods=["GET"])
 @auth.login_required(role="read")
 def view_faqs():

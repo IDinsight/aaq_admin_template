@@ -1,0 +1,27 @@
+{% extends 'bootstrap/base.html' %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+
+{% block styles %}
+{{ super() }}
+<style>
+    body {
+        background: #e6f3ff;
+    }
+</style>
+{% endblock %}
+
+
+{% block title %}
+Check New Urgency Rules
+{% endblock %}
+
+
+{% block scripts %}
+{{ super() }}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+{% endblock %}
+
+{% include "includes/nav.html" %}
+{% block content %}
+{% endblock %}

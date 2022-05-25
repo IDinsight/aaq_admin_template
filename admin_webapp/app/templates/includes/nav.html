@@ -7,11 +7,31 @@
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item">
-          <a {% if request.path in ("/", "/home", "/demo") %}
+          <a {% if request.path in ("/", "/home") %}
                 class="nav-link active"
             {% else %} class="nav-link" {% endif %}
             href="/">Home 
             {% if request.path == "/" %}
+              <span class="sr-only">(current)</span>
+            {% endif %}
+          </a>
+      </li>
+      <li class="nav-item">
+          <a {% if request.path in ("/demo/apicall", "/demo") %} 
+                class="nav-link active"
+            {% else %} class="nav-link" {% endif %}
+            href="/demo">Core Demo
+            {% if request.path in ("/demo", "/demo/apicall") %}
+                <span class="sr-only">(current)</span>
+            {% endif %}
+          </a>
+      </li>
+      <li class="nav-item">
+          <a {% if request.path in ("/faqs/view", "/faqs") %}
+                class="nav-link active"
+            {% else %} class="nav-link" {% endif %}
+            href="/faqs">Manage FAQs 
+            {% if request.path in ("/db_ui/view", "/db_ui") %}
               <span class="sr-only">(current)</span>
             {% endif %}
           </a>
@@ -26,26 +46,29 @@
             {% endif %}
           </a>
       </li>
+
+      {% if config.get('UD_ENABLED') %}
       <li class="nav-item">
-          <a {% if request.path == "/demo/check-new-urgency-rules" %} 
+          <a {% if request.path == "/ud/check-new-urgency-rules" %} 
                 class="nav-link active"
             {% else %} class="nav-link" {% endif %}
-            href="/demo/check-new-urgency-rules">Check New Urgency Rule
-            {% if request.path == "/demo/check-new-urgency-rules" %}
+            href="/ud/check-new-urgency-rules">Check New Urgency Rule
+            {% if request.path == "/ud/check-new-urgency-rules" %}
                 <span class="sr-only">(current)</span>
             {% endif %}
           </a>
       </li>
         <li class="nav-item">
-          <a {% if request.path == "/demo/ud-rules/view" %} 
+          <a {% if request.path == "/ud/ud-rules/view" %} 
                 class="nav-link active"
             {% else %} class="nav-link" {% endif %}
-            href="/demo/ud-rules/view">Manage Urgency Rules<span class="sr-only">(current)</span>
-            {% if request.path == "/demo/ud-rules/view" %}
+            href="/ud/ud-rules/view">Manage Urgency Rules<span class="sr-only">(current)</span>
+            {% if request.path == "/ud/ud-rules/view" %}
                 <span class="sr-only">(current)</span>
             {% endif %}
           </a>
       </li>
+      {% endif %}
     </ul>
   </div>
 </nav>

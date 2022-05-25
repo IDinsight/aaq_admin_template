@@ -1,4 +1,4 @@
-from database_sqlalchemy import db
+from .database_sqlalchemy import db
 
 
 class FAQModel(db.Model):
@@ -6,8 +6,7 @@ class FAQModel(db.Model):
     SQLAlchemy data model for FAQ
     """
 
-    __table_args__ = {"schema": "mc"}
-    __tablename__ = "praekelt_idinsight_mcfaq_faqmatches"
+    __tablename__ = "faqmatches"
 
     faq_id = db.Column(db.Integer, primary_key=True)
     faq_added_utc = db.Column(db.DateTime())
@@ -27,8 +26,7 @@ class RulesModel(db.Model):
     SQLAlchemy data model for rules
     """
 
-    __table_args__ = {"schema": "mc"}
-    __tablename__ = "praekelt_idinsight_mcud_urgency_rules"
+    __tablename__ = "urgency_rules"
 
     urgency_rule_id = db.Column(db.Integer, primary_key=True)
     urgency_rule_added_utc = db.Column(db.DateTime())

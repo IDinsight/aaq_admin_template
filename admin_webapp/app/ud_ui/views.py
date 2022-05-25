@@ -99,7 +99,7 @@ def check_new_urgency_rules():
     )
 
 
-@ud_ui.route("/view", methods=["GET"])
+@ud_ui.route("/ud-rules/view", methods=["GET"])
 @auth.login_required(role="read")
 def view_rules():
     """
@@ -111,7 +111,7 @@ def view_rules():
     return render_template("view_urgency_rules.html", rules=rules)
 
 
-@ud_ui.route("/add", methods=["GET", "POST"])
+@ud_ui.route("/ud-rules/add", methods=["GET", "POST"])
 @auth.login_required(role="add")
 def add_rule():
     """
@@ -189,7 +189,7 @@ def add_rule():
     )
 
 
-@ud_ui.route("/edit/<edit_rule_id>", methods=["GET", "POST"])
+@ud_ui.route("/ud-rules/edit/<edit_rule_id>", methods=["GET", "POST"])
 @auth.login_required(role="add")
 def edit_rule(edit_rule_id):
     """
@@ -253,7 +253,7 @@ def edit_rule(edit_rule_id):
     )
 
 
-@ud_ui.route("/delete/<delete_rule_id>", methods=["GET", "POST"])
+@ud_ui.route("/ud-rules/delete/<delete_rule_id>", methods=["GET", "POST"])
 @auth.login_required(role="add")
 def delete_rule(delete_rule_id):
     """

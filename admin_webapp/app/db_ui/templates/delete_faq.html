@@ -1,29 +1,4 @@
-{% extends 'bootstrap/base.html' %}
-{% import "bootstrap/wtf.html" as wtf %}
-
-
-{% block styles %}
-{{ super() }}
-<style>
-    body {
-        background: #e8f1f9;
-    }
-
-    th {
-        padding-right: 20px;
-    }
-
-    td {
-        padding-right: 20px;
-    }
-
-    form {
-        display: inline;
-        padding-right: 20px;
-    }
-</style>
-{% endblock %}
-
+{% extends 'base.html' %}
 
 {% block title %}
 Delete FAQ
@@ -39,8 +14,6 @@ Delete FAQ
 {% endblock %}
 
 {% block content %}
-
-
 
 <div class="container">
     <div class="row">
@@ -89,7 +62,5 @@ Delete FAQ
         </div>
     </div>
 </div>
-
-
 
 {% endblock %}

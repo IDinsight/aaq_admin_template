@@ -59,21 +59,21 @@ setup-secrets:
 	done
 
 ci:
-	isort --profile black --check demo_webapp
-	black --check demo_webapp
-	flake8 demo_webapp --count --ignore=E501,E203,E731,W503,E722 --show-source --statistics
+	isort --profile black --check admin_webapp
+	black --check admin_webapp
+	flake8 admin_webapp --count --ignore=E501,E203,E731,W503,E722 --show-source --statistics
 
 image:
 	# Build docker image
-	cp ./requirements.txt ./demo_webapp/requirements.txt
+	cp ./requirements.txt ./admin_webapp/requirements.txt
 
 	@docker build --rm \
 			--build-arg NAME=$(NAME) \
 			--build-arg PORT=$(PORT) \
 			-t $(NAME):$(VERSION) \
-			./demo_webapp
+			./admin_webapp
 		
-	rm -rf ./demo_webapp/requirements.txt
+	rm -rf ./admin_webapp/requirements.txt
 
 container:
 	@docker container run \
