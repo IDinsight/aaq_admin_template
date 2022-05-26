@@ -23,6 +23,7 @@ def clean_ud_rules_table(db_engine):
         db_connection.execute(t)
 
 
+@pytest.mark.ud_test
 class TestCheckNewUDRules:
     def test_check_new_ud_rules_page_loads(self, client_ud):
         credentials = base64.b64encode(b"readonly_user:testread123").decode("utf-8")
@@ -81,6 +82,7 @@ class TestCheckNewUDRules:
         assert re.search(f">{result}<", response.get_data(as_text=True))
 
 
+@pytest.mark.ud_test
 class TestAddUDRule:
     def test_add_page_fails_unauthorized(self, client_ud, credentials_readonly):
         response = client_ud.get(
@@ -139,6 +141,7 @@ class TestAddUDRule:
         )
 
 
+@pytest.mark.ud_test
 class TestEditUDRule:
 
     insert_ud = (
@@ -203,6 +206,7 @@ class TestEditUDRule:
     # TODO: Need test cases for edit - add terms, delete terms, change terms
 
 
+@pytest.mark.ud_test
 class TestDeleteUDRule:
 
     insert_ud = (

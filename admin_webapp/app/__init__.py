@@ -18,8 +18,8 @@ def create_app(params=None, enable_ud=False):
     """
     app = Flask(__name__)
     setup(app, params, enable_ud)
-    from .db_ui import db_ui as dbui_blueprint
     from .demo_ui import demo_ui as demo_blueprint
+    from .faq_ui import faq_ui as dbui_blueprint
     from .main import main as main_blueprint
 
     app.register_blueprint(main_blueprint)

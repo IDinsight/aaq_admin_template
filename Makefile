@@ -33,7 +33,7 @@ cmd-exists-%:
 guard-%:
 	@if [ -z '${${*}}' ]; then echo 'ERROR: environment variable $* not set' && exit 1; fi
 
-setup-dev: guard-PROJECT_CONDA_ENV cmd-exists-conda
+setup-dev: guard-PROJECT_CONDA_ENV cmd-exists-conda setup-secrets
 	conda create --name $(PROJECT_CONDA_ENV) python==3.9 -y
 	$(CONDA_ACTIVATE) $(PROJECT_CONDA_ENV); pip install --upgrade pip
 	$(CONDA_ACTIVATE) $(PROJECT_CONDA_ENV); pip install -r requirements.txt --ignore-installed 
