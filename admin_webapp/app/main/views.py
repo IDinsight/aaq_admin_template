@@ -21,7 +21,6 @@ def healthcheck():
         f"{current_app.MODEL_PROTOCOL}://{current_app.MODEL_HOST}:"
         "9902/auth-healthcheck"
     )
-
     try:
         headers = {"Authorization": "Bearer %s" % current_app.INBOUND_CHECK_TOKEN}
         response = requests.get(
@@ -45,11 +44,11 @@ def healthcheck():
                 ),
                 response.status_code,
             )
-    except requests.ConnectionError:
+    except requests.ConnectionError as e:
         return (
             (
                 "Failed health check - cannot connect to model at "
-                f"{model_connection_string}"
+                f"{model_connection_string}: {e}"
             ),
             500,
         )
@@ -61,8 +60,12 @@ def healthcheck():
 
     engine = sa.create_engine(current_app.config["SQLALCHEMY_DATABASE_URI"])
     insp = sa.inspect(engine)
-    if not insp.has_table("praekelt_idinsight_vaccinefaq_faqmatches"):
+    table_names = insp.get_table_names()
+
+    if "faqmatches" not in table_names:
         return "FAQ table doesn't exist", 500
+    if current_app.config.get("UD_ENABLED") and ("urgency_rules" not in table_names):
+        return "Urgency Detection table doesn't exist", 500
 
     return "Healthy - all checks complete", 200
 
