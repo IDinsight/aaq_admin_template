@@ -1,21 +1,8 @@
-{% extends 'bootstrap/base.html' %}
-{% import "bootstrap/wtf.html" as wtf %}
-
-
-{% block styles %}
-{{ super() }}
-<style>
-    body {
-        background: #e8f1f9;
-    }
-</style>
-{% endblock %}
-
+{% extends 'base.html' %}
 
 {% block title %}
 Edit Urgency Rule
 {% endblock %}
-
 
 {% block scripts %}
 {{ super() }}
@@ -24,8 +11,6 @@ Edit Urgency Rule
     url_for('.static', filename='js/add_tags.js') }}"></script>
 </script>
 {% endblock %}
-
-{% include "includes/nav.html" %}
 
 {% block content %}
 
@@ -130,7 +115,5 @@ Edit Urgency Rule
         </div>
     </div>
 </div>
-
-
 
 {% endblock %}

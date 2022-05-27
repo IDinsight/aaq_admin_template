@@ -3,19 +3,32 @@ from pathlib import Path
 import pytest
 import sqlalchemy
 import yaml
+
 from admin_webapp.app import create_app, get_config_data
 
 
 @pytest.fixture(scope="session")
-def test_params():
+def monkeysession(request):
+    from _pytest.monkeypatch import MonkeyPatch
+
+    mpatch = MonkeyPatch()
+    yield mpatch
+    mpatch.undo()
+
+
+@pytest.fixture(scope="session")
+def test_params(monkeysession):
     with open(Path(__file__).parent / "config.yaml", "r") as stream:
         params_dict = yaml.safe_load(stream)
+
+    monkeysession.setenv("READONLY_PASSWORD", params_dict["READONLY_PASSWORD"])
+    monkeysession.setenv("FULLACCESS_PASSWORD", params_dict["FULLACCESS_PASSWORD"])
 
     return params_dict
 
 
 @pytest.fixture(scope="session")
-def app(test_params):
+def app(test_params, monkeysession):
     app = create_app(test_params)
     yield app
 

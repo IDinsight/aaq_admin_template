@@ -1,0 +1,40 @@
+name: Run Unit Tests
+on:
+  push:
+    branches:
+      - "**"
+
+jobs:
+  ValidateModels:
+    runs-on: ubuntu-latest
+    outputs:
+      env-name: ${{ steps.env-name.outputs.environment }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Install Dependencies with Apt Get
+        run: |
+          sudo apt-get update
+          sudo apt-get install python3.9 jq -y
+      - name: Install libraries
+        run: |
+          pip install -r requirements.txt
+          pip install -r requirements_dev.txt
+      - name: Run Unit Tests
+        env:
+          PG_ENDPOINT: ${{secrets.GA_PG_ENDPOINT}}
+          PG_PASSWORD: ${{secrets.GA_PG_PASSWORD}}
+          INBOUND_CHECK_TOKEN: ${{secrets.GA_INBOUND_CHECK_TOKEN}}
+          UD_INBOUND_CHECK_TOKEN: ${{secrets.GA_UD_INBOUND_CHECK_TOKEN}}
+          MODEL_HOST: ${{secrets.GA_MODEL_HOST}}
+          UD_HOST: ${{secrets.GA_UD_HOST}}
+        run: |
+          coverage run -m pytest tests
+          coverage lcov --include="core_model/*"
+      - name: Coveralls Test Coverage
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: coverage.lcov
+
