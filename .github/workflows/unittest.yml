@@ -31,7 +31,7 @@ jobs:
           UD_HOST: ${{secrets.GA_UD_HOST}}
         run: |
           coverage run -m pytest tests
-          coverage lcov --include="core_model/*"
+          coverage lcov --include="admin_webapp/*"
       - name: Coveralls Test Coverage
         uses: coverallsapp/github-action@master
         with:
