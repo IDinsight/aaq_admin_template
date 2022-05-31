@@ -7,7 +7,7 @@ from ..auth import auth
 from ..data_models import FAQModel
 from ..database_sqlalchemy import db
 from ..utils import load_parameters
-from . import db_ui
+from . import faq_ui
 from .form_models import AddFAQForm
 
 ##############################################################################
@@ -15,8 +15,8 @@ from .form_models import AddFAQForm
 ##############################################################################
 
 
-@db_ui.route("/", methods=["GET"])
-@db_ui.route("/view", methods=["GET"])
+@faq_ui.route("/", methods=["GET"])
+@faq_ui.route("/view", methods=["GET"])
 @auth.login_required(role="read")
 def view_faqs():
     """
@@ -50,7 +50,7 @@ def validate_tags(tag_list):
     return bad_tags
 
 
-@db_ui.route("/add", methods=["GET", "POST"])
+@faq_ui.route("/add", methods=["GET", "POST"])
 @auth.login_required(role="add")
 def add_faq():
     """
@@ -107,7 +107,7 @@ def add_faq():
     return render_template("add_faq.html", form=form)
 
 
-@db_ui.route("/edit/<edit_faq_id>", methods=["GET", "POST"])
+@faq_ui.route("/edit/<edit_faq_id>", methods=["GET", "POST"])
 @auth.login_required(role="add")
 def edit_faq(edit_faq_id):
     """
@@ -171,7 +171,7 @@ def edit_faq(edit_faq_id):
     )
 
 
-@db_ui.route("/delete/<delete_faq_id>", methods=["GET", "POST"])
+@faq_ui.route("/delete/<delete_faq_id>", methods=["GET", "POST"])
 @auth.login_required(role="add")
 def delete_faq(delete_faq_id):
     """

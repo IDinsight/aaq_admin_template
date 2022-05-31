@@ -1,7 +1,7 @@
 from flask import Blueprint
 
-db_ui = Blueprint(
-    "db_ui",
+faq_ui = Blueprint(
+    "faq_ui",
     __name__,
     template_folder="templates",
     static_url_path="/landing/static",
