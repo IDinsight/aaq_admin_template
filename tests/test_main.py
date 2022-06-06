@@ -48,6 +48,7 @@ class TestHealthCheck:
 
         assert response.status_code == 200
 
+    @pytest.mark.ud_test
     def test_health_check_fails_no_ud_table_ud_enabled(
         self, correct_model_string, client_ud, monkeypatch, requests_mock
     ):

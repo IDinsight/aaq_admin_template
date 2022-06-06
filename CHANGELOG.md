@@ -6,7 +6,7 @@
 
 Initial template created with four blueprints:
 * main - healthcheck
-* db_ui - managing FAQs
+* faq_ui - managing FAQs
 * ud_ui - managing urgency rules
 * demo - for checking new FAQs and demo'ing the API
 

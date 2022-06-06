@@ -7,7 +7,7 @@ minversion = "6.0"
 addopts = "-rPaq"
 testpaths = ["tests"]
 python_files = ["*.py"]
-markers = ["slow: mark test as slow", "fast: mark test as fast"]
+markers = ["slow: mark test as slow", "fast: mark test as fast", "ud_test: for urgency detection"]
 filterwarnings = [
     "error",
     "ignore::DeprecationWarning"
