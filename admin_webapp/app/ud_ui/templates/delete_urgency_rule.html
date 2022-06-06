@@ -1,29 +1,4 @@
-{% extends 'bootstrap/base.html' %}
-{% import "bootstrap/wtf.html" as wtf %}
-
-
-{% block styles %}
-{{ super() }}
-<style>
-    body {
-        background: #e8f1f9;
-    }
-
-    th {
-        padding-right: 20px;
-    }
-
-    td {
-        padding-right: 20px;
-    }
-
-    form {
-        display: inline;
-        padding-right: 20px;
-    }
-</style>
-{% endblock %}
-
+{% extends 'base.html' %}
 
 {% block title %}
 Delete Rule
@@ -37,8 +12,6 @@ Delete Rule
     url_for('.static', filename='js/add_tags.js') }}"></script>
 </script>
 {% endblock %}
-
-{% include "includes/nav.html" %}
 
 {% block content %}
 <div class="container">
@@ -92,7 +65,5 @@ Delete Rule
         </div>
     </div>
 </div>
-
-
 
 {% endblock %}
