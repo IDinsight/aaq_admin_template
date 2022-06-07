@@ -1,9 +1,9 @@
-June 6, 2022
+June 7, 2022
 
 CURRENT VERSION: aaq_admin_template:v1.0.0
 # Deploying the AAQ Admin App
 
-This is the deployment instructions for the **AAQ Admin App**. It does not cover deployment of the AAQ Admin App.
+This is the deployment instructions for the **AAQ Admin App**. It does not cover deployment of the AAQ Core or UD Apps.
 
 The AAQ Admin App provides a convenient interface to 
 1. add to or modify content tables (`faqmatches` for FAQs, and `urgency_rules` if urgency detection is enabled), and
@@ -13,7 +13,7 @@ The AAQ Admin App provides a convenient interface to
 
 # Initial setup
 
-First set up the AAQ Core App (from `aaq_core_template`) and optionally the urgency detection app (template not provided yet).
+First set up the AAQ Core App (from `aaq_core_template`) and optionally the urgency detection app (from `aaq_ud_template`).
 
 # Images
 
@@ -24,7 +24,7 @@ You'll need a token to access the image. Please contact IDinsight for this token
 
 ## Resources for images
 
-The admin app doesn't require much resources.
+The Admin app doesn't require many resources as the heavy processing is done in the Core and UD apps.
 
 ## Image setup
 
