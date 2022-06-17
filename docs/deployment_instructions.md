@@ -17,10 +17,10 @@ First set up the AAQ Core App (from `aaq_core_template`) and optionally the urge
 
 # Images
 
-The Docker image for the admin app is hosted on GHCR at
-`ghcr.io/idinsight/aaq_admin_template:v1.0.0`
+The Docker image for the core model server is hosted on AWS ECR at
+`[AWS_ACCOUNT_ID].dks.ecr.af-south-1.amazonaws.com/aaq_solution/aaq_admin_template:v1.0.0`
 
-You'll need a token to access the image. Please contact IDinsight for this token.
+Your AWS user will need access to this resource. Please contact IDinsight for access.
 
 ## Resources for images
 
