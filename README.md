@@ -75,11 +75,7 @@ You should edit each of the files in `./secrets` and set the correct parameters.
 ### Other tasks
 
 1. Setup auto deployment on EC2 (using webhooks or other)
-<<<<<<< HEAD
-2. Enable UD by passing `enable_ud=True` to `creat_app` in `aaq_admin_template/admin_webapp/flask_app.py`
-=======
 2. Enable UD by passing `enable_ud=True` to `create_app` in `aaq_admin_template/admin_webapp/flask_app.py`. If you want to run pytests with UD disabled, make sure to pass `-m "not ud_test"` option to pytest to exclude UD tests.
->>>>>>> d923a90 (added healthcheck tests)
 3. Update this file!
 
 -   Remove irrelevant content (all the template text)
