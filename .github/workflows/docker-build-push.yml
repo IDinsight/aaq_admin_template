@@ -24,7 +24,7 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
       - name: Build Docker image
         run: |
-          cp ./requirements.txt ./demo_webapp/requirements.txt
+          cp ./requirements.txt ./admin_webapp/requirements.txt
           docker build --rm \
             --build-arg NAME=${{ github.event.repository.name }} \
             --build-arg PORT=9903 \
