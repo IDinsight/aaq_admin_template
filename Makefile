@@ -33,7 +33,11 @@ cmd-exists-%:
 guard-%:
 	@if [ -z '${${*}}' ]; then echo 'ERROR: environment variable $* not set' && exit 1; fi
 
-setup-dev: guard-PROJECT_CONDA_ENV cmd-exists-conda setup-secrets
+setup: setup-dev setup-ecr
+
+setup-dev: setup-env setup-secrets
+
+setup-env: guard-PROJECT_CONDA_ENV cmd-exists-conda setup-secrets
 	conda create --name $(PROJECT_CONDA_ENV) python==3.9 -y
 	$(CONDA_ACTIVATE) $(PROJECT_CONDA_ENV); pip install --upgrade pip
 	$(CONDA_ACTIVATE) $(PROJECT_CONDA_ENV); pip install -r requirements.txt --ignore-installed 
@@ -57,6 +61,11 @@ setup-secrets:
 	@for env_var in $(SENTRY_CONFIG) ; do \
 		echo "$$env_var=" >> ./secrets/sentry_config.env ; \
 	done
+
+setup-ecr: cmd-exists-aws
+	aws ecr create-repository \
+		--repository-name aaq_solution/$(NAME) \
+		--region $(AWS_REGION)
 
 ci:
 	isort --profile black --check admin_webapp
