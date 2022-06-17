@@ -59,7 +59,7 @@ The `project_config.cfg` in the root directory should be updated with your proje
 
 ### Initialise
 
-#### `make setup-dev`
+#### Run `make setup-dev`
 
 This command does the following:
 
@@ -67,6 +67,10 @@ This command does the following:
 2. Installs dependencies from `requirements.txt` and `requirements_dev.txt`
 3. Installs pre-commit hooks
 4. Creates secrets files in `./secrets/`
+
+#### Run `make setup-ecr`
+
+This creates the ECR repository for the project to store docker images.
 
 ### Enter details in secrets file
 
