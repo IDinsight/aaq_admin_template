@@ -29,7 +29,7 @@ jobs:
             --build-arg NAME=${{ github.event.repository.name }} \
             --build-arg PORT=9903 \
             -t $IMAGE_NAME \
-            ./demo_webapp
+            ./admin_webapp
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
