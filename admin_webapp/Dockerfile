@@ -17,9 +17,9 @@ RUN useradd -ms /bin/bash -d ${HOME_DIR} container_user
 RUN chown -R container_user: ${HOME_DIR}
 
 # No dependencies on src/, config/, etc.
-COPY . ${HOME_DIR}
-WORKDIR ${HOME_DIR}
-RUN ["chmod", "+x", "gunicorn.sh"]
+#COPY . ${HOME_DIR}
+#WORKDIR ${HOME_DIR}
+#RUN ["chmod", "+x", "gunicorn.sh"]
 
 ENV PYTHONPATH "${PYTHONPATH}:${HOME_DIR}"
 ENV PORT ${PORT}

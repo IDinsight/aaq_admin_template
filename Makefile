@@ -85,7 +85,7 @@ image:
 	rm -rf ./admin_webapp/requirements.txt
 
 container:
-	@docker container run \
+	@docker container run -it \
 		-p $(PORT):$(PORT) \
 		-e MODEL_PROTOCOL=$(MODEL_PROTOCOL) \
 		-e MODEL_HOST=$(MODEL_HOST) \
@@ -93,8 +93,10 @@ container:
 		-e UD_PROTOCOL=$(UD_PROTOCOL) \
 		-e UD_HOST=$(UD_HOST) \
 		-e UD_PORT=$(UD_PORT) \
+		-v $(PWD)/admin_webapp:/usr/src/$(NAME) \
 		--env-file ./secrets/app_secrets.env \
 		--env-file ./secrets/database_secrets.env \
 		--env-file ./secrets/sentry_config.env \
 		--env-file ./secrets/ud_secrets.env \
-		$(NAME):$(VERSION)
+		-w /usr/src/$(NAME) \
+		$(NAME):$(VERSION) ./flask_dev.sh
