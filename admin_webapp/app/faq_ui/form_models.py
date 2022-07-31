@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField
-from wtforms.validators import DataRequired
+from wtforms import IntegerField, StringField, SubmitField
+from wtforms.validators import DataRequired, NumberRange
 from wtforms.widgets import TextArea
 
 
@@ -16,6 +16,13 @@ class AddFAQForm(FlaskForm):
         "Content of FAQ (to send upon user selection):",
         validators=[DataRequired()],
         widget=TextArea(),
+    )
+    faq_weight = IntegerField(
+        validators=[
+            DataRequired(),
+            NumberRange(min=1, message="Weight must be at least 1"),
+        ],
+        default=1,
     )
     tag_1 = StringField(validators=[DataRequired()])
     tag_2 = StringField(validators=[DataRequired()])

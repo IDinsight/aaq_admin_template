@@ -66,6 +66,7 @@ class TestAddFAQ:
                 "tag_2": tag2,
                 "faq_author": "pytest",
                 "faq_title": "test_title",
+                "faq_weight": 1,
                 "faq_content_to_send": "Test Content Data",
                 "submit": "True",
             },
@@ -80,14 +81,47 @@ class TestAddFAQ:
                 "The following tags are invalid:", response.get_data(as_text=True)
             )
 
+    @pytest.mark.parametrize(
+        "weight, error_msg",
+        [
+            (12, "Successfully added new FAQ"),
+            (0, "This field is required"),
+            (-1, "Weight must be at least 1"),
+            (0.3, "This field is required"),
+            ("hello", "This field is required"),
+        ],
+    )
+    def test_add_new_faq_incorrect_weight(
+        self, weight, error_msg, client, credentials_fullaccess, clean_faq_table
+    ):
+        response = client.post(
+            "/faqs/add",
+            follow_redirects=True,
+            headers={"Authorization": "Basic " + credentials_fullaccess},
+            data={
+                "tag_1": "weight",
+                "tag_2": "test",
+                "faq_author": "pytest",
+                "faq_title": "test_title",
+                "faq_weight": weight,
+                "faq_content_to_send": "Test Content Data",
+                "submit": "True",
+            },
+        )
+
+        print(response.get_data(as_text=True))
+
+        assert re.search(error_msg, response.get_data(as_text=True))
+
 
 class TestEditFAQ:
 
     insert_faq = (
         "INSERT INTO faqmatches ("
         "faq_id, faq_tags, faq_author, faq_title, faq_content_to_send, "
-        "faq_added_utc, faq_thresholds) "
-        "VALUES (:faq_id, :faq_tags, :author, :title, :content, :added_utc, :threshold)"
+        "faq_weight, faq_added_utc, faq_thresholds) "
+        "VALUES (:faq_id, :faq_tags, :author, :title, :content, :weight, "
+        ":added_utc, :threshold)"
     )
     faq_tags = [
         """{"rock", "guitar", "melody", "chord"}""",
@@ -101,6 +135,7 @@ class TestEditFAQ:
         "added_utc": "2022-04-14",
         "author": "pytest",
         "content": "{}",
+        "weight": 2,
         "threshold": "{0.1, 0.1, 0.1, 0.1}",
     }
 
@@ -154,6 +189,7 @@ class TestEditFAQ:
                 "faq_author": "pytest",
                 "faq_title": "test_title",
                 "faq_content_to_send": "Test Content Data",
+                "faq_weight": 10,
                 "submit": "True",
             },
         )
@@ -167,14 +203,45 @@ class TestEditFAQ:
                 "The following tags are invalid:", response.get_data(as_text=True)
             )
 
+    @pytest.mark.parametrize(
+        "weight, error_msg",
+        [
+            (12, "Successfully edited FAQ with ID: 1001"),
+            (0, "This field is required"),
+            (-1, "Weight must be at least 1"),
+            (0.3, "This field is required"),
+            ("hello", "This field is required"),
+        ],
+    )
+    def test_edit_faq_incorrect_weight(
+        self, weight, error_msg, faq_data, client, credentials_fullaccess
+    ):
+        response = client.post(
+            "/faqs/edit/1001",
+            follow_redirects=True,
+            headers={"Authorization": "Basic " + credentials_fullaccess},
+            data={
+                "tag_1": "weight",
+                "tag_2": "test",
+                "faq_author": "pytest",
+                "faq_title": "test_title",
+                "faq_weight": weight,
+                "faq_content_to_send": "Test Content Data",
+                "submit": "True",
+            },
+        )
+
+        assert re.search(error_msg, response.get_data(as_text=True))
+
 
 class TestDeleteFAQ:
 
     insert_faq = (
         "INSERT INTO faqmatches ("
         "faq_id, faq_tags, faq_author, faq_title, faq_content_to_send, "
-        "faq_added_utc, faq_thresholds) "
-        "VALUES (:faq_id, :faq_tags, :author, :title, :content, :added_utc, :threshold)"
+        "faq_weight, faq_added_utc, faq_thresholds) "
+        "VALUES (:faq_id, :faq_tags, :author, :title, :content, :weight, "
+        ":added_utc, :threshold)"
     )
     faq_tags = [
         """{"rock", "guitar", "melody", "chord"}""",
@@ -188,6 +255,7 @@ class TestDeleteFAQ:
         "added_utc": "2022-04-14",
         "author": "pytest",
         "content": "{}",
+        "weight": 2,
         "threshold": "{0.1, 0.1, 0.1, 0.1}",
     }
 

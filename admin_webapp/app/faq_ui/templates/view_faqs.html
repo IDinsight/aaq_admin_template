@@ -32,6 +32,7 @@ View FAQs
                         <th>ID</th>
                         <th>Title</th>
                         <th>Content to Send</th>
+                        <th>Weight</th>
                         <th>Tags</th>
                     </tr>
                 </thead>
@@ -45,6 +46,7 @@ View FAQs
                             <p>{{para}}</p>
                             {% endfor %}
                         </td>
+                        <td>{{faq.faq_weight}}</td>
                         <td>{{faq.faq_tags}}</td>
                         <td>
                             <form method="GET" action="{{ url_for('.edit_faq', edit_faq_id=faq.faq_id) }}">
