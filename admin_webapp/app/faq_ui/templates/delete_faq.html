@@ -39,6 +39,7 @@ Delete FAQ
                         <th>Content to Send</th>
                         <th>Weight</th>
                         <th>Tags</th>
+                        <th>Last Updated</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -48,6 +49,8 @@ Delete FAQ
                         <td>{{ faq_to_delete.faq_content_to_send }}</td>
                         <td>{{ faq_to_delete.faq_weight }}</td>
                         <td>{{ faq_to_delete.faq_tags }}</td>
+                        <td>{{ faq_to_delete.faq_updated_utc.strftime("%Y-%m-%d %H:%M:%S") }}</td>
+
                     </tr>
                 </tbody>
             </table>

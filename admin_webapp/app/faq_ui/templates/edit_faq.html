@@ -19,8 +19,10 @@ Edit FAQ
     <div class="row">
         <div class="col-md-10 col-lg-8 mx-lg-auto mx-md-auto">
 
-            <h1 class="pt-5 pb-2">Edit FAQ #{{ faq_to_edit.faq_id }}</h1>
-
+            <h1 class="pt-5">Edit FAQ #{{ faq_to_edit.faq_id }}</h1>
+            <div class="pb-4 text-muted">
+                Last updated: {{ faq_to_edit.faq_updated_utc.strftime('%Y-%m-%d %H:%M:%S')}}
+            </div>
             {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
             {% for category, message in messages %}
