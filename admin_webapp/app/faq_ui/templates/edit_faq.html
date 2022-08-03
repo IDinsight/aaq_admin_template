@@ -20,8 +20,14 @@ Edit FAQ
         <div class="col-md-10 col-lg-8 mx-lg-auto mx-md-auto">
 
             <h1 class="pt-5">Edit FAQ #{{ faq_to_edit.faq_id }}</h1>
+            {% if faq_to_edit.faq_updated_utc is none %}
+            {%      set last_updated = faq_to_edit.faq_added_utc %}
+            {% else %}
+            {%      set last_updated = faq_to_edit.faq_updated_utc %}
+            {% endif %}
+
             <div class="pb-4 text-muted">
-                Last updated: {{ faq_to_edit.faq_updated_utc.strftime('%Y-%m-%d %H:%M:%S')}}
+                Last updated: {{ last_updated.strftime('%Y-%m-%d %H:%M:%S') }}
             </div>
             {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
