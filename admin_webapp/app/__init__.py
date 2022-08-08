@@ -2,6 +2,7 @@
 Create and initialise the app. Uses Blueprints to define views
 """
 import os
+from pathlib import Path
 
 from flask import Flask
 from flask_bootstrap import Bootstrap
@@ -48,7 +49,11 @@ def setup(app, params, enable_ud):
 
     if params is None:
         params = {}
+
     config = get_config_data(params)
+    project_config = get_project_config()
+    config.update(project_config)
+
     setup_core(app, config)
 
     if enable_ud:
@@ -104,5 +109,20 @@ def get_config_data(params):
         config["PG_USERNAME"],
         config["PG_PASSWORD"],
     )
+
+    return config
+
+
+def get_project_config():
+    """
+    Read project configuration
+    """
+    config_path = Path(__file__).parents[2] / "project_config.cfg"
+
+    config = dict()
+    with open(config_path, "r") as f:
+        for line in f.readlines():
+            key, val = map(lambda x: x.strip(), line.split("="))
+            config[key] = val
 
     return config
