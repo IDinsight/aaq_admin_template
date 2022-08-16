@@ -90,6 +90,7 @@ def add_faq():
         else:
             new_faq = FAQModel(
                 faq_added_utc=added_ts,
+                faq_updated_utc=added_ts,
                 faq_author=form.faq_author.data,
                 faq_title=form.faq_title.data,
                 faq_content_to_send=form.faq_content_to_send.data,
@@ -128,6 +129,8 @@ def edit_faq(edit_faq_id):
     tag_data = faq_to_edit.faq_tags
 
     if form.validate_on_submit():
+        updated_ts = datetime.utcnow()
+
         tag_data = [
             form.tag_1.data,
             form.tag_2.data,
@@ -158,6 +161,7 @@ def edit_faq(edit_faq_id):
             faq_to_edit.faq_content_to_send = form.faq_content_to_send.data
             faq_to_edit.faq_weight = form.faq_weight.data
             faq_to_edit.faq_tags = tag_data
+            faq_to_edit.faq_updated_utc = updated_ts
 
             db.session.commit()
 
