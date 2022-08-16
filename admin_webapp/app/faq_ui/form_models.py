@@ -18,6 +18,7 @@ class AddFAQForm(FlaskForm):
         widget=TextArea(),
     )
     faq_weight = IntegerField(
+        "FAQ Weight",
         validators=[
             DataRequired(),
             NumberRange(min=1, message="Weight must be at least 1"),
