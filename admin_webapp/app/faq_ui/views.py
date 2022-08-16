@@ -93,6 +93,7 @@ def add_faq():
                 faq_author=form.faq_author.data,
                 faq_title=form.faq_title.data,
                 faq_content_to_send=form.faq_content_to_send.data,
+                faq_weight=form.faq_weight.data,
                 faq_tags=tag_data,
                 faq_thresholds=[faqs_params["default_threshold"]] * len(tag_data),
             )
@@ -155,6 +156,7 @@ def edit_faq(edit_faq_id):
             faq_to_edit.faq_author = form.faq_author.data
             faq_to_edit.faq_title = form.faq_title.data
             faq_to_edit.faq_content_to_send = form.faq_content_to_send.data
+            faq_to_edit.faq_weight = form.faq_weight.data
             faq_to_edit.faq_tags = tag_data
 
             db.session.commit()

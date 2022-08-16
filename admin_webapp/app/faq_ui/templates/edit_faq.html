@@ -35,7 +35,7 @@ Edit FAQ
                 {{ wtf.form_field(form.faq_author) }}
                 {{ wtf.form_field(form.faq_title) }}
                 {{ wtf.form_field(form.faq_content_to_send, rows='20') }}
-
+                {{ wtf.form_field(form.faq_weight) }}
                 <div class="form-group"><label class="form-control-label">Old Tags:</label>
                     {% for tag in faq_to_edit.faq_tags %}
                     <input class="form-control" style="margin-bottom:5px;" value="{{ tag }}" disabled>
