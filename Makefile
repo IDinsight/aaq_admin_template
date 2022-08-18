@@ -104,6 +104,10 @@ container:
 		$(NAME):$(VERSION)
 
 container-stg:
+	# Set docker hosts for ECS
+	$(eval MODEL_HOST="172.17.0.1")
+	$(eval UD_HOST="172.17.0.1")
+	
 	# Configure ecs-cli options
 	@ecs-cli configure --cluster ${SOLUTION_NAME}-cluster \
 	--default-launch-type EC2 \
