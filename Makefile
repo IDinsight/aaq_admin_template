@@ -124,7 +124,7 @@ container-stg:
 	UD_PROTOCOL=$(UD_PROTOCOL) \
 	UD_HOST=$(UD_HOST) \
 	UD_PORT=$(UD_PORT) \
-	ecs-cli compose -f docker-compose/docker-compose-stg.yaml \
+	ecs-cli compose -f docker-compose/docker-compose-stg.yml \
 	--project-name ${NAME} \
 	--cluster-config ${NAME}-config \
 	--task-role-arn arn:aws:iam::$(AWS_ACCOUNT_ID):role/${SOLUTION_NAME}-task-role \
@@ -134,6 +134,6 @@ container-stg:
 
 down-stg:
 	@ecs-cli compose \
-	-f docker-compose/docker-compose-stg.yaml \
+	-f docker-compose/docker-compose-stg.yml \
 	--project-name ${NAME} \
 	--cluster-config ${NAME}-config service down

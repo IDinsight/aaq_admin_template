@@ -85,19 +85,24 @@ jobs:
 
       - name: Deploy using ECS CLI
         env:
+          PROJECT_NAME: ${{ github.event.repository.name }}
+          IMAGE_NAME: ${{ needs.DockerMakeAndPushRelease.outputs.ecr-image-path }}
+          PORT: 9903
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          
           MODEL_PROTOCOL: "http"
           MODEL_HOST: "172.17.0.1"
-          MODEL_PORT: "9902"
+          MODEL_PORT: 9902
           UD_PROTOCOL: "http"
           UD_HOST: "172.17.0.1"
-          UD_PORT: "9904"
+          UD_PORT: 9904
           # app secrets
           READONLY_PASSWORD: ${{ secrets.READONLY_PASSWORD }}
           FULLACCESS_PASSWORD: ${{ secrets.FULLACCESS_PASSWORD }}
           INBOUND_CHECK_TOKEN: ${{ secret.INBOUND_CHECK_TOKEN }}
           # database secrets
           PG_ENDPOINT: ${{ secrets.PG_ENDPOINT }}
-          PG_PORT: "5432"
+          PG_PORT: 5432
           PG_USERNAME: "flask"
           PG_PASSWORD: ${{ secrets.PG_PASSWORD }}
           PG_DATABASE: ${{ secrets.PG_DATABASE }}
@@ -115,7 +120,7 @@ jobs:
           --config-name ${PROJECT_NAME}-config
 
           ecs-cli compose \
-          -f docker-compose/docker-compose-stg.yaml \
+          -f docker-compose/docker-compose-stg.yml \
           --project-name ${PROJECT_NAME} \
           --cluster-config ${PROJECT_NAME}-config \
           --task-role-arn arn:aws:iam::678681925278:role/${SOLUTION_NAME}-task-role \
