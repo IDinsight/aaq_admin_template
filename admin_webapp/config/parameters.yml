@@ -1,2 +1,4 @@
+jinja_variables: # Name must be uppercase for the variable to be available in jinja templates
+  PROJECT_DISPLAY_NAME: "AAQ Admin Template"
 faqs_ui:
   default_threshold: 0.3

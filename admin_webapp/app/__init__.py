@@ -7,7 +7,7 @@ from flask import Flask
 from flask_bootstrap import Bootstrap
 
 from .database_sqlalchemy import db
-from .utils import DefaultEnvDict, get_postgres_uri
+from .utils import DefaultEnvDict, get_postgres_uri, load_parameters
 
 bootstrap = Bootstrap()
 
@@ -48,7 +48,9 @@ def setup(app, params, enable_ud):
 
     if params is None:
         params = {}
+
     config = get_config_data(params)
+
     setup_core(app, config)
 
     if enable_ud:
@@ -95,6 +97,9 @@ def get_config_data(params):
     """
 
     config = DefaultEnvDict()
+    jinja_variables = load_parameters("jinja_variables")
+    config.update(jinja_variables)
+
     config.update(params)
 
     config["SQLALCHEMY_DATABASE_URI"] = get_postgres_uri(
