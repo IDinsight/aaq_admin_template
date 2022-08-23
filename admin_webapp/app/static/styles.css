@@ -12,6 +12,13 @@ table {
     margin-bottom: 50px;
 }
 
+.table-header {
+    border-bottom: 1.5px solid #bbb;
+}
+
+.table-row {
+    border-bottom: 1.2px solid #ccc;
+}
 /*Added CSS here to override base bootstrap CSS*/
 body {
     background: linear-gradient(

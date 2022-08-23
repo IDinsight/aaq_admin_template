@@ -28,7 +28,7 @@ View FAQs
 
             <table cellpadding="5">
                 <thead>
-                    <tr style="border-bottom: 1.5px solid #bbb">
+                    <tr class="table-header">
                         <th>ID</th>
                         <th>Title</th>
                         <th>Content to Send</th>
@@ -41,7 +41,7 @@ View FAQs
                 </thead>
                 <tbody>
                     {% for faq in faqs %}
-                    <tr style="border-bottom: 1.2px solid #ccc">
+                    <tr class="table-row">
                         <td>{{faq.faq_id}}</td>
                         <td>{{faq.faq_title}}</td>
                         <td>

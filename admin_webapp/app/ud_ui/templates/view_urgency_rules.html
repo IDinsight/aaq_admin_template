@@ -26,7 +26,7 @@ View Urgency Rules
 
             <table cellpadding="5">
                 <thead>
-                    <tr style="border-bottom: 1.5px solid #bbb">
+                    <tr class="table-header">
                         <th>ID</th>
                         <th>Title</th>
                         <th>Include Tags</th>
@@ -39,7 +39,7 @@ View Urgency Rules
                 </thead>
                 <tbody>
                     {% for rule in rules %}
-                    <tr style="border-bottom: 1.2px solid #ccc">
+                    <tr class="table-row">
                         <td>{{rule.urgency_rule_id}}</td>
                         <td>{{rule.urgency_rule_title}}</td>
                         <td>{{rule.urgency_rule_tags_include}}</td>
