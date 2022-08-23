@@ -5,10 +5,6 @@
 {% block styles %}
 {{ super() }}
 <style>
-    body {
-        background: #e6f3ff;
-    }
-
     th {
         padding-left: 10px;
         padding-right: 10px;
@@ -21,6 +17,127 @@
 
     table {
         margin-bottom: 50px;
+    }
+
+    /*Added CSS here to override base bootstrap CSS*/
+    body {
+        background: linear-gradient(180deg, rgba(168,204,235,1) 0%, rgba(255,255,255,1) 100%);
+    }
+    .navbar-brand{
+    font-weight: bold;
+    }
+    .navbar{
+        background-color: #1e3561 !important;
+    }
+    .nav-link{
+        color:white !important;
+    }
+    .navbar-brand{
+        color:white !important;
+    }
+    /*Navbar Animation and underline*/
+    .navbar-light .navbar-nav .nav-link {
+    display: inline;
+    text-transform: lowercase;
+    font-size: 15px;
+    text-decoration: none;
+    transition: 0.3s ease;
+    border-top: 4px solid transparent;
+    border-bottom: 4px solid transparent;
+    margin: 0 30px;
+    padding: 20px 0;
+
+    }
+    .navbar-nav .nav-link.active, .navbar-nav .nav-link:hover {
+    transition: 0.3s ease;
+    border-bottom: 4px solid #5480D6;
+    padding: 8px 0; 
+    }
+    body {
+        background: linear-gradient(180deg, rgba(168,204,235,1) 0%, rgba(255,255,255,1) 100%);
+    }
+    /*Home page box styling*/
+    #box {
+        height: 200px;
+        padding-top: 25px;
+        padding-bottom: 25px;
+    background-color:rgb(240, 240, 240);
+    /*Border radius*/
+    -webkit-border-radius: 15px;
+    -moz-border-radius: 15px;
+    border-radius: 15px;
+    /*Drop Shadow*/
+    -webkit-box-shadow: 0px 10px 13px -7px #cecece, 5px 5px 15px 5px rgba(148, 148, 148, 0); 
+    box-shadow: 0px 10px 13px -7px #c6c6c6, 5px 5px 15px 5px rgba(148,148,148,0);
+    }
+    #box:hover{
+        transform: scale(1.05);
+        transition: 0.3s ease;
+        background-color:rgb(230, 230, 230);
+    }
+
+    #Layer_1{
+        width: 70px;
+    }
+    h1{
+        color: white;
+        font-weight: 600;
+        background-color:#264D96;
+        margin-left: -30%;
+        padding-left: 30%;
+        margin-right: -30%;
+        margin-bottom: 30px;
+    }
+    h2{
+        color:#1e3561;
+        font-weight: 400;
+    }
+    h3{
+        color:#1e3561;
+        font-size: 18pt;
+    }
+    /*Button Styling*/
+    .btn-primary, .btn-secondary{
+        background-color:#5480D6;
+        border-radius: 200px;
+    }
+    .container-fluid{
+        width: 90vw;
+    }
+    .container-fluid .row{
+         /*positionin*/
+    margin-top: 50px;
+    padding-bottom: 50px;
+    padding-left: 50px;
+    padding-right: 50x;
+    /*BG Color*/
+    background-color: white;
+    /*Border radius*/
+    -webkit-border-radius: 15px;
+    -moz-border-radius: 15px;
+    border-radius: 15px;
+    /*Drop Shadow*/
+    -webkit-box-shadow: 0px 10px 13px -7px #000000, 5px 5px 15px 5px rgba(0,0,0,0); 
+    box-shadow: 0px 10px 13px -7px #000000, 5px 5px 15px 5px rgba(0,0,0,0);
+    /*overflow*/
+    overflow: hidden;
+        
+    }
+    .container{
+    /*positionin*/
+    margin-top: 50px;
+    padding-bottom: 50px;
+    /*BG Color*/
+    background-color: white;
+    /*Border radius*/
+    -webkit-border-radius: 15px;
+    -moz-border-radius: 15px;
+    border-radius: 15px;
+    /*Drop Shadow*/
+    -webkit-box-shadow: 0px 10px 13px -7px #000000, 5px 5px 15px 5px rgba(0,0,0,0); 
+    box-shadow: 0px 10px 13px -7px #000000, 5px 5px 15px 5px rgba(0,0,0,0);
+    /*overflow*/
+    overflow: hidden;
     }
 </style>
 {% endblock %}
