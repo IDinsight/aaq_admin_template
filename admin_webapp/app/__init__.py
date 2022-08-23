@@ -2,7 +2,6 @@
 Create and initialise the app. Uses Blueprints to define views
 """
 import os
-from pathlib import Path
 
 from flask import Flask
 from flask_bootstrap import Bootstrap
@@ -98,6 +97,9 @@ def get_config_data(params):
     """
 
     config = DefaultEnvDict()
+    jinja_variables = load_parameters("jinja_variables")
+    config.update(jinja_variables)
+
     config.update(params)
 
     config["SQLALCHEMY_DATABASE_URI"] = get_postgres_uri(
@@ -107,8 +109,5 @@ def get_config_data(params):
         config["PG_USERNAME"],
         config["PG_PASSWORD"],
     )
-
-    jinja_variables = load_parameters("jinja_variables")
-    config.update(jinja_variables)
 
     return config
