@@ -7,7 +7,6 @@ export
 include ./secrets/*.env
 export
 
-$(eval SOLUTION_NAME=$(SOLUTION_NAME))
 $(eval NAME=$(PROJECT_NAME))
 $(eval PORT=9903)
 $(eval VERSION=dev)
@@ -109,7 +108,7 @@ container-stg:
 	$(eval UD_HOST="172.17.0.1")
 	
 	# Configure ecs-cli options
-	@ecs-cli configure --cluster ${SOLUTION_NAME}-cluster \
+	@ecs-cli configure --cluster ${PROJECT_SHORT_NAME}-cluster \
 	--default-launch-type EC2 \
 	--region $(AWS_REGION) \
 	--config-name ${NAME}-config
@@ -127,7 +126,7 @@ container-stg:
 	ecs-cli compose -f docker-compose/docker-compose-stg.yml \
 	--project-name ${NAME} \
 	--cluster-config ${NAME}-config \
-	--task-role-arn arn:aws:iam::$(AWS_ACCOUNT_ID):role/${SOLUTION_NAME}-task-role \
+	--task-role-arn arn:aws:iam::$(AWS_ACCOUNT_ID):role/${PROJECT_SHORT_NAME}-task-role \
 	service up \
 	--create-log-groups \
 	--deployment-min-healthy-percent 0 
