@@ -83,6 +83,8 @@ This creates the ECR repository for the project to store docker images.
 
 You should edit each of the files in `./secrets` and set the correct parameters.
 
+To use other `make` commands, [set the secrets as environment variables for the conda environment](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#saving-environment-variables).
+
 ### Other tasks
 
 1. Setup auto deployment on EC2 (using webhooks or other)
@@ -98,6 +100,5 @@ You should edit each of the files in `./secrets` and set the correct parameters.
 To run this project:
 
 1. Setup environment as determined above.
-2. Set up secrets in the 3 files under `/secrets/`.
-3. Run `make image` from the root folder.
-4. Run the Docker container by calling `make container` from the root folder.
+2. Run `make image` from the root folder.
+3. Run the Docker container by calling `make container` from the root folder.
