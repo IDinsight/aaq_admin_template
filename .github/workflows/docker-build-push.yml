@@ -5,7 +5,7 @@ on:
   #   types: [published]
   push:
     branches:
-      - "ecs_deployment"
+      - ecs_deployment
 
 jobs:
   DockerMakeAndPushRelease:
