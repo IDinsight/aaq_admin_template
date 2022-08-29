@@ -4,25 +4,7 @@
 
 {% block styles %}
 {{ super() }}
-<style>
-    body {
-        background: #e6f3ff;
-    }
-
-    th {
-        padding-left: 10px;
-        padding-right: 10px;
-    }
-
-    td {
-        padding-left: 10px;
-        padding-right: 10px;
-    }
-
-    table {
-        margin-bottom: 50px;
-    }
-</style>
+<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 {% endblock %}
 
 {% include "includes/nav.html" %}

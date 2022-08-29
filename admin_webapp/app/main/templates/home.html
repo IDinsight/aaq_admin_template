@@ -1,19 +1,16 @@
-{% extends 'bootstrap/base.html' %}
+{% extends 'base.html' %}
 {% import "bootstrap/wtf.html" as wtf %}
 
 
 {% block styles %}
 {{ super() }}
 <style>
-    body {
-        background: #e6f3ff;
-    }
+    
 </style>
 {% endblock %}
 
 
 {% block title %}
-Check New Urgency Rules
 {% endblock %}
 
 
@@ -22,6 +19,48 @@ Check New Urgency Rules
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 {% endblock %}
 
-{% include "includes/nav.html" %}
 {% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-10 col-lg-10 mx-lg-auto mx-md-auto">
+        <h1 class="pt-5 pb-2">ask a question app</h1>
+            <h2>Welcome</h2>
+            <p>
+            This admin app can be used to manage and test the AAQ service. Please use the navigation bar to continue or use one of the buttons below.
+            </p>
+            <div class="row">
+                <div class="col-md-12">
+                    <hr>
+                    <h2>Where would you like to start?<br /></h2>
+                    <div class="row" style="margin-top:30px;">
+                        <div class="col-md-4" style="text-align-last: center; align-self: center; height: 210px;">
+                            <a href="/demo/" style="text-decoration: none;"><div id="box">
+                                {% include "hover-click.svg" %}
+                                <h3><br />Core Demo</h3>
+                            </div></a>
+                       </div>
+                        <div class="col-md-4" style="text-align-last: center; align-self: center; height: 210px;">
+                            <a href="/faqs/" style="text-decoration: none;"><div id="box">
+                                {% include "question.svg" %}
+                                <h3><br />Manage FAQs</h3>
+                            </div></a>
+                        </div>
+                        <div class="col-md-4" style="text-align-last: center; align-self: center; height: 210px;">
+                            <a href="/demo/check-new-faq-tags" style="text-decoration: none;"><div id="box">
+                                {% include "right-file.svg" %}
+                                <h3><br />Check FAQs</h3>
+                            </div></a>
+                        </div>
+                    </div>    
+                </div>
+            </div>
+               <div class="col-12"><p><br />
+                   
+                </p>
+                </div>
+            
+        </div>
+    </div>
+        
+</div>
 {% endblock %}
