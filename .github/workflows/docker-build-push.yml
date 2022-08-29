@@ -17,7 +17,7 @@ jobs:
       IMAGE_NAME: ${{ github.event.repository.name }}:dev
     outputs:
       env-name: ${{ steps.env-name.outputs.environment }}
-      ecr-image-path: ${{ steps.update-ecr.outputs.EcrImagePath }}
+      EcrImagePath: ${{ steps.update-ecr.outputs.EcrImagePath }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -125,7 +125,7 @@ jobs:
           # app secrets
           READONLY_PASSWORD: ${{ secrets.GA_READONLY_PASSWORD }}
           FULLACCESS_PASSWORD: ${{ secrets.GA_FULLACCESS_PASSWORD }}
-          INBOUND_CHECK_TOKEN: ${{ secret.GA_INBOUND_CHECK_TOKEN }}
+          INBOUND_CHECK_TOKEN: ${{ secrets.GA_INBOUND_CHECK_TOKEN }}
           # database secrets
           PG_ENDPOINT: ${{ secrets.GA_PG_ENDPOINT }}
           PG_PORT: 5432
