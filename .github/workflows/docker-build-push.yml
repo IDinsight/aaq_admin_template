@@ -139,7 +139,7 @@ jobs:
           UD_INBOUND_CHECK_TOKEN: ${{ secrets.GA_UD_INBOUND_CHECK_TOKEN }}
         run: |
           ecs-cli configure \
-          --cluster ${{ secrets.PROJECT_SHORT_NAME }}-cluster \
+          --cluster ${PROJECT_SHORT_NAME}-cluster \
           --default-launch-type EC2 \
           --region ${AWS_REGION} \
           --config-name ${PROJECT_NAME}-config
