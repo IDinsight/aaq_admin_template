@@ -44,9 +44,9 @@ The following environment variables are required:
   - `MODEL_PROTOCOL`
   - `INBOUND_CHECK_TOKEN`: Bearer token set in the AAQ Core app
 - Urgency detection app information (if it's enabled)
-  - `UD_MODEL_HOST`
-  - `UD_MODEL_PORT`
-  - `UD_MODEL_PROTOCOL`
+  - `UD_HOST`
+  - `UD_PORT`
+  - `UD_PROTOCOL`
   - `UD_INBOUND_CHECK_TOKEN`: Bearer token set in the AAQ Urgency Detection app
 - Login credentials
   - `READONLY_PASSWORD`: Password to the user `readonly_user` with read-only access -- cannot add, edit, or delete contents.
