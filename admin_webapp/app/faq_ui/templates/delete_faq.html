@@ -37,7 +37,9 @@ Delete FAQ
                         <th>ID</th>
                         <th>Title</th>
                         <th>Content to Send</th>
+                        <th>Weight</th>
                         <th>Tags</th>
+                        <th>Last Updated</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -45,7 +47,15 @@ Delete FAQ
                         <td>{{ faq_to_delete.faq_id }}</td>
                         <td>{{ faq_to_delete.faq_title }}</td>
                         <td>{{ faq_to_delete.faq_content_to_send }}</td>
+                        <td>{{ faq_to_delete.faq_weight }}</td>
                         <td>{{ faq_to_delete.faq_tags }}</td>
+                        {% if faq_to_delete.faq_updated_utc is none %}
+                        {%      set last_updated = faq_to_delete.faq_added_utc %}
+                        {% else %}
+                        {%      set last_updated = faq_to_delete.faq_updated_utc %}
+                        {% endif %}
+                        <td>{{ last_updated.strftime("%Y-%m-%d %H:%M:%S") }}</td>
+
                     </tr>
                 </tbody>
             </table>

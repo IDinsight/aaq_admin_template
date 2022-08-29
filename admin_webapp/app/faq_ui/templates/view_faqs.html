@@ -26,18 +26,22 @@ View FAQs
                     value="Add FAQ">
             </form>
 
-            <table>
+            <table cellpadding="5">
                 <thead>
-                    <tr>
+                    <tr style="border-bottom: 1.5px solid #bbb">
                         <th>ID</th>
                         <th>Title</th>
                         <th>Content to Send</th>
+                        <th>Weight</th>
                         <th>Tags</th>
+                        <th>Last Updated</th>
+                        <th>Edit</th>
+                        <th>Delete</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for faq in faqs %}
-                    <tr style="outline: thin solid">
+                    <tr style="border-bottom: 1.2px solid #ccc">
                         <td>{{faq.faq_id}}</td>
                         <td>{{faq.faq_title}}</td>
                         <td>
@@ -45,7 +49,14 @@ View FAQs
                             <p>{{para}}</p>
                             {% endfor %}
                         </td>
+                        <td>{{faq.faq_weight}}</td>
                         <td>{{faq.faq_tags}}</td>
+                        {% if faq.faq_updated_utc is none %}
+                        {%      set last_updated = faq.faq_added_utc %}
+                        {% else %}
+                        {%      set last_updated = faq.faq_updated_utc %}
+                        {% endif %}
+                        <td>{{ last_updated.strftime("%Y-%m-%d %H:%M:%S") }}</td>
                         <td>
                             <form method="GET" action="{{ url_for('.edit_faq', edit_faq_id=faq.faq_id) }}">
                                 <input class="btn btn-primary btn-sm" type="submit" value="Edit">

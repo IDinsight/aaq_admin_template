@@ -55,7 +55,14 @@ git push -u origin main
 
 ### Configure project details
 
-The `project_config.cfg` in the root directory should be updated with your project details.
+The `project_config.cfg` config file should be updated with your project details.
+* `PROJECT_NAME`: e.g. your git repository name
+* `PROJECT_SHORT_NAME`: used for DB schema name
+* `PROJECT_CONDA_ENV`: conda environment name
+* `AWS_ACCOUNT_ID`: your AWS account ID for publishing the image to ECR
+* `AWS_REGION`: your ECR region
+
+To change the header text of the app, edit the `PROJECT_DISPLAY_NAME` value in `admin_webapp/app/config/parameters.yml`.
 
 ### Initialise
 

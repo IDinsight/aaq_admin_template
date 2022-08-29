@@ -36,6 +36,7 @@ Add FAQ
                 {{ wtf.form_field(form.faq_author) }}
                 {{ wtf.form_field(form.faq_title, placeholder='This will be displayed in the list of 3, for the user to'
                 ' choose from.') }}
+                {{ wtf.form_field(form.faq_weight, placeholder='Weight for new FAQ. Should be 1 in most cases.') }}
                 {{ wtf.form_field(form.faq_content_to_send,
                 placeholder='This will be sent when the user selects this FAQ.', rows='20') }}
 
