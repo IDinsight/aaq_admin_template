@@ -98,7 +98,7 @@ jobs:
           -f docker-compose/docker-compose-stg.yml \
           --project-name ${PROJECT_NAME} \
           --cluster-config ${PROJECT_NAME}-config \
-          --cluster ${{ secrets.PROJECT_SHORT_NAME }}-cluster \
+          --cluster ${PROJECT_SHORT_NAME}-cluster \
           service down --timeout 10
         continue-on-error: true
 
