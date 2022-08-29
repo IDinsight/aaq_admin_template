@@ -9,11 +9,11 @@ $(eval PORT=9903)
 $(eval VERSION=dev)
 
 $(eval MODEL_PROTOCOL="http")
-$(eval MODEL_HOST="host.docker.internal") # "host.docker.internal" on Mac, "127.0.0.1" on Linux
+$(eval MODEL_HOST="host.docker.internal") # "host.docker.internal" on Mac, "127.0.0.1" on Linux, "172.17.0.1" on ECS
 $(eval MODEL_PORT=9902)
 
 $(eval UD_PROTOCOL="http")
-$(eval UD_HOST="host.docker.internal") # "host.docker.internal" on Mac, "127.0.0.1" on Linux
+$(eval UD_HOST="host.docker.internal") # "host.docker.internal" on Mac, "127.0.0.1" on Linux, "172.17.0.1" on ECS
 $(eval UD_PORT=9904)
 
 # Need to specify bash in order for conda activate to work.
@@ -98,3 +98,38 @@ container:
 		--env-file ./secrets/sentry_config.env \
 		--env-file ./secrets/ud_secrets.env \
 		$(NAME):$(VERSION)
+
+container-stg:
+	# Set docker hosts for ECS
+	$(eval MODEL_HOST="172.17.0.1")
+	$(eval UD_HOST="172.17.0.1")
+	
+	# Configure ecs-cli options
+	@ecs-cli configure --cluster ${PROJECT_SHORT_NAME}-cluster \
+	--default-launch-type EC2 \
+	--region $(AWS_REGION) \
+	--config-name ${NAME}-config
+
+	@PROJECT_NAME=$(NAME) \
+	PORT=$(PORT) \
+	IMAGE_NAME=$(AWS_ACCOUNT_ID).dkr.ecr.af-south-1.amazonaws.com/aaq_solution/$(NAME):$(VERSION) \
+	AWS_REGION=$(AWS_REGION) \
+	MODEL_PROTOCOL=$(MODEL_PROTOCOL) \
+	MODEL_HOST=$(MODEL_HOST) \
+	MODEL_PORT=$(MODEL_PORT) \
+	UD_PROTOCOL=$(UD_PROTOCOL) \
+	UD_HOST=$(UD_HOST) \
+	UD_PORT=$(UD_PORT) \
+	ecs-cli compose -f docker-compose/docker-compose-stg.yml \
+	--project-name ${NAME} \
+	--cluster-config ${NAME}-config \
+	--task-role-arn arn:aws:iam::$(AWS_ACCOUNT_ID):role/${PROJECT_SHORT_NAME}-task-role \
+	service up \
+	--create-log-groups \
+	--deployment-min-healthy-percent 0 
+
+down-stg:
+	@ecs-cli compose \
+	-f docker-compose/docker-compose-stg.yml \
+	--project-name ${NAME} \
+	--cluster-config ${NAME}-config service down

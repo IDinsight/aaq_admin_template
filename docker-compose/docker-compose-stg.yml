@@ -1,0 +1,38 @@
+version: '2'
+services:
+    admin:
+        image: ${IMAGE_NAME}
+        cpu_shares: 300
+        mem_limit: 2048576000
+        environment:
+          - MODEL_PROTOCOL=${MODEL_PROTOCOL}
+          - MODEL_HOST=${MODEL_HOST}
+          - MODEL_PORT=${MODEL_PORT}
+          - UD_PROTOCOL=${UD_PROTOCOL}
+          - UD_HOST=${UD_HOST}
+          - UD_PORT=${UD_PORT}
+          # app secrets
+          - READONLY_PASSWORD=${READONLY_PASSWORD}
+          - FULLACCESS_PASSWORD=${FULLACCESS_PASSWORD}
+          - INBOUND_CHECK_TOKEN=${INBOUND_CHECK_TOKEN}
+          # database secrets
+          - PG_ENDPOINT=${PG_ENDPOINT}
+          - PG_PORT=${PG_PORT}
+          - PG_USERNAME=${PG_USERNAME}
+          - PG_PASSWORD=${PG_PASSWORD}
+          - PG_DATABASE=${PG_DATABASE}
+          # sentry config
+          - SENTRY_DSN=${SENTRY_DSN}
+          - SENTRY_ENVIRONMENT=${SENTRY_ENVIRONMENT}
+          - SENTRY_TRACES_SAMPLE_RATE=${SENTRY_TRACES_SAMPLE_RATE}
+          # ud secrets
+          - UD_INBOUND_CHECK_TOKEN=${UD_INBOUND_CHECK_TOKEN}
+        ports:
+            - "${PORT}:${PORT}"
+        logging:
+          driver: awslogs
+          options:
+            awslogs-group: aaq_solution
+            awslogs-region: ${AWS_REGION}
+            awslogs-stream-prefix: ${PROJECT_NAME}
+            
