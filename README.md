@@ -102,3 +102,28 @@ To run this project:
 1. Setup environment as determined above.
 2. Run `make image` from the root folder.
 3. Run the Docker container by calling `make container` from the root folder.
+
+## Troubleshooting
+
+It is possible that users may encounter bugs while using the Admin app. Upon encountering a bug, the best way to identify the issue is to go through the following steps:
+
+1. SSH into the EC2 instance where the Admin app container is running,
+2. Run the command ```docker logs "CONTAINER_NAME"```,
+3. View the latest logs tracked by the container which will likely show the error encountered by the app.
+
+As an example, we highlight one specific error - a DB error - that occured during testing:
+- We followed the above steps to check the docker container logs for the admin app. We noticed the following error -
+```
+sqlalchemy.exc.IntegrityError: (psycopg2.errors.UniqueViolation) duplicate key valueviolates unique constraint "faqmatches_pkey"
+DETAIL:  Key (faq_id)=(182) already exists.
+```
+- This error occurs when a DB primary key column gets manually written, likely when data is copied into a new table. In the above case, this error occured  because Key (faq_id)=(182) already existed but the faq_id column's sequence was set at < 182.
+- This causes the DB to error out when using the "Add FAQ" functionality of the app because the new FAQ is added with an ID that already exists.
+
+To fix the above issue, one can do the following -
+1. Log into the relevant DB
+2. Check the maximum value of the key column: ```SELECT MAX(faq_id) FROM faqmatches;```
+3. Check the nextvalue of the key column's sequence ```SELECT nextval('faqmatches_faq_id_seq');```
+4. If the above two values do not match, run the query ```SELECT setval('faqmatches_faq_id_seq', (SELECT MAX(faq_id) FROM faqmatches)+1);```
+
+Following the above steps will fix the issue.
