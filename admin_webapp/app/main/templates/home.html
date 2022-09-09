@@ -23,7 +23,7 @@
 <div class="container">
     <div class="row">
         <div class="col-md-10 col-lg-10 mx-lg-auto mx-md-auto">
-        <h1 class="pt-5 pb-2">ask a question app</h1>
+        <h1>ask a question app</h1>
             <h2>Welcome</h2>
             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent vel facilisis mauris. Sed hendrerit placerat interdum. Sed volutpat massa nec sollicitudin pellentesque. Suspendisse mi ante, bibendum eget condimentum in, suscipit eu urna. Suspendisse potenti. Morbi cursus feugiat porta. Nullam a imperdiet purus. Nunc cursus aliquet quam et suscipit. Nunc dapibus id velit ut commodo. Sed laoreet orci eget euismod vehicula.
             </p>
@@ -53,6 +53,27 @@
                     </div>    
                 </div>
             </div>
+            <!--Urgency rules buttons only active when UD_ENABLED-->
+            {% if config.get('UD_ENABLED') %}
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="row" style="margin-top:30px;">
+                        <div class="col-md-6" style="text-align-last: center; align-self: center; height: 210px;">
+                            <a href="/ud/check-new-urgency-rules" style="text-decoration: none;"><div id="box">
+                                {% include "check_urgency.svg" %}
+                                <h3><br />Check Urgency Rules</h3>
+                            </div></a>
+                        </div>
+                        <div class="col-md-6" style="text-align-last: center; align-self: center; height: 210px;">
+                            <a href="/ud/ud-rules/view" style="text-decoration: none;"><div id="box">
+                                {% include "manage_urgency.svg" %}
+                                <h3><br />Manage Urgency Rules</h3>
+                            </div></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
                <div class="col-12"><p><br />Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent vel facilisis mauris. Sed hendrerit placerat interdum. Sed volutpat massa nec sollicitudin pellentesque. Suspendisse mi ante, bibendum eget condimentum in, suscipit eu urna. Suspendisse potenti. Morbi cursus feugiat porta. Nullam a imperdiet purus. Nunc cursus aliquet quam et suscipit. Nunc dapibus id velit ut commodo. Sed laoreet orci eget euismod vehicula.
                 </p>
                 </div>
