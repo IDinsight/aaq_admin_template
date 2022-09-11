@@ -19,7 +19,7 @@ Edit FAQ
     <div class="row">
         <div class="col-md-10 col-lg-8 mx-lg-auto mx-md-auto">
 
-            <h1 class="pt-5">Edit FAQ #{{ faq_to_edit.faq_id }}</h1>
+            <h1>Edit FAQ #{{ faq_to_edit.faq_id }}</h1>
             {% if faq_to_edit.faq_updated_utc is none %}
             {%      set last_updated = faq_to_edit.faq_added_utc %}
             {% else %}
