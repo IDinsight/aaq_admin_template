@@ -4,6 +4,8 @@ import re
 import pytest
 from sqlalchemy import text
 
+from admin_webapp.app.faq_ui import views
+
 
 @pytest.fixture
 def credentials_fullaccess():
@@ -23,14 +25,21 @@ def clean_faq_table(db_engine):
         db_connection.execute(t)
 
 
-@pytest.mark.parametrize("endpoint", ["/faqs", "/faqs/view"])
+@pytest.mark.parametrize("endpoint", ["/", "/faqs", "/faqs/view"])
 def test_view_page_loads(endpoint, client, credentials_readonly):
     response = client.get(
         endpoint,
         follow_redirects=True,
         headers={"Authorization": "Basic " + credentials_readonly},
     )
+
     assert response.status_code == 200
+
+
+def my_validate_tags(tag_list):
+
+    VALIDWORDS = ["hello", "world", "weight", "test"]
+    return [x for x in tag_list if x not in VALIDWORDS]
 
 
 class TestAddFAQ:
@@ -55,8 +64,16 @@ class TestAddFAQ:
         [("hello", "world", "success"), ("madeupword", "world", "invalid")],
     )
     def test_add_new_faq(
-        self, tag1, tag2, outcome, client, credentials_fullaccess, clean_faq_table
+        self,
+        tag1,
+        tag2,
+        outcome,
+        client,
+        credentials_fullaccess,
+        clean_faq_table,
+        monkeypatch,
     ):
+        monkeypatch.setattr(views, "validate_tags", my_validate_tags)
         response = client.post(
             "/faqs/add",
             follow_redirects=True,
@@ -108,8 +125,6 @@ class TestAddFAQ:
                 "submit": "True",
             },
         )
-
-        print(response.get_data(as_text=True))
 
         assert re.search(error_msg, response.get_data(as_text=True))
 
@@ -177,8 +192,9 @@ class TestEditFAQ:
         [("hello", "world", "success"), ("madeupword", "world", "invalid")],
     )
     def test_edit_faq(
-        self, tag1, tag2, outcome, faq_data, client, credentials_fullaccess
+        self, tag1, tag2, outcome, faq_data, client, credentials_fullaccess, monkeypatch
     ):
+        monkeypatch.setattr(views, "validate_tags", my_validate_tags)
         response = client.post(
             "/faqs/edit/1001",
             follow_redirects=True,
