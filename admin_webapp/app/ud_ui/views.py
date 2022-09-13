@@ -82,7 +82,6 @@ def check_new_urgency_rules():
             current_app.UD_PORT,
         )
         response = requests.post(endpoint, json=api_call_body, headers=headers)
-        print(response)
         response_json = response.json()
         query_results = list(
             zip(response_json["preprocessed_queries"], response_json["urgency_scores"])
