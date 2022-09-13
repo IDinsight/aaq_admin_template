@@ -20,6 +20,9 @@ table {
     border-bottom: 1.2px solid #ccc;
 }
 /*Added CSS here to override base bootstrap CSS*/
+
+/*BLUE THEME styles - Comment out when using other theme colors*/
+/*
 body {
     background: linear-gradient(
         180deg,
@@ -27,12 +30,87 @@ body {
         rgba(255, 255, 255, 1) 100%
     );
 }
-.navbar-brand {
-    font-weight: bold;
-}
 .navbar {
     background-color: #1e3561 !important;
 }
+
+h1{
+    background-color: #264d96;
+}
+h2,h3{
+    color: #1e3561;
+}
+.btn-primary,
+.btn-secondary {
+    background-color: #5480d6;
+}
+.btn-primary:hover,.btn-secondary:hover {
+background-color: #A8Bfeb;
+}
+*/
+/*End of BLUE THEME-----------------------------------*/
+/*GREEN THEME styles - Comment out when using other theme colors*/
+
+body {
+    background: linear-gradient(
+        180deg,
+        rgb(168, 235, 194) 0%,
+        rgba(255, 255, 255, 1) 100%
+    );
+}
+.navbar {
+    background-color: #0f4d42 !important;
+}
+h1 {
+    background-color: #216b4f;
+}
+h2,
+h3 {
+    color: #0f4d42;
+}
+.btn-primary,
+.btn-secondary {
+    background-color: #63cfa3;
+    border-color: white !important;
+}
+.btn-primary:hover,
+.btn-secondary:hover {
+    background-color: #b0e5d1;
+}
+*/
+/*End of GREEN THEME-----------------------------------*/
+/*PURPLE THEME styles - Comment out when using other theme colors*/
+/*
+body {
+    background: linear-gradient(
+        180deg,
+        rgb(193, 168, 235) 0%,
+        rgba(255, 255, 255, 1) 100%
+    );
+}
+.navbar {
+    background-color: #472666 !important;
+}
+h1{
+    background-color: #663894;
+}
+h2,h3{
+    color: #472666;
+}
+.btn-primary,
+.btn-secondary {
+    background-color: #663894;
+    border-color: white !important;
+}
+.btn-primary:hover,.btn-secondary:hover {
+    background-color: #996BC7 ;
+}*/
+/*End of PURPLE THEME-----------------------------------*/
+
+.navbar-brand {
+    font-weight: bold;
+}
+
 .nav-link {
     color: white !important;
 }
@@ -40,7 +118,7 @@ body {
     color: white !important;
 }
 /*Navbar Animation and underline*/
-.navbar-light .navbar-nav .nav-link {
+.navbar-dark .navbar-nav .nav-link {
     display: inline;
     text-transform: lowercase;
     font-size: 15px;
@@ -54,18 +132,18 @@ body {
 .navbar-nav .nav-link.active,
 .navbar-nav .nav-link:hover {
     transition: 0.3s ease;
-    border-bottom: 4px solid #5480d6;
+    border-bottom: 4px solid #ffffff;
     padding: 8px 0;
-}
-body {
-    background: linear-gradient(
-        180deg,
-        rgba(168, 204, 235, 1) 0%,
-        rgba(255, 255, 255, 1) 100%
-    );
 }
 /*Home page box styling*/
 #box {
+    display: flex;
+    align-content: center;
+    flex-wrap: nowrap;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
     height: 200px;
     padding-top: 25px;
     padding-bottom: 25px;
@@ -90,26 +168,25 @@ body {
     width: 70px;
 }
 h1 {
+    padding-top: 30px;
+    padding-bottom: 20px;
     color: white;
-    font-weight: 600;
-    background-color: #264d96;
+    font-size: 30pt;
+    font-weight: 500;
     margin-left: -30%;
     padding-left: 30%;
     margin-right: -30%;
     margin-bottom: 30px;
 }
 h2 {
-    color: #1e3561;
     font-weight: 400;
 }
 h3 {
-    color: #1e3561;
     font-size: 18pt;
 }
 /*Button Styling*/
 .btn-primary,
 .btn-secondary {
-    background-color: #5480d6;
     border-radius: 200px;
 }
 .container-fluid {
@@ -150,4 +227,18 @@ h3 {
     box-shadow: 0px 10px 13px -7px #000000, 5px 5px 15px 5px rgba(0, 0, 0, 0);
     /*overflow*/
     overflow: hidden;
+}
+
+/*--MEDIA QUERIES FOR Mobile responsiveness--*/
+@media only screen and (max-width: 1200px) {
+    /*Navbar Animation and underline*/
+    .navbar-dark .navbar-nav .nav-link {
+        padding-top: 20px;
+        border-top: none;
+        border-bottom: none;
+    }
+    .navbar-nav .nav-link.active,
+    .navbar-nav .nav-link:hover {
+        border-bottom: none;
+    }
 }
