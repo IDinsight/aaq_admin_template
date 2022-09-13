@@ -111,6 +111,11 @@ class TestAddFAQ:
     def test_add_new_faq_incorrect_weight(
         self, weight, error_msg, client, credentials_fullaccess, clean_faq_table
     ):
+        """
+        Note: this test, unlike some other `add_new_faq` tests, is NOT monkeypatched
+        and hence needs to connect to a core model to pass. This is left as is on
+        purpose to test the integration with core model.
+        """
         response = client.post(
             "/faqs/add",
             follow_redirects=True,
@@ -232,6 +237,12 @@ class TestEditFAQ:
     def test_edit_faq_incorrect_weight(
         self, weight, error_msg, faq_data, client, credentials_fullaccess
     ):
+        """
+        Note: this test, unlike some other `edit_faq` tests, is NOT monkeypatched
+        and hence needs to connect to a core model to pass. This is left as is on
+        purpose to test the integration with core model.
+        """
+
         response = client.post(
             "/faqs/edit/1001",
             follow_redirects=True,
