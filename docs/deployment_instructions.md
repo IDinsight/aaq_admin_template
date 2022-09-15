@@ -1,6 +1,6 @@
-June 7, 2022
+Sep 15, 2022
 
-CURRENT VERSION: aaq_admin_template:v1.0.0
+CURRENT VERSION: aaq_admin_template: v1.0.1
 # Deploying the AAQ Admin App
 
 This is the deployment instructions for the **AAQ Admin App**. It does not cover deployment of the AAQ Core or UD Apps.
@@ -18,7 +18,7 @@ First set up the AAQ Core App (from `aaq_core_template`) and optionally the urge
 # Images
 
 The Docker image for the core model server is hosted on AWS ECR at
-`[AWS_ACCOUNT_ID].dks.ecr.af-south-1.amazonaws.com/aaq_solution/aaq_admin_template:v1.0.0`
+`[AWS_ACCOUNT_ID].dkr.ecr.af-south-1.amazonaws.com/aaq_solution/aaq_admin_template:v1.0.1`
 
 Your AWS user will need access to this resource. Please contact IDinsight for access.
 
