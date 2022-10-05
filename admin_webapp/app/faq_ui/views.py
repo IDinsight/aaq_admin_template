@@ -60,50 +60,7 @@ def add_faq():
     form = AddFAQForm()
 
     if form.validate_on_submit():
-        added_ts = datetime.utcnow()
-
-        tag_data = [
-            form.tag_1.data,
-            form.tag_2.data,
-            form.tag_3.data,
-            form.tag_4.data,
-            form.tag_5.data,
-            form.tag_6.data,
-            form.tag_7.data,
-            form.tag_8.data,
-            form.tag_9.data,
-            form.tag_10.data,
-        ]
-        tag_data = list(filter(None, tag_data))
-
-        # Step 1: check if all tags are valid
-        bad_tags = validate_tags(tag_data)
-
-        # If unsuccessful
-        if len(bad_tags) > 0:
-            flash(
-                "The following tags are invalid: %s.\nPlease correct and resubmit."
-                % str(bad_tags),
-                "danger",
-            )
-        # Else, go to step 2:
-        else:
-            new_faq = FAQModel(
-                faq_added_utc=added_ts,
-                faq_updated_utc=added_ts,
-                faq_author=form.faq_author.data,
-                faq_title=form.faq_title.data,
-                faq_content_to_send=form.faq_content_to_send.data,
-                faq_weight=form.faq_weight.data,
-                faq_tags=tag_data,
-                faq_thresholds=[faqs_params["default_threshold"]] * len(tag_data),
-            )
-
-            db.session.add(new_faq)
-            db.session.commit()
-
-            # Flash message, and return to view_faqs
-            flash("Successfully added new FAQ with ID: %d" % new_faq.faq_id, "success")
+        if faq_validate_and_save(form, faqs_params["default_threshold"], None):
             return redirect(url_for(".view_faqs"))
 
     return render_template("add_faq.html", form=form)
@@ -125,48 +82,10 @@ def edit_faq(edit_faq_id):
         return "No FAQ with ID: %s" % edit_faq_id, 404
 
     form = AddFAQForm(obj=faq_to_edit)
-
     tag_data = faq_to_edit.faq_tags
 
     if form.validate_on_submit():
-        updated_ts = datetime.utcnow()
-
-        tag_data = [
-            form.tag_1.data,
-            form.tag_2.data,
-            form.tag_3.data,
-            form.tag_4.data,
-            form.tag_5.data,
-            form.tag_6.data,
-            form.tag_7.data,
-            form.tag_8.data,
-            form.tag_9.data,
-            form.tag_10.data,
-        ]
-        tag_data = list(filter(None, tag_data))
-
-        # Step 1: check if all tags are valid
-        bad_tags = validate_tags(tag_data)
-
-        # If unsuccessful
-        if len(bad_tags) > 0:
-            flash(
-                "The following tags are invalid: %s.\nPlease correct and resubmit."
-                % str(bad_tags),
-                "danger",
-            )
-        else:
-            faq_to_edit.faq_author = form.faq_author.data
-            faq_to_edit.faq_title = form.faq_title.data
-            faq_to_edit.faq_content_to_send = form.faq_content_to_send.data
-            faq_to_edit.faq_weight = form.faq_weight.data
-            faq_to_edit.faq_tags = tag_data
-            faq_to_edit.faq_updated_utc = updated_ts
-
-            db.session.commit()
-
-            # Flash message, and return to view_faqs
-            flash("Successfully edited FAQ with ID: %s" % edit_faq_id, "info")
+        if faq_validate_and_save(form, None, faq_to_edit):
             return redirect(url_for(".view_faqs"))
 
     return render_template(
@@ -175,6 +94,99 @@ def edit_faq(edit_faq_id):
         form=form,
         tag_data=tag_data,
     )
+
+
+def faq_validate_and_save(form, thresholds, faq_to_edit):
+    """
+    Check field in the FAQ form and save edit to FAQ or new FAQ.
+
+    Parameters
+    ----------
+    form : AddFAQForm
+        A WTForm. Defined in app/faq_ui/form_models.py
+    thresholds: {float, List}
+        The thresholds to apply to each token.
+        NOTE: Not currently in use
+    faq_to_edit: {FAQModel, None}
+        If editing an FAQ then the FAQModel ORM object.
+        If creating a new none
+
+    Returns
+    -------
+    Boolean
+        True is record was created / updated
+        False if there was an error
+
+    Notes
+    -----
+    It also flashes the result on the next page that is rendered
+    """
+
+    current_ts = datetime.utcnow()
+
+    tag_data = [
+        form.tag_1.data,
+        form.tag_2.data,
+        form.tag_3.data,
+        form.tag_4.data,
+        form.tag_5.data,
+        form.tag_6.data,
+        form.tag_7.data,
+        form.tag_8.data,
+        form.tag_9.data,
+        form.tag_10.data,
+    ]
+    tag_data = list(filter(None, tag_data))
+
+    # Step 1: check if all tags are valid
+    bad_tags = validate_tags(tag_data)
+
+    # If unsuccessful
+    if len(bad_tags) > 0:
+        flash(
+            "The following tags are invalid: %s.\nPlease correct and resubmit."
+            % str(bad_tags),
+            "danger",
+        )
+
+        return False
+    else:
+        if faq_to_edit is None:
+            if not isinstance(thresholds, list):
+                thresholds = [thresholds] * len(tag_data)
+
+            new_faq = FAQModel(
+                faq_added_utc=current_ts,
+                faq_updated_utc=current_ts,
+                faq_author=form.faq_author.data,
+                faq_title=form.faq_title.data,
+                faq_content_to_send=form.faq_content_to_send.data,
+                faq_weight=form.faq_weight.data,
+                faq_tags=tag_data,
+                faq_thresholds=thresholds,
+            )
+            db.session.add(new_faq)
+            db.session.commit()
+
+            faq_id = new_faq.faq_id
+
+            action = "added new"
+
+        else:
+            faq_to_edit.faq_author = form.faq_author.data
+            faq_to_edit.faq_title = form.faq_title.data
+            faq_to_edit.faq_content_to_send = form.faq_content_to_send.data
+            faq_to_edit.faq_weight = form.faq_weight.data
+            faq_to_edit.faq_tags = tag_data
+            faq_to_edit.faq_updated_utc = current_ts
+
+            faq_id = faq_to_edit.faq_id
+            action = "edited"
+
+            db.session.commit()
+
+        flash(f"Successfully {action} FAQ with ID: %s" % faq_id, "info")
+        return True
 
 
 @faq_ui.route("/delete/<delete_faq_id>", methods=["GET", "POST"])
