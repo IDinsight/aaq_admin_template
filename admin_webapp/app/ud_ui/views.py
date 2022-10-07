@@ -1,4 +1,5 @@
 import json
+import re
 from datetime import datetime
 
 import requests
@@ -32,33 +33,8 @@ def check_new_urgency_rules():
     preprocessed_exclude_kws = []
 
     if form.validate_on_submit():
-        include_kw_list = [
-            form.include_1.data,
-            form.include_2.data,
-            form.include_3.data,
-            form.include_4.data,
-            form.include_5.data,
-            form.include_6.data,
-            form.include_7.data,
-            form.include_8.data,
-            form.include_9.data,
-            form.include_10.data,
-        ]
-        include_kw_list = list(filter(None, include_kw_list))
-
-        exclude_kw_list = [
-            form.exclude_1.data,
-            form.exclude_2.data,
-            form.exclude_3.data,
-            form.exclude_4.data,
-            form.exclude_5.data,
-            form.exclude_6.data,
-            form.exclude_7.data,
-            form.exclude_8.data,
-            form.exclude_9.data,
-            form.exclude_10.data,
-        ]
-        exclude_kw_list = list(filter(None, exclude_kw_list))
+        include_kw_list = get_form_data(form, "^include_[1-9]+$")
+        exclude_kw_list = get_form_data(form, "^exclude_[1-9]+$")
 
         queries = [
             form.query_1.data,
@@ -132,60 +108,15 @@ def add_rule():
             exclude_data_prefill = json.loads(exclude_str.replace("'", '"'))
 
     if form.validate_on_submit():
-        added_ts = datetime.utcnow()
-
-        include_data = [
-            form.include_1.data,
-            form.include_2.data,
-            form.include_3.data,
-            form.include_4.data,
-            form.include_5.data,
-            form.include_6.data,
-            form.include_7.data,
-            form.include_8.data,
-            form.include_9.data,
-            form.include_10.data,
-        ]
-        include_data = list(filter(None, include_data))
-
-        exclude_data = [
-            form.exclude_1.data,
-            form.exclude_2.data,
-            form.exclude_3.data,
-            form.exclude_4.data,
-            form.exclude_5.data,
-            form.exclude_6.data,
-            form.exclude_7.data,
-            form.exclude_8.data,
-            form.exclude_9.data,
-            form.exclude_10.data,
-        ]
-        exclude_data = list(filter(None, exclude_data))
-
-        new_rule = RulesModel(
-            urgency_rule_added_utc=added_ts,
-            urgency_rule_author=form.rule_author.data,
-            urgency_rule_title=form.rule_title.data,
-            urgency_rule_tags_include=include_data,
-            urgency_rule_tags_exclude=exclude_data,
-        )
-
-        db.session.add(new_rule)
-        db.session.commit()
-
-        # Flash message, and return to view_rules
-        flash(
-            "Successfully added new rule with ID: %d" % new_rule.urgency_rule_id,
-            "success",
-        )
+        ud_upsert_rule(form, None)
         return redirect(url_for(".view_rules"))
-
-    return render_template(
-        "add_urgency_rule.html",
-        form=form,
-        include_data_prefill=include_data_prefill,
-        exclude_data_prefill=exclude_data_prefill,
-    )
+    else:
+        return render_template(
+            "add_urgency_rule.html",
+            form=form,
+            include_data_prefill=include_data_prefill,
+            exclude_data_prefill=exclude_data_prefill,
+        )
 
 
 @ud_ui.route("/ud-rules/edit/<edit_rule_id>", methods=["GET", "POST"])
@@ -206,50 +137,15 @@ def edit_rule(edit_rule_id):
     form = AddRuleForm(obj=rule_to_edit)
 
     if form.validate_on_submit():
-        include_data = [
-            form.include_1.data,
-            form.include_2.data,
-            form.include_3.data,
-            form.include_4.data,
-            form.include_5.data,
-            form.include_6.data,
-            form.include_7.data,
-            form.include_8.data,
-            form.include_9.data,
-            form.include_10.data,
-        ]
-        include_data = list(filter(None, include_data))
-
-        exclude_data = [
-            form.exclude_1.data,
-            form.exclude_2.data,
-            form.exclude_3.data,
-            form.exclude_4.data,
-            form.exclude_5.data,
-            form.exclude_6.data,
-            form.exclude_7.data,
-            form.exclude_8.data,
-            form.exclude_9.data,
-            form.exclude_10.data,
-        ]
-        exclude_data = list(filter(None, exclude_data))
-
-        rule_to_edit.urgency_rule_author = form.rule_author.data
-        rule_to_edit.urgency_rule_title = form.rule_title.data
-        rule_to_edit.urgency_rule_tags_include = include_data
-        rule_to_edit.urgency_rule_tags_exclude = exclude_data
-
-        db.session.commit()
-
-        # Flash message, and return to view_rules
-        flash("Successfully edited rule with ID: %s" % edit_rule_id, "info")
+        ud_upsert_rule(form, rule_to_edit)
         return redirect(url_for(".view_rules"))
 
-    return render_template(
-        "edit_urgency_rule.html",
-        rule_to_edit=rule_to_edit,
-        form=form,
-    )
+    else:
+        return render_template(
+            "edit_urgency_rule.html",
+            rule_to_edit=rule_to_edit,
+            form=form,
+        )
 
 
 @ud_ui.route("/ud-rules/delete/<delete_rule_id>", methods=["GET", "POST"])
@@ -273,7 +169,6 @@ def delete_rule(delete_rule_id):
         db.session.delete(rule_to_delete)
         db.session.commit()
 
-        # Flash message, and return to view_rules
         flash(
             "Successfully deleted Urgency Rule with ID: %s" % delete_rule_id, "warning"
         )
@@ -285,3 +180,56 @@ def delete_rule(delete_rule_id):
             "delete_urgency_rule.html",
             rule_to_delete=rule_to_delete,
         )
+
+
+def ud_upsert_rule(form, rule_to_edit):
+    """
+    Create or edit a rule based on form data
+
+    """
+
+    include_data = get_form_data(form, "^include_[1-9]+$")
+    exclude_data = get_form_data(form, "^exclude_[1-9]+$")
+
+    if rule_to_edit is None:
+        current_ts = datetime.utcnow()
+        new_rule = RulesModel(
+            urgency_rule_added_utc=current_ts,
+            urgency_rule_author=form.rule_author.data,
+            urgency_rule_title=form.rule_title.data,
+            urgency_rule_tags_include=include_data,
+            urgency_rule_tags_exclude=exclude_data,
+        )
+
+        db.session.add(new_rule)
+        db.session.commit()
+
+        rule_id = new_rule.urgency_rule_id
+        action = "added new"
+
+    else:
+        rule_to_edit.urgency_rule_author = form.rule_author.data
+        rule_to_edit.urgency_rule_title = form.rule_title.data
+        rule_to_edit.urgency_rule_tags_include = include_data
+        rule_to_edit.urgency_rule_tags_exclude = exclude_data
+        rule_id = rule_to_edit.urgency_rule_id
+
+        db.session.commit()
+        action = "edited"
+
+    flash(f"Successfully {action} rule with ID: %s" % rule_id, "info")
+
+    return
+
+
+def get_form_data(form, field_regex):
+    """
+    Returns form data as a list
+    """
+
+    attributes = form.__class__.__dict__.keys()
+    form_data = [
+        getattr(form, attr).data for attr in attributes if re.search(field_regex, attr)
+    ]
+    form_data_no_nulls = list(filter(None, form_data))
+    return form_data_no_nulls
