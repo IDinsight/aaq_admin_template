@@ -134,22 +134,22 @@ def check_new_faq_tags():
             results = []
             for i in range(len(queries)):
                 cur_matches = []
-                matched_new_tags = False
+                matched_new_content = False
 
                 for match in response_json["top_matches_for_each_query"][i]:
-                    # [title, score, [all_tags]]
-                    if match[0] == "*** NEW TAGS MATCHED ***":
-                        matched_new_tags = True
+                    title, score, content = match
+                    if title == "*** NEW TAGS MATCHED ***":
+                        matched_new_content = True
 
-                    title_and_score = "%s / Score: %s" % (match[0], match[1])
-                    tag_list_str = str(match[2])
-                    cur_matches.append([title_and_score, tag_list_str])
+                    title_and_score = "%s / Score: %s" % (title, score)
+
+                    cur_matches.append([title_and_score, content])
 
                 results.append(
                     [
                         "Query %d: %s" % (i + 1, queries[i]),
                         cur_matches,
-                        matched_new_tags,
+                        matched_new_content,
                     ]
                 )
 
