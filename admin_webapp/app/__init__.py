@@ -78,6 +78,7 @@ def setup_core(app, config):
     app.MODEL_HOST = config["MODEL_HOST"]
     app.MODEL_PORT = config["MODEL_PORT"]
     app.INBOUND_CHECK_TOKEN = config["INBOUND_CHECK_TOKEN"]
+    app.NUM_FAQS_PER_PAGE = config["NUM_FAQS_PER_PAGE"]
 
 
 def setup_ud(app, config):

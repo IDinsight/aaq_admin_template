@@ -26,7 +26,9 @@ def view_faqs(page_num):
     """
     Displays all FAQs from database
     """
-    faqs_page = FAQModel.query.paginate(page=int(page_num), per_page=RESULTS_PER_PAGE)
+    faqs_page = FAQModel.query.paginate(
+        page=int(page_num), per_page=current_app.config["NUM_FAQS_PER_PAGE"]
+    )
     # faqs.sort(key=lambda x: x.faq_id)
 
     for faq in faqs_page.items:

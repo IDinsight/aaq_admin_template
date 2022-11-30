@@ -9,7 +9,7 @@ $(eval PORT=9903)
 $(eval VERSION=dev)
 
 $(eval MODEL_PROTOCOL="http")
-$(eval MODEL_HOST="13.245.35.37") # "host.docker.internal" on Mac, "127.0.0.1" on Linux, "172.17.0.1" on ECS
+$(eval MODEL_HOST="host.docker.internal") # "host.docker.internal" on Mac, "127.0.0.1" on Linux, "172.17.0.1" on ECS
 $(eval MODEL_PORT=9902)
 
 $(eval UD_PROTOCOL="http")
