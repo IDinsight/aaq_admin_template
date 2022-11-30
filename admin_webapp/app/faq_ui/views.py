@@ -15,18 +15,15 @@ from .form_models import AddFAQForm
 ##############################################################################
 
 
-@faq_ui.route("/<page_num>", methods=["GET"])
+@faq_ui.route("/view", defaults={"page_num": 1}, methods=["GET"])
 @faq_ui.route("/view/<page_num>", methods=["GET"])
+@faq_ui.route("/", defaults={"page_num": 1}, methods=["GET"])
+@faq_ui.route("/<page_num>", methods=["GET"])
 @auth.login_required(role="read")
 def view_faqs(page_num):
     """
     Displays all FAQs from database
     """
-    if len(page_num) == 0:
-        page_num = 1
-    else:
-        page_num = int(page_num)
-
     faqs_page = FAQModel.query.paginate(page=int(page_num), per_page=2)
     # faqs.sort(key=lambda x: x.faq_id)
 
