@@ -14,8 +14,6 @@ from .form_models import AddFAQForm
 # Database management endpoints
 ##############################################################################
 
-RESULTS_PER_PAGE = 20  # TODO: Add to current_app cofig
-
 
 @faq_ui.route("/view", defaults={"page_num": 1}, methods=["GET"])
 @faq_ui.route("/view/<page_num>", methods=["GET"])
