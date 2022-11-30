@@ -46,7 +46,8 @@
                 <strong>Scoring:</strong>
                 <br />
                 {% for faq_id in scoring %}
-                <u>{{ faq_id }} / {{ scoring[faq_id]["faq_title"] }}</u><br />
+                <u>{{ faq_id }} / {{ scoring[faq_id]["faq_title"] }} /
+                    score: {{"%.5f"|format(scoring[faq_id]['overall_score']|float)}}</u><br />
                 {% for tag in scoring[faq_id]["tag_cs"] %}
                 {{ tag }} / {{ scoring[faq_id]["tag_cs"][tag] }}<br />
                 {% endfor %}
