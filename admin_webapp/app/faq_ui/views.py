@@ -14,6 +14,8 @@ from .form_models import AddFAQForm
 # Database management endpoints
 ##############################################################################
 
+RESULTS_PER_PAGE = 20  # TODO: Add to current_app cofig
+
 
 @faq_ui.route("/view", defaults={"page_num": 1}, methods=["GET"])
 @faq_ui.route("/view/<page_num>", methods=["GET"])
@@ -24,7 +26,7 @@ def view_faqs(page_num):
     """
     Displays all FAQs from database
     """
-    faqs_page = FAQModel.query.paginate(page=int(page_num), per_page=2)
+    faqs_page = FAQModel.query.paginate(page=int(page_num), per_page=RESULTS_PER_PAGE)
     # faqs.sort(key=lambda x: x.faq_id)
 
     for faq in faqs_page.items:
