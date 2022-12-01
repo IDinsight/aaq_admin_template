@@ -251,7 +251,7 @@ h3 {
     color: white;
 }
 
-.pagination a:hover:not(.current-page-number) {
+.pagination a:hover:not(.current-page-number):not(.not-active) {
     background-color: #ddd;
 }
 

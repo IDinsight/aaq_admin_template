@@ -88,7 +88,14 @@ View FAQs
             </li>
         {% endif %}
         {% for number in faqs_page.iter_pages() %}
-            {% if faqs_page.page != number %}
+            {% if number is none %}
+                <li>
+                        <a class='page-number not-active'>
+                        ...
+                        </a>
+                </li>
+            
+            {% elif faqs_page.page != number %}
                 <li>
                         <a class='page-number'
                             href="{{ url_for('.view_faqs', page_num=number) }}">
