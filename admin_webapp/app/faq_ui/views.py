@@ -50,6 +50,26 @@ def validate_tags(tag_list):
     return bad_tags
 
 
+def refresh_faqs_core():
+    """
+    Calls the core app's /internal/refresh-faqs endpoint
+    """
+    refresh_faqs_endpoint = "%s://%s:%s/internal/refresh-faqs" % (
+        current_app.MODEL_PROTOCOL,
+        current_app.MODEL_HOST,
+        current_app.MODEL_PORT,
+    )
+    headers = {"Authorization": "Bearer %s" % current_app.INBOUND_CHECK_TOKEN}
+    response = requests.get(refresh_faqs_endpoint, headers=headers)
+
+    if response.status_code != 200:
+        message = f"Request to refresh FAQs in the core app failed: {response.text}"
+        flash(message, "warning")
+    else:
+        message = f"{response.text} in the core app."
+        flash(message, "info")
+
+
 @faq_ui.route("/add", methods=["GET", "POST"])
 @auth.login_required(role="add")
 def add_faq():
@@ -60,7 +80,7 @@ def add_faq():
     form = AddFAQForm()
 
     if form.validate_on_submit():
-        if faq_validate_and_save(form, faqs_params["default_threshold"], None):
+        if faq_validate_save_and_refresh(form, faqs_params["default_threshold"], None):
             return redirect(url_for(".view_faqs"))
 
     return render_template("add_faq.html", form=form)
@@ -85,7 +105,7 @@ def edit_faq(edit_faq_id):
     tag_data = faq_to_edit.faq_tags
 
     if form.validate_on_submit():
-        if faq_validate_and_save(form, None, faq_to_edit):
+        if faq_validate_save_and_refresh(form, None, faq_to_edit):
             return redirect(url_for(".view_faqs"))
 
     return render_template(
@@ -96,7 +116,7 @@ def edit_faq(edit_faq_id):
     )
 
 
-def faq_validate_and_save(form, thresholds, faq_to_edit):
+def faq_validate_save_and_refresh(form, thresholds, faq_to_edit):
     """
     Check field in the FAQ form and save edit to FAQ or new FAQ.
 
@@ -186,6 +206,9 @@ def faq_validate_and_save(form, thresholds, faq_to_edit):
             db.session.commit()
 
         flash(f"Successfully {action} FAQ with ID: %s" % faq_id, "info")
+
+        refresh_faqs_core()
+
         return True
 
 
@@ -212,6 +235,9 @@ def delete_faq(delete_faq_id):
 
         # Flash message, and return to view_faqs
         flash("Successfully deleted FAQ with ID: %s" % delete_faq_id, "warning")
+
+        refresh_faqs_core()
+
         return redirect(url_for(".view_faqs"))
 
     # Otherwise load form
