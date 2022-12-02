@@ -19,6 +19,16 @@ table {
 .table-row {
     border-bottom: 1.2px solid #ccc;
 }
+
+ul {
+    display: block;
+    list-style-type: disc;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    padding-inline-start: 40px;
+}
 /*Added CSS here to override base bootstrap CSS*/
 
 /*BLUE THEME styles - Comment out when using other theme colors*/
@@ -33,7 +43,10 @@ body {
 .navbar {
     background-color: #1e3561 !important;
 }
-
+.pagination a.current-page-number {
+    background-color: #264d96;
+    color: white;
+}
 h1{
     background-color: #264d96;
 }
@@ -60,6 +73,10 @@ body {
 }
 .navbar {
     background-color: #0f4d42 !important;
+}
+.pagination a.current-page-number {
+    background-color: #216b4f;
+    color: white;
 }
 h1 {
     background-color: #216b4f;
@@ -90,6 +107,10 @@ body {
 }
 .navbar {
     background-color: #472666 !important;
+}
+.pagination a.current-page-number {
+    background-color: #663894;
+    color: white;
 }
 h1{
     background-color: #663894;
@@ -227,6 +248,22 @@ h3 {
     box-shadow: 0px 10px 13px -7px #000000, 5px 5px 15px 5px rgba(0, 0, 0, 0);
     /*overflow*/
     overflow: hidden;
+}
+
+.pagination a {
+    color: black;
+    float: left;
+    padding: 8px 16px;
+    text-decoration: none;
+}
+
+.pagination a.current-page-number {
+    background-color: #4caf50;
+    color: white;
+}
+
+.pagination a:hover:not(.current-page-number):not(.not-active) {
+    background-color: #ddd;
 }
 
 /*--MEDIA QUERIES FOR Mobile responsiveness--*/

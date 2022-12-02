@@ -15,20 +15,24 @@ from .form_models import AddFAQForm
 ##############################################################################
 
 
-@faq_ui.route("/", methods=["GET"])
-@faq_ui.route("/view", methods=["GET"])
+@faq_ui.route("/view", defaults={"page_num": 1}, methods=["GET"])
+@faq_ui.route("/view/<page_num>", methods=["GET"])
+@faq_ui.route("/", defaults={"page_num": 1}, methods=["GET"])
+@faq_ui.route("/<page_num>", methods=["GET"])
 @auth.login_required(role="read")
-def view_faqs():
+def view_faqs(page_num):
     """
     Displays all FAQs from database
     """
-    faqs = FAQModel.query.all()
-    faqs.sort(key=lambda x: x.faq_id)
+    faqs_page = FAQModel.query.paginate(
+        page=int(page_num), per_page=current_app.config["NUM_FAQS_PER_PAGE"]
+    )
+    # faqs.sort(key=lambda x: x.faq_id)
 
-    for faq in faqs:
+    for faq in faqs_page.items:
         faq.faq_content_to_send = faq.faq_content_to_send.split("\n")
 
-    return render_template("view_faqs.html", faqs=faqs)
+    return render_template("view_faqs.html", faqs_page=faqs_page)
 
 
 def validate_tags(tag_list):
