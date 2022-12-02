@@ -43,7 +43,10 @@ body {
 .navbar {
     background-color: #1e3561 !important;
 }
-
+.pagination a.current-page-number {
+    background-color: #264d96;
+    color: white;
+}
 h1{
     background-color: #264d96;
 }
@@ -70,6 +73,10 @@ body {
 }
 .navbar {
     background-color: #0f4d42 !important;
+}
+.pagination a.current-page-number {
+    background-color: #216b4f;
+    color: white;
 }
 h1 {
     background-color: #216b4f;
@@ -100,6 +107,10 @@ body {
 }
 .navbar {
     background-color: #472666 !important;
+}
+.pagination a.current-page-number {
+    background-color: #663894;
+    color: white;
 }
 h1{
     background-color: #663894;
