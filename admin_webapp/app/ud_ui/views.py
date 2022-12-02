@@ -16,6 +16,28 @@ from .form_models import AddRuleForm, CheckRulesForm
 ##############################################################################
 
 
+def refresh_rules_core():
+    """
+    Calls the core app's /internal/refresh-rules endpoint
+    """
+    refresh_rules_endpoint = "%s://%s:%s/internal/refresh-rules" % (
+        current_app.UD_PROTOCOL,
+        current_app.UD_HOST,
+        current_app.UD_PORT,
+    )
+    headers = {"Authorization": "Bearer %s" % current_app.UD_INBOUND_CHECK_TOKEN}
+    response = requests.get(refresh_rules_endpoint, headers=headers)
+
+    if response.status_code != 200:
+        message = (
+            f"Request to refresh urgency reuls in the core app failed: {response.text}"
+        )
+        flash(message, "warning")
+    else:
+        message = f"{response.text} in the core app."
+        flash(message, "info")
+
+
 @ud_ui.route("/check-new-urgency-rules", methods=["GET", "POST"])
 @auth.login_required
 def check_new_urgency_rules():
@@ -109,6 +131,7 @@ def add_rule():
 
     if form.validate_on_submit():
         ud_upsert_rule(form, None)
+        refresh_rules_core()
         return redirect(url_for(".view_rules"))
     else:
         return render_template(
@@ -138,6 +161,7 @@ def edit_rule(edit_rule_id):
 
     if form.validate_on_submit():
         ud_upsert_rule(form, rule_to_edit)
+        refresh_rules_core()
         return redirect(url_for(".view_rules"))
 
     else:
@@ -172,6 +196,9 @@ def delete_rule(delete_rule_id):
         flash(
             "Successfully deleted Urgency Rule with ID: %s" % delete_rule_id, "warning"
         )
+
+        refresh_rules_core()
+
         return redirect(url_for(".view_rules"))
 
     # Otherwise load form
