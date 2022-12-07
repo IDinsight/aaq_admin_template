@@ -6,7 +6,7 @@ from flask import current_app, flash, redirect, render_template, request, url_fo
 from ..auth import auth
 from ..data_models import FAQModel
 from ..database_sqlalchemy import db
-from ..utils import load_parameters
+from ..utils import check_id_match, load_parameters
 from . import faq_ui
 from .form_models import AddFAQForm
 
@@ -162,7 +162,7 @@ def faq_validate_save_and_refresh(form, thresholds, faq_to_edit):
     ]
     tag_data = list(filter(None, tag_data))
 
-    # Step 1: check if all tags are valid
+    # Step 1: check if all tags are valid and there is not title duplicates
     bad_tags = validate_tags(tag_data)
 
     # If unsuccessful
@@ -174,11 +174,22 @@ def faq_validate_save_and_refresh(form, thresholds, faq_to_edit):
         )
 
         return False
+    # check for duplicates
+    faq_id = faq_to_edit.faq_id if faq_to_edit is not None else None
+    is_duplicate = check_faq_title_duplicates(form.faq_title.data, faq_id)
+
+    if is_duplicate:
+        flash(
+            "The following faq title already exists: %s.\nPlease correct and resubmit."
+            % str(form.faq_title.data),
+            "danger",
+        )
+        return False
+
     else:
         if faq_to_edit is None:
             if not isinstance(thresholds, list):
                 thresholds = [thresholds] * len(tag_data)
-
             new_faq = FAQModel(
                 faq_added_utc=current_ts,
                 faq_updated_utc=current_ts,
@@ -250,3 +261,13 @@ def delete_faq(delete_faq_id):
             "delete_faq.html",
             faq_to_delete=faq_to_delete,
         )
+
+
+def check_faq_title_duplicates(title, faq_id):
+
+    faqs = FAQModel.query.all()
+
+    titles = [faq.faq_title for faq in faqs]
+    ids = [faq.faq_id for faq in faqs]
+
+    return check_id_match(title, titles, ids, faq_id)

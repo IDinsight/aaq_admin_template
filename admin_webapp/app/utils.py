@@ -73,3 +73,34 @@ class DefaultEnvDict(UserDict):
         if value is None:
             raise KeyError(f"{key} not found in dict or environment variables")
         return os.getenv(key)
+
+
+def check_id_match(title, titles, ids, _id):
+    """
+
+    Check if the new title is already in the titles saved in Database.
+
+    Parameters
+    ----------
+    title : title of the new or modified rule/faq
+    titles: List[String]
+        List of titles in the database.
+    ids: List[int]
+        List of Ids in the database
+    ids: {int,None}
+        Id of the modified faq/rule in the database
+
+    Returns
+    -------
+    Boolean
+        True if there was a duplicate
+        False if there is no duplicates
+    """
+    match = None
+    for title_pair in zip(titles, ids):
+        if title == title_pair[0]:
+            match = title_pair[1]
+            break
+    if match not in [None, _id]:
+        return True
+    return False

@@ -8,6 +8,7 @@ from flask import current_app, flash, redirect, render_template, request, url_fo
 from ..auth import auth
 from ..data_models import RulesModel
 from ..database_sqlalchemy import db
+from ..utils import check_id_match
 from . import ud_ui
 from .form_models import AddRuleForm, CheckRulesForm
 
@@ -128,18 +129,17 @@ def add_rule():
         exclude_str = post_form_dict.get("exclude", None)
         if exclude_str is not None:
             exclude_data_prefill = json.loads(exclude_str.replace("'", '"'))
-
     if form.validate_on_submit():
-        ud_upsert_rule(form, None)
-        refresh_rules_core()
-        return redirect(url_for(".view_rules"))
-    else:
-        return render_template(
-            "add_urgency_rule.html",
-            form=form,
-            include_data_prefill=include_data_prefill,
-            exclude_data_prefill=exclude_data_prefill,
-        )
+        if ud_upsert_rule(form, None):
+            refresh_rules_core()
+            return redirect(url_for(".view_rules"))
+
+    return render_template(
+        "add_urgency_rule.html",
+        form=form,
+        include_data_prefill=include_data_prefill,
+        exclude_data_prefill=exclude_data_prefill,
+    )
 
 
 @ud_ui.route("/ud-rules/edit/<edit_rule_id>", methods=["GET", "POST"])
@@ -160,16 +160,15 @@ def edit_rule(edit_rule_id):
     form = AddRuleForm(obj=rule_to_edit)
 
     if form.validate_on_submit():
-        ud_upsert_rule(form, rule_to_edit)
-        refresh_rules_core()
-        return redirect(url_for(".view_rules"))
+        if ud_upsert_rule(form, rule_to_edit):
+            refresh_rules_core()
+            return redirect(url_for(".view_rules"))
 
-    else:
-        return render_template(
-            "edit_urgency_rule.html",
-            rule_to_edit=rule_to_edit,
-            form=form,
-        )
+    return render_template(
+        "edit_urgency_rule.html",
+        rule_to_edit=rule_to_edit,
+        form=form,
+    )
 
 
 @ud_ui.route("/ud-rules/delete/<delete_rule_id>", methods=["GET", "POST"])
@@ -218,6 +217,16 @@ def ud_upsert_rule(form, rule_to_edit):
     include_data = get_form_data(form, "^include_[1-9]+$")
     exclude_data = get_form_data(form, "^exclude_[1-9]+$")
 
+    rule_id = rule_to_edit.urgency_rule_id if rule_to_edit is not None else None
+
+    is_duplicate = check_rule_title_duplicates(form.rule_title.data, rule_id)
+    if is_duplicate:
+        flash(
+            "The following urgency rule already exists: %s.\nPlease correct and resubmit."
+            % str(form.rule_title.data),
+            "danger",
+        )
+        return False
     if rule_to_edit is None:
         current_ts = datetime.utcnow()
         new_rule = RulesModel(
@@ -246,7 +255,16 @@ def ud_upsert_rule(form, rule_to_edit):
 
     flash(f"Successfully {action} rule with ID: %s" % rule_id, "info")
 
-    return
+    return True
+
+
+def check_rule_title_duplicates(title, rule_id):
+    """Check if title has duplicates id database"""
+
+    rules = RulesModel.query.all()
+    titles = [rule.urgency_rule_title for rule in rules]
+    ids = [rule.urgency_rule_id for rule in rules]
+    return check_id_match(title, titles, ids, rule_id)
 
 
 def get_form_data(form, field_regex):
