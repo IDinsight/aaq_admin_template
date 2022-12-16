@@ -3,7 +3,7 @@
 
 # Ask A Question (AAQ) Admin App Template
 
-This is the readme for the AAQ Template Admin App repository. To start development on a new AAQ solution, clone or fork this and follow the setup instructions below.
+To start development on a new AAQ solution, clone or fork this and follow the setup instructions below.
 
 Ensure to pull in new features from this repository regularly.
 
@@ -20,6 +20,8 @@ This is a containerized flask app that provides the following functionality:
 You can view the app at {server address}:9903/ in your web browser.
 
 This app calls endpoints in the [AAQ Core app](https://github.com/IDinsight/aaq_core_template) which needs to be running for the above functions to work.
+
+![AAQ Admin](docs/readme/images/aaq_template-admin.png)
 
 ## Setup
 
