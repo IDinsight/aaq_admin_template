@@ -8,7 +8,7 @@ from flask import current_app, flash, redirect, render_template, request, url_fo
 from ..auth import auth
 from ..data_models import RulesModel
 from ..database_sqlalchemy import db
-from ..utils import check_id_match
+from ..utils import check_new_id_match
 from . import ud_ui
 from .form_models import AddRuleForm, CheckRulesForm
 
@@ -259,12 +259,20 @@ def ud_upsert_rule(form, rule_to_edit):
 
 
 def check_rule_title_duplicates(title, rule_id):
-    """Check if title has duplicates id database"""
+    """Check if title has duplicates in database"""
 
-    rules = RulesModel.query.all()
-    titles = [rule.urgency_rule_title for rule in rules]
-    ids = [rule.urgency_rule_id for rule in rules]
-    return check_id_match(title, titles, ids, rule_id)
+    titles_dic = dict()
+
+    rules = (
+        db.session.query(RulesModel.urgency_rule_title, RulesModel.urgency_rule_id)
+        .filter(RulesModel.urgency_rule_title == title)
+        .all()
+    )
+    for title, title_id in rules:
+        titles_dic[title] = title_id
+    if len(titles_dic) < 1:
+        return False
+    return check_new_id_match(title, titles_dic, rule_id)
 
 
 def get_form_data(form, field_regex):

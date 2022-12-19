@@ -99,6 +99,51 @@ class TestAddFAQ:
             )
 
     @pytest.mark.parametrize(
+        "tag1,tag2,title,outcome",
+        [
+            ("hello", "world", "test_pytest", "success"),
+            ("hello", "world", "test_pytest", "invalid"),
+        ],
+    )
+    def test_add_new_faq_incorrect_title(
+        self,
+        tag1,
+        tag2,
+        title,
+        outcome,
+        client,
+        credentials_fullaccess,
+        # clean_faq_table,
+        monkeypatch,
+    ):
+        monkeypatch.setattr(views, "validate_tags", my_validate_tags)
+        response = client.post(
+            "/faqs/add",
+            follow_redirects=True,
+            headers={"Authorization": "Basic " + credentials_fullaccess},
+            data={
+                "tag_1": tag1,
+                "tag_2": tag2,
+                "faq_author": "pytest",
+                "faq_title": title,
+                "faq_weight": 1,
+                "faq_content_to_send": "Test Content Data",
+                "submit": "True",
+            },
+        )
+
+        if outcome == "success":
+            assert re.search(
+                "Successfully added new FAQ", response.get_data(as_text=True)
+            )
+        if outcome == "invalid":
+            print(response.get_data(as_text=True))
+            assert re.search(
+                "The following faq title already exists:",
+                response.get_data(as_text=True),
+            )
+
+    @pytest.mark.parametrize(
         "weight, error_msg",
         [
             (12, "Successfully added new FAQ"),

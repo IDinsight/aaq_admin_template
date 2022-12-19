@@ -75,20 +75,18 @@ class DefaultEnvDict(UserDict):
         return os.getenv(key)
 
 
-def check_id_match(title, titles, ids, _id):
+def check_new_id_match(title, titles_dic, title_id):
     """
 
-    Check if the new title is already in the titles saved in Database.
+    Check if the title exists in the dictionary of titles .
 
     Parameters
     ----------
-    title : title of the new or modified rule/faq
+    title : title
     titles: List[String]
-        List of titles in the database.
-    ids: List[int]
-        List of Ids in the database
-    ids: {int,None}
-        Id of the modified faq/rule in the database
+        Dictionary with titles as key and ids as value.
+    title_id: int
+        Id linked to the title
 
     Returns
     -------
@@ -96,11 +94,9 @@ def check_id_match(title, titles, ids, _id):
         True if there was a duplicate
         False if there is no duplicates
     """
-    match = None
-    for title_pair in zip(titles, ids):
-        if title == title_pair[0]:
-            match = title_pair[1]
-            break
-    if match not in [None, _id]:
+
+    matching_id = titles_dic.get(title)
+    if matching_id != title_id:
         return True
-    return False
+    else:
+        return False

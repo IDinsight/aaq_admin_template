@@ -6,7 +6,7 @@ from flask import current_app, flash, redirect, render_template, request, url_fo
 from ..auth import auth
 from ..data_models import FAQModel
 from ..database_sqlalchemy import db
-from ..utils import check_id_match, load_parameters
+from ..utils import check_new_id_match, load_parameters
 from . import faq_ui
 from .form_models import AddFAQForm
 
@@ -122,7 +122,7 @@ def edit_faq(edit_faq_id):
 
 def faq_validate_save_and_refresh(form, thresholds, faq_to_edit):
     """
-    Check field in the FAQ form and save edit to FAQ or new FAQ.
+    Check fields in the FAQ form and save edit to FAQ or new FAQ.
 
     Parameters
     ----------
@@ -146,25 +146,7 @@ def faq_validate_save_and_refresh(form, thresholds, faq_to_edit):
     It also flashes the result on the next page that is rendered
     """
 
-    current_ts = datetime.utcnow()
-
-    tag_data = [
-        form.tag_1.data,
-        form.tag_2.data,
-        form.tag_3.data,
-        form.tag_4.data,
-        form.tag_5.data,
-        form.tag_6.data,
-        form.tag_7.data,
-        form.tag_8.data,
-        form.tag_9.data,
-        form.tag_10.data,
-    ]
-    tag_data = list(filter(None, tag_data))
-
-    # Step 1: check if all tags are valid and there is not title duplicates
-    bad_tags = validate_tags(tag_data)
-
+    bad_tags, tag_data = check_bad_tags(form)
     # If unsuccessful
     if len(bad_tags) > 0:
         flash(
@@ -186,45 +168,12 @@ def faq_validate_save_and_refresh(form, thresholds, faq_to_edit):
         )
         return False
 
-    else:
-        if faq_to_edit is None:
-            if not isinstance(thresholds, list):
-                thresholds = [thresholds] * len(tag_data)
-            new_faq = FAQModel(
-                faq_added_utc=current_ts,
-                faq_updated_utc=current_ts,
-                faq_author=form.faq_author.data,
-                faq_title=form.faq_title.data,
-                faq_content_to_send=form.faq_content_to_send.data,
-                faq_weight=form.faq_weight.data,
-                faq_tags=tag_data,
-                faq_thresholds=thresholds,
-            )
-            db.session.add(new_faq)
-            db.session.commit()
+    faq_id, action = upsert_faq(form, thresholds, faq_to_edit, tag_data)
+    flash(f"Successfully {action} FAQ with ID: %s" % faq_id, "info")
 
-            faq_id = new_faq.faq_id
+    refresh_faqs_core()
 
-            action = "added new"
-
-        else:
-            faq_to_edit.faq_author = form.faq_author.data
-            faq_to_edit.faq_title = form.faq_title.data
-            faq_to_edit.faq_content_to_send = form.faq_content_to_send.data
-            faq_to_edit.faq_weight = form.faq_weight.data
-            faq_to_edit.faq_tags = tag_data
-            faq_to_edit.faq_updated_utc = current_ts
-
-            faq_id = faq_to_edit.faq_id
-            action = "edited"
-
-            db.session.commit()
-
-        flash(f"Successfully {action} FAQ with ID: %s" % faq_id, "info")
-
-        refresh_faqs_core()
-
-        return True
+    return True
 
 
 @faq_ui.route("/delete/<delete_faq_id>", methods=["GET", "POST"])
@@ -263,11 +212,119 @@ def delete_faq(delete_faq_id):
         )
 
 
+def check_bad_tags(form):
+    """
+    Check if there are bad tags
+    Parameters
+    ----------
+    form : AddFAQForm
+        A WTForm. Defined in app/faq_ui/form_models.py
+    Returns
+    -------
+
+    bad_tags: List[str]
+        list of bad_tags
+    tag_data: List[str]
+        list of all tags
+
+
+    """
+
+    tag_data = [
+        form.tag_1.data,
+        form.tag_2.data,
+        form.tag_3.data,
+        form.tag_4.data,
+        form.tag_5.data,
+        form.tag_6.data,
+        form.tag_7.data,
+        form.tag_8.data,
+        form.tag_9.data,
+        form.tag_10.data,
+    ]
+    tag_data = list(filter(None, tag_data))
+
+    # check if all tags are valid and there is not title duplicates
+    bad_tags = validate_tags(tag_data)
+    return bad_tags, tag_data
+
+
+def upsert_faq(form, thresholds, faq_to_edit, tag_data):
+    """
+     save edit to FAQ or new FAQ.
+
+    Parameters
+    ----------
+    form : AddFAQForm
+        A WTForm. Defined in app/faq_ui/form_models.py
+    thresholds: {float, List}
+        The thresholds to apply to each token.
+        NOTE: Not currently in use
+    faq_to_edit: {FAQModel, None}
+        If editing an FAQ then the FAQModel ORM object.
+        If creating a new none
+    tag_data: list[str]
+            List of faq tags
+    Returns
+    -------
+    Boolean
+        faq_id:
+            id of the new/modified faq
+        action: str
+            upsert mode ("added new" if new faq added or "edited" if edited faq)
+
+
+    """
+
+    current_ts = datetime.utcnow()
+
+    if faq_to_edit is None:
+        if not isinstance(thresholds, list):
+            thresholds = [thresholds] * len(tag_data)
+        new_faq = FAQModel(
+            faq_added_utc=current_ts,
+            faq_updated_utc=current_ts,
+            faq_author=form.faq_author.data,
+            faq_title=form.faq_title.data,
+            faq_content_to_send=form.faq_content_to_send.data,
+            faq_weight=form.faq_weight.data,
+            faq_tags=tag_data,
+            faq_thresholds=thresholds,
+        )
+        db.session.add(new_faq)
+        db.session.commit()
+
+        faq_id = new_faq.faq_id
+
+        action = "added new"
+
+    else:
+        faq_to_edit.faq_author = form.faq_author.data
+        faq_to_edit.faq_title = form.faq_title.data
+        faq_to_edit.faq_content_to_send = form.faq_content_to_send.data
+        faq_to_edit.faq_weight = form.faq_weight.data
+        faq_to_edit.faq_tags = tag_data
+        faq_to_edit.faq_updated_utc = current_ts
+
+        faq_id = faq_to_edit.faq_id
+        action = "edited"
+
+        db.session.commit()
+    return faq_id, action
+
+
 def check_faq_title_duplicates(title, faq_id):
-
+    """Check if title has duplicates in database"""
     faqs = FAQModel.query.all()
+    titles_dic = dict()
 
-    titles = [faq.faq_title for faq in faqs]
-    ids = [faq.faq_id for faq in faqs]
-
-    return check_id_match(title, titles, ids, faq_id)
+    faqs = (
+        db.session.query(FAQModel.faq_title, FAQModel.faq_id)
+        .filter(FAQModel.faq_title == title)
+        .all()
+    )
+    for title, title_id in faqs:
+        titles_dic[title] = title_id
+    if len(titles_dic) < 1:
+        return False
+    return check_new_id_match(title, titles_dic, faq_id)

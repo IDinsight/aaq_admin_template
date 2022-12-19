@@ -140,6 +140,52 @@ class TestAddUDRule:
             "Successfully added new rule with ID", response.get_data(as_text=True)
         )
 
+    @pytest.mark.parametrize(
+        "includes,excludes,title,outcome",
+        [
+            (["hello", "world"], [], "test_pytest", "success"),
+            (["hello", "world"], ["test"], "test_pytest", "invalid"),
+        ],
+    )
+    def test_add_new_rule_same_title(
+        self,
+        includes,
+        excludes,
+        title,
+        outcome,
+        client_ud,
+        credentials_fullaccess,
+        # clean_ud_rules_table,
+    ):
+        data = {
+            "rule_author": "pytest",
+            "rule_title": "test rule",
+            "Submit": "True",
+        }
+        data.update(
+            dict(zip([f"include_{i+1}" for i in range(len(includes))], includes))
+        )
+        data.update(
+            dict(zip([f"exclude_{i+1}" for i in range(len(excludes))], excludes))
+        )
+        print(data)
+        response = client_ud.post(
+            "/ud/ud-rules/add",
+            follow_redirects=True,
+            headers={"Authorization": "Basic " + credentials_fullaccess},
+            data=data,
+        )
+        if outcome == "success":
+            assert response.status_code == 200
+            assert re.search(
+                "Successfully added new rule with ID", response.get_data(as_text=True)
+            )
+        if outcome == "invalid":
+            assert re.search(
+                "The following urgency rule already exists:",
+                response.get_data(as_text=True),
+            )
+
 
 @pytest.mark.ud_test
 class TestEditUDRule:
