@@ -6,7 +6,7 @@ on:
 
 jobs:
   ValidateModels:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     outputs:
       env-name: ${{ steps.env-name.outputs.environment }}
     steps:
@@ -15,8 +15,6 @@ jobs:
           fetch-depth: 0
       - name: Install Dependencies with Apt Get
         run: |
-          sudo apt install software-properties-common -y
-          sudo add-apt-repository ppa:deadsnakes/ppa -y
           sudo apt-get update
           sudo apt-get install python3.9 jq -y
       - name: Install libraries
