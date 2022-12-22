@@ -6,7 +6,7 @@ from flask import current_app, flash, redirect, render_template, request, url_fo
 from ..auth import auth
 from ..data_models import FAQModel
 from ..database_sqlalchemy import db
-from ..utils import check_new_id_match, load_parameters
+from ..utils import load_parameters
 from . import faq_ui
 from .form_models import AddFAQForm
 
@@ -147,7 +147,6 @@ def faq_validate_save_and_refresh(form, thresholds, faq_to_edit):
     """
 
     bad_tags, tag_data = check_bad_tags(form)
-    # If unsuccessful
     if len(bad_tags) > 0:
         flash(
             "The following tags are invalid: %s.\nPlease correct and resubmit."
@@ -156,9 +155,9 @@ def faq_validate_save_and_refresh(form, thresholds, faq_to_edit):
         )
 
         return False
-    # check for duplicates
+
     faq_id = faq_to_edit.faq_id if faq_to_edit is not None else None
-    is_duplicate = check_faq_title_duplicates(form.faq_title.data, faq_id)
+    is_duplicate = is_faq_title_already_used(form.faq_title.data, faq_id)
 
     if is_duplicate:
         flash(
@@ -251,7 +250,7 @@ def check_bad_tags(form):
 
 def upsert_faq(form, thresholds, faq_to_edit, tag_data):
     """
-     save edit to FAQ or new FAQ.
+    save edit to FAQ or create new FAQ.
 
     Parameters
     ----------
@@ -265,6 +264,7 @@ def upsert_faq(form, thresholds, faq_to_edit, tag_data):
         If creating a new none
     tag_data: list[str]
             List of faq tags
+
     Returns
     -------
     Boolean
@@ -313,18 +313,18 @@ def upsert_faq(form, thresholds, faq_to_edit, tag_data):
     return faq_id, action
 
 
-def check_faq_title_duplicates(title, faq_id):
+def is_faq_title_already_used(title, faq_id):
     """Check if title has duplicates in database"""
-    faqs = FAQModel.query.all()
-    titles_dic = dict()
 
     faqs = (
         db.session.query(FAQModel.faq_title, FAQModel.faq_id)
         .filter(FAQModel.faq_title == title)
         .all()
     )
-    for title, title_id in faqs:
-        titles_dic[title] = title_id
-    if len(titles_dic) < 1:
+
+    titles_dict = dict(faqs)
+
+    if len(titles_dict) == 0:
         return False
-    return check_new_id_match(title, titles_dic, faq_id)
+    elif (faq_id is None) or (titles_dict.get(title) == faq_id):
+        return True

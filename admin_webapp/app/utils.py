@@ -73,30 +73,3 @@ class DefaultEnvDict(UserDict):
         if value is None:
             raise KeyError(f"{key} not found in dict or environment variables")
         return os.getenv(key)
-
-
-def check_new_id_match(title, titles_dic, title_id):
-    """
-
-    Check if the title exists in the dictionary of titles .
-
-    Parameters
-    ----------
-    title : title
-    titles: List[String]
-        Dictionary with titles as key and ids as value.
-    title_id: int
-        Id linked to the title
-
-    Returns
-    -------
-    Boolean
-        True if there was a duplicate
-        False if there is no duplicates
-    """
-
-    matching_id = titles_dic.get(title)
-    if matching_id != title_id:
-        return True
-    else:
-        return False

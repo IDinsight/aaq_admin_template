@@ -296,7 +296,7 @@ class TestEditFAQ:
                 "tag_1": "weight",
                 "tag_2": "test",
                 "faq_author": "pytest",
-                "faq_title": "test_title",
+                "faq_title": f"test_title_{weight}",
                 "faq_weight": weight,
                 "faq_content_to_send": "Test Content Data",
                 "submit": "True",

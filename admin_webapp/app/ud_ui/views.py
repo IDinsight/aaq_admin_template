@@ -8,7 +8,6 @@ from flask import current_app, flash, redirect, render_template, request, url_fo
 from ..auth import auth
 from ..data_models import RulesModel
 from ..database_sqlalchemy import db
-from ..utils import check_new_id_match
 from . import ud_ui
 from .form_models import AddRuleForm, CheckRulesForm
 
@@ -219,7 +218,7 @@ def ud_upsert_rule(form, rule_to_edit):
 
     rule_id = rule_to_edit.urgency_rule_id if rule_to_edit is not None else None
 
-    is_duplicate = check_rule_title_duplicates(form.rule_title.data, rule_id)
+    is_duplicate = is_rule_title_already_used(form.rule_title.data, rule_id)
     if is_duplicate:
         flash(
             "The following urgency rule already exists: %s.\nPlease correct and resubmit."
@@ -258,21 +257,20 @@ def ud_upsert_rule(form, rule_to_edit):
     return True
 
 
-def check_rule_title_duplicates(title, rule_id):
+def is_rule_title_already_used(title, rule_id):
     """Check if title has duplicates in database"""
-
-    titles_dic = dict()
 
     rules = (
         db.session.query(RulesModel.urgency_rule_title, RulesModel.urgency_rule_id)
         .filter(RulesModel.urgency_rule_title == title)
         .all()
     )
-    for title, title_id in rules:
-        titles_dic[title] = title_id
-    if len(titles_dic) < 1:
+
+    titles_dict = dict(rules)
+    if len(titles_dict) == 0:
         return False
-    return check_new_id_match(title, titles_dic, rule_id)
+    elif (rule_id is None) or (titles_dict.get(title) == rule_id):
+        return True
 
 
 def get_form_data(form, field_regex):
