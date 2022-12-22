@@ -26,8 +26,6 @@ You can view the admin app at `{server address}:9903/` in your web browser.
 
 ![AAQ Admin](docs/readme/images/aaq_template-admin.png)
 
-![AAQ Admin](docs/readme/images/aaq_template-admin.png)
-
 ## Setup
 
 ### Copy this code
