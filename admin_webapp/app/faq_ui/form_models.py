@@ -36,4 +36,15 @@ class AddFAQForm(FlaskForm):
     tag_9 = StringField()
     tag_10 = StringField()
 
+    question_1 = StringField(validators=[DataRequired()])
+    question_2 = StringField(validators=[DataRequired()])
+    question_3 = StringField(validators=[DataRequired()])
+    question_4 = StringField(validators=[DataRequired()])
+    question_5 = StringField(validators=[DataRequired()])
+    question_6 = StringField()
+    question_7 = StringField()
+    question_8 = StringField()
+    question_9 = StringField()
+    question_10 = StringField()
+
     submit = SubmitField("Save")

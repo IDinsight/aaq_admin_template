@@ -1,5 +1,5 @@
-$('.add').on('click', add_tag);
-$('.remove').on('click', remove_tag);
+$('.add_tag').on('click', add_tag);
+$('.remove_tag').on('click', remove_tag);
 
 // Adds tag field to page
 function add_tag() {
@@ -22,3 +22,16 @@ function remove_tag() {
         $('#total_tags').val(n_last_tag - 1);
     }
 }
+
+// Adds tag field to page
+function add_question() {
+    var n_new_question = parseInt($('#total_questions').val()) + 1;
+
+    if (n_new_question < 11) {
+        var new_input = '<input class="form-control" placeholder="Question ' + n_new_question + '" required type="text" style="margin-bottom:5px;" id="tag_' + n_new_question + '" name="tag_' + n_new_question + '"> ';
+        $('#new_question').append(new_input);
+
+        $('#total_questions').val(n_new_question);
+    }
+}
+

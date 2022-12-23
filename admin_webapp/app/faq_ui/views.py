@@ -107,6 +107,7 @@ def edit_faq(edit_faq_id):
 
     form = AddFAQForm(obj=faq_to_edit)
     tag_data = faq_to_edit.faq_tags
+    question_data = faq_to_edit.faq_questions
 
     if form.validate_on_submit():
         if faq_validate_save_and_refresh(form, None, faq_to_edit):
@@ -117,6 +118,7 @@ def edit_faq(edit_faq_id):
         faq_to_edit=faq_to_edit,
         form=form,
         tag_data=tag_data,
+        question_data=question_data,
     )
 
 
@@ -161,6 +163,19 @@ def faq_validate_save_and_refresh(form, thresholds, faq_to_edit):
         form.tag_10.data,
     ]
     tag_data = list(filter(None, tag_data))
+    question_data = [
+        form.question_1.data,
+        form.question_2.data,
+        form.question_3.data,
+        form.question_4.data,
+        form.question_5.data,
+        form.question_6.data,
+        form.question_7.data,
+        form.question_8.data,
+        form.question_9.data,
+        form.question_10.data,
+    ]
+    question_data = list(filter(None, question_data))
 
     # Step 1: check if all tags are valid
     bad_tags = validate_tags(tag_data)
@@ -187,6 +202,7 @@ def faq_validate_save_and_refresh(form, thresholds, faq_to_edit):
                 faq_content_to_send=form.faq_content_to_send.data,
                 faq_weight=form.faq_weight.data,
                 faq_tags=tag_data,
+                faq_questions=question_data,
                 faq_thresholds=thresholds,
             )
             db.session.add(new_faq)
@@ -202,6 +218,7 @@ def faq_validate_save_and_refresh(form, thresholds, faq_to_edit):
             faq_to_edit.faq_content_to_send = form.faq_content_to_send.data
             faq_to_edit.faq_weight = form.faq_weight.data
             faq_to_edit.faq_tags = tag_data
+            faq_to_edit.faq_questions = question_data
             faq_to_edit.faq_updated_utc = current_ts
 
             faq_id = faq_to_edit.faq_id

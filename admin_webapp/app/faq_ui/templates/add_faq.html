@@ -9,6 +9,8 @@ Add FAQ
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script type=text/javascript src="{{
     url_for('.static', filename='js/add_tags.js') }}"></script>
+<script type=text/javascript src="{{
+        url_for('.static', filename='js/add_questions.js') }}"></script>
 </script>
 {% endblock %}
 
@@ -52,9 +54,37 @@ Add FAQ
                     <input type="hidden" value="2" id="total_tags">
                     <div id="new_tags"></div>
 
-                    <input class="btn btn-secondary add" type="button" value="+ Tag"
+                    <input class="btn btn-secondary add_tag" type="button" value="+ Tag"
                         style="margin-right:5px; margin-bottom:5px;">
-                    <input class="btn btn-secondary remove" type="button" value="- Tag"
+                    <input class="btn btn-secondary remove_tag" type="button" value="- Tag"
+                        style="margin-right:5px; margin-bottom:5px;">
+                </div>
+
+                <div class="form-group  required"><label class="form-control-label">Example question:</label>
+
+                    <input class="form-control" placeholder="Question 1" required type="text" style="margin-bottom:5px;"
+                        id="question_1" name="question_1" {% if form.question_1.data is not none %}
+                        value="{{ form.question_1.data }}" {% endif %}>
+                    <input class="form-control" placeholder="Question 2" required type="text" style="margin-bottom:5px;"
+                        id="question_2" name="question_2" {% if form.question_2.data is not none %}
+                        value="{{ form.question_2.data }}" {% endif %}>
+                    <input class="form-control" placeholder="Question 3" required type="text" style="margin-bottom:5px;"
+                        id="question_3" name="question_3" {% if form.question_3.data is not none %}
+                        value="{{ form.question_3.data }}" {% endif %}>
+                    <input class="form-control" placeholder="Question 4" required type="text" style="margin-bottom:5px;"
+                        id="question_4" name="question_4" {% if form.question_4.data is not none %}
+                        value="{{ form.question_4.data }}" {% endif %}>
+                    <input class="form-control" placeholder="Question 5" required type="text" style="margin-bottom:5px;"
+                        id="question_5" name="question_5" {% if form.question_5.data is not none %}
+                        value="{{ form.question_5.data }}" {% endif %}>
+
+
+                    <input type="hidden" value="5" id="total_questions">
+                    <div id="new_questions"></div>
+
+                    <input class="btn btn-secondary add_question" type="button" value="+ Question"
+                        style="margin-right:5px; margin-bottom:5px;">
+                    <input class="btn btn-secondary remove_question" type="button" value="- Question"
                         style="margin-right:5px; margin-bottom:5px;">
                 </div>
 
