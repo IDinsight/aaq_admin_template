@@ -269,7 +269,7 @@ def is_rule_title_already_used(title, rule_id):
     titles_dict = dict(rules)
     if len(titles_dict) == 0:
         return False
-    elif (rule_id is None) or (titles_dict.get(title) == rule_id):
+    elif (rule_id is None) or (titles_dict.get(title) != rule_id):
         return True
 
 

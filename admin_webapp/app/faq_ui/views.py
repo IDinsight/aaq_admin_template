@@ -326,5 +326,5 @@ def is_faq_title_already_used(title, faq_id):
 
     if len(titles_dict) == 0:
         return False
-    elif (faq_id is None) or (titles_dict.get(title) == faq_id):
+    elif (faq_id is None) or (titles_dict.get(title) != faq_id):
         return True
