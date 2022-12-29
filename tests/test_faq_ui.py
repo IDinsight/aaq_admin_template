@@ -143,15 +143,73 @@ class TestAddFAQ:
 
         assert re.search(error_msg, response.get_data(as_text=True))
 
+    @pytest.mark.parametrize(
+        "question_1,question_2,question_3,question_4,question_5,question_6, error_msg",
+        [
+            (
+                "This is question 1",
+                "This is question 2",
+                "This is question 3",
+                "This is question 4",
+                "This is question 5",
+                None,
+                "Successfully added new FAQ",
+            ),
+            (
+                "This is question 1",
+                " This is question 2",
+                "This is question 3",
+                "This is question 4",
+                "This is question 5",
+                " ",
+                "The following questions are invalid",
+            ),
+        ],
+    )
+    def test_add_incorrect_question(
+        self,
+        question_1,
+        question_2,
+        question_3,
+        question_4,
+        question_5,
+        question_6,
+        error_msg,
+        client,
+        credentials_fullaccess,
+        clean_faq_table,
+    ):
+        response = client.post(
+            "/faqs/add",
+            follow_redirects=True,
+            headers={"Authorization": "Basic " + credentials_fullaccess},
+            data={
+                "tag_1": "weight",
+                "tag_2": "test",
+                "faq_author": "pytest",
+                "faq_title": "test_question",
+                "faq_weight": 12,
+                "faq_content_to_send": "Test Content Data",
+                "question_1": question_1,
+                "question_2": question_2,
+                "question_3": question_3,
+                "question_4": question_4,
+                "question_5": question_5,
+                "question_6": question_6,
+                "submit": "True",
+            },
+        )
+        assert re.search(error_msg, response.get_data(as_text=True))
+
 
 class TestEditFAQ:
 
     insert_faq = (
         "INSERT INTO faqmatches ("
         "faq_id, faq_tags, faq_author, faq_title, faq_content_to_send, "
-        "faq_weight, faq_added_utc, faq_thresholds) "
+        "faq_weight, faq_added_utc, faq_thresholds,faq_questions) "
         "VALUES (:faq_id, :faq_tags, :author, :title, :content, :weight, "
-        ":added_utc, :threshold)"
+        ":added_utc, :threshold,:faq_questions)"
     )
     faq_tags = [
         """{"rock", "guitar", "melody", "chord"}""",
@@ -165,6 +223,7 @@ class TestEditFAQ:
         "added_utc": "2022-04-14",
         "author": "pytest",
         "content": "{}",
+        "faq_questions": """{"Dummmy question 1", "Dummmy question 2", "Dummmy question 3", "Dummmy question 4","Dummmy question 5","Dummy question 6"}""",
         "weight": 2,
         "threshold": "{0.1, 0.1, 0.1, 0.1}",
     }
@@ -280,15 +339,73 @@ class TestEditFAQ:
 
         assert re.search(error_msg, response.get_data(as_text=True))
 
+    @pytest.mark.parametrize(
+        "question_1,question_2,question_3,question_4,question_5,question_6, error_msg",
+        [
+            (
+                "Dummmy question 1",
+                "Dummmy question 2",
+                "Dummmy question 3",
+                "Dummmy question 4",
+                "Dummmy question 5",
+                None,
+                "Successfully edited FAQ with ID: 1001",
+            ),
+            (
+                "Dummmy question 1",
+                "Dummmy question 2",
+                "Dummmy question 3",
+                "Dummmy question 4",
+                "Dummmy question 5",
+                " ",
+                "The following questions are invalid",
+            ),
+        ],
+    )
+    def test_edit_incorrect_question(
+        self,
+        question_1,
+        question_2,
+        question_3,
+        question_4,
+        question_5,
+        question_6,
+        error_msg,
+        client,
+        faq_data,
+        credentials_fullaccess,
+    ):
+        response = client.post(
+            "/faqs/edit/1001",
+            follow_redirects=True,
+            headers={"Authorization": "Basic " + credentials_fullaccess},
+            data={
+                "tag_1": "weight",
+                "tag_2": "test",
+                "faq_author": "pytest",
+                "faq_title": "test_question",
+                "faq_weight": 12,
+                "faq_content_to_send": "Test Content Data",
+                "question_1": question_1,
+                "question_2": question_2,
+                "question_3": question_3,
+                "question_4": question_4,
+                "question_5": question_5,
+                "question_6": question_6,
+                "submit": "True",
+            },
+        )
+        assert re.search(error_msg, response.get_data(as_text=True))
+
 
 class TestDeleteFAQ:
 
     insert_faq = (
         "INSERT INTO faqmatches ("
         "faq_id, faq_tags, faq_author, faq_title, faq_content_to_send, "
-        "faq_weight, faq_added_utc, faq_thresholds) "
+        "faq_weight, faq_added_utc, faq_thresholds,faq_questions) "
         "VALUES (:faq_id, :faq_tags, :author, :title, :content, :weight, "
-        ":added_utc, :threshold)"
+        ":added_utc, :threshold,:faq_questions)"
     )
     faq_tags = [
         """{"rock", "guitar", "melody", "chord"}""",
@@ -302,6 +419,7 @@ class TestDeleteFAQ:
         "added_utc": "2022-04-14",
         "author": "pytest",
         "content": "{}",
+        "faq_questions": """{"Dummmy question 1", "Dummmy question 2", "Dummmy question 3", "Dummmy question 4","Dummmy question 5"}""",
         "weight": 2,
         "threshold": "{0.1, 0.1, 0.1, 0.1}",
     }

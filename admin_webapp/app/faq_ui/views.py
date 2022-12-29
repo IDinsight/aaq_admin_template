@@ -189,48 +189,52 @@ def faq_validate_save_and_refresh(form, thresholds, faq_to_edit):
         )
 
         return False
+
     else:
-        if faq_to_edit is None:
-            if not isinstance(thresholds, list):
-                thresholds = [thresholds] * len(tag_data)
+        if is_question_valid(question_data):
+            if faq_to_edit is None:
+                if not isinstance(thresholds, list):
+                    thresholds = [thresholds] * len(tag_data)
 
-            new_faq = FAQModel(
-                faq_added_utc=current_ts,
-                faq_updated_utc=current_ts,
-                faq_author=form.faq_author.data,
-                faq_title=form.faq_title.data,
-                faq_content_to_send=form.faq_content_to_send.data,
-                faq_weight=form.faq_weight.data,
-                faq_tags=tag_data,
-                faq_questions=question_data,
-                faq_thresholds=thresholds,
-            )
-            db.session.add(new_faq)
-            db.session.commit()
+                new_faq = FAQModel(
+                    faq_added_utc=current_ts,
+                    faq_updated_utc=current_ts,
+                    faq_author=form.faq_author.data,
+                    faq_title=form.faq_title.data,
+                    faq_content_to_send=form.faq_content_to_send.data,
+                    faq_weight=form.faq_weight.data,
+                    faq_tags=tag_data,
+                    faq_questions=question_data,
+                    faq_thresholds=thresholds,
+                )
+                db.session.add(new_faq)
+                db.session.commit()
 
-            faq_id = new_faq.faq_id
+                faq_id = new_faq.faq_id
 
-            action = "added new"
+                action = "added new"
 
+            else:
+                faq_to_edit.faq_author = form.faq_author.data
+                faq_to_edit.faq_title = form.faq_title.data
+                faq_to_edit.faq_content_to_send = form.faq_content_to_send.data
+                faq_to_edit.faq_weight = form.faq_weight.data
+                faq_to_edit.faq_tags = tag_data
+                faq_to_edit.faq_questions = question_data
+                faq_to_edit.faq_updated_utc = current_ts
+
+                faq_id = faq_to_edit.faq_id
+                action = "edited"
+
+                db.session.commit()
+
+            flash(f"Successfully {action} FAQ with ID: %s" % faq_id, "info")
+
+            refresh_faqs_core()
+
+            return True
         else:
-            faq_to_edit.faq_author = form.faq_author.data
-            faq_to_edit.faq_title = form.faq_title.data
-            faq_to_edit.faq_content_to_send = form.faq_content_to_send.data
-            faq_to_edit.faq_weight = form.faq_weight.data
-            faq_to_edit.faq_tags = tag_data
-            faq_to_edit.faq_questions = question_data
-            faq_to_edit.faq_updated_utc = current_ts
-
-            faq_id = faq_to_edit.faq_id
-            action = "edited"
-
-            db.session.commit()
-
-        flash(f"Successfully {action} FAQ with ID: %s" % faq_id, "info")
-
-        refresh_faqs_core()
-
-        return True
+            return False
 
 
 @faq_ui.route("/delete/<delete_faq_id>", methods=["GET", "POST"])
@@ -267,3 +271,17 @@ def delete_faq(delete_faq_id):
             "delete_faq.html",
             faq_to_delete=faq_to_delete,
         )
+
+
+def is_question_valid(questions):
+    """Make sure each question is valid before adding to DB (not empty )"""
+    bad_questions = [question for question in questions if not question.strip()]
+
+    if len(bad_questions) > 0:
+        flash(
+            "The following questions are invalid: %s.\nPlease correct and resubmit."
+            % str(bad_questions),
+            "danger",
+        )
+        return False
+    return True
