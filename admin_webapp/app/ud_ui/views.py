@@ -271,6 +271,8 @@ def is_rule_title_already_used(title, rule_id):
         return False
     elif (rule_id is None) or (titles_dict.get(title) != rule_id):
         return True
+    else:
+        return False
 
 
 def get_form_data(form, field_regex):

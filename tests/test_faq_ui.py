@@ -144,7 +144,6 @@ class TestAddFAQ:
         client,
         add_faq_data,
         credentials_fullaccess,
-        # clean_faq_table,
     ):
         response = client.post(
             "/faqs/add",
