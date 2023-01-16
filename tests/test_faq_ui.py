@@ -43,6 +43,38 @@ def my_validate_tags(tag_list):
 
 
 class TestAddFAQ:
+    insert_faq = (
+        "INSERT INTO faqmatches ("
+        "faq_id, faq_tags, faq_author, faq_title, faq_content_to_send, "
+        "faq_weight, faq_added_utc, faq_thresholds) "
+        "VALUES (:faq_id, :faq_tags, :author, :title, :content, :weight, "
+        ":added_utc, :threshold)"
+    )
+    faq_other_params = {
+        "faq_tags": """{"rock", "guitar", "melody", "chord"}""",
+        "added_utc": "2022-04-14",
+        "author": "pytest",
+        "content": "{}",
+        "weight": 2,
+        "threshold": "{0.1, 0.1, 0.1, 0.1}",
+    }
+
+    @pytest.fixture(scope="class")
+    def add_faq_data(self, client, db_engine):
+        with db_engine.connect() as db_connection:
+            inbound_sql = text(self.insert_faq)
+
+            db_connection.execute(
+                inbound_sql,
+                faq_id=1001,
+                title=f"Pytest title #1",
+                **self.faq_other_params,
+            )
+        yield
+        with db_engine.connect() as db_connection:
+            t = text("DELETE FROM faqmatches " "WHERE faq_author='pytest'")
+            db_connection.execute(t)
+
     def test_add_page_fails_unauthorized(self, client, credentials_readonly):
         response = client.get(
             "/faqs/add",
@@ -101,6 +133,46 @@ class TestAddFAQ:
         if outcome == "invalid":
             assert re.search(
                 "The following tags are invalid:", response.get_data(as_text=True)
+            )
+
+    @pytest.mark.parametrize(
+        "title,outcome",
+        [
+            ("Pytest title #1", "invalid"),
+            ("Pytest title #2", "success"),
+        ],
+    )
+    def test_add_new_faq_incorrect_title(
+        self,
+        title,
+        outcome,
+        client,
+        add_faq_data,
+        credentials_fullaccess,
+    ):
+        response = client.post(
+            "/faqs/add",
+            follow_redirects=True,
+            headers={"Authorization": "Basic " + credentials_fullaccess},
+            data={
+                "tag_1": "Hello",
+                "tag_2": "World",
+                "faq_author": "pytest",
+                "faq_title": title,
+                "faq_weight": 1,
+                "faq_content_to_send": "Test Content Data",
+                "submit": "True",
+            },
+        )
+
+        if outcome == "success":
+            assert re.search(
+                "Successfully added new FAQ", response.get_data(as_text=True)
+            )
+        if outcome == "invalid":
+            assert re.search(
+                "The following faq title already exists:",
+                response.get_data(as_text=True),
             )
 
     @pytest.mark.parametrize(
@@ -299,6 +371,42 @@ class TestEditFAQ:
             )
 
     @pytest.mark.parametrize(
+        "faq_id,title,outcome",
+        [
+            (1001, "Pytest title #1", "success"),
+            (1001, "Pytest title #2", "invalid"),
+            (1001, "Pytest title #7", "success"),
+        ],
+    )
+    def test_edit_faq_incorrect_title(
+        self, faq_data, faq_id, title, outcome, client, credentials_fullaccess
+    ):
+        response = client.post(
+            f"/faqs/edit/{faq_id}",
+            follow_redirects=True,
+            headers={"Authorization": "Basic " + credentials_fullaccess},
+            data={
+                "tag_1": "Hello",
+                "tag_2": "World",
+                "faq_author": "pytest",
+                "faq_title": title,
+                "faq_weight": 1,
+                "faq_content_to_send": "Test Content Data",
+                "submit": "True",
+            },
+        )
+
+        if outcome == "success":
+            assert re.search(
+                "Successfully edited FAQ with ID: 1001", response.get_data(as_text=True)
+            )
+        if outcome == "invalid":
+            assert re.search(
+                "The following faq title already exists:",
+                response.get_data(as_text=True),
+            )
+
+    @pytest.mark.parametrize(
         "weight, error_msg",
         [
             (12, "Successfully edited FAQ with ID: 1001"),
@@ -325,7 +433,7 @@ class TestEditFAQ:
                 "tag_1": "weight",
                 "tag_2": "test",
                 "faq_author": "pytest",
-                "faq_title": "test_title",
+                "faq_title": f"test_title_{weight}",
                 "question_1": "This is question 1",
                 "question_2": "This is question 2",
                 "question_3": "This is question 3",
