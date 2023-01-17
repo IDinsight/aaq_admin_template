@@ -139,12 +139,14 @@ GA_PG_ENDPOINT
 GA_PG_PASSWORD
 
 # From `secrets/app_secrets.env`
+GA_READONLY_PASSWORD
+GA_FULLACCESS_PASSWORD
 GA_INBOUND_CHECK_TOKEN
+GA_UD_INBOUND_CHECK_TOKEN  # if UD is enabled
 
-# If using validation
-VALIDATION_BUCKET  # S3 bucket storing validation data
-VALIDATION_DATA_PREFIX  # Prefix of validation data in the S3 bucket
-VALIDATION_FAQ_PREFIX  # Prefix of FAQ data in the S3 bucket
+# Host addresses of other apps
+GA_MODEL_HOST  # Core app
+GA_UD_HOST
 ```
 
 Make sure to comment out the block of code that uses secrets from AWS, and uncomment the
