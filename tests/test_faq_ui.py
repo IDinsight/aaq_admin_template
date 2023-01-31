@@ -37,7 +37,6 @@ def test_view_page_loads(endpoint, client, credentials_readonly):
 
 
 def my_validate_tags(tag_list):
-
     VALIDWORDS = ["hello", "world", "weight", "test"]
     return [x for x in tag_list if x not in VALIDWORDS]
 
@@ -45,15 +44,16 @@ def my_validate_tags(tag_list):
 class TestAddFAQ:
     insert_faq = (
         "INSERT INTO faqmatches ("
-        "faq_id, faq_tags, faq_author, faq_title, faq_content_to_send, "
+        "faq_id, faq_tags, faq_questions,faq_author, faq_title, faq_content_to_send, "
         "faq_weight, faq_added_utc, faq_thresholds) "
-        "VALUES (:faq_id, :faq_tags, :author, :title, :content, :weight, "
+        "VALUES (:faq_id, :faq_tags,:faq_questions, :author, :title, :content, :weight, "
         ":added_utc, :threshold)"
     )
     faq_other_params = {
         "faq_tags": """{"rock", "guitar", "melody", "chord"}""",
-        "added_utc": "2022-04-14",
         "author": "pytest",
+        "faq_questions": """{"This is question 1 ", "This is question 2", "This is question 3", "This is question 4","This is question 1"}""",
+        "added_utc": "2022-04-14",
         "content": "{}",
         "weight": 2,
         "threshold": "{0.1, 0.1, 0.1, 0.1}",
@@ -159,6 +159,11 @@ class TestAddFAQ:
                 "tag_2": "World",
                 "faq_author": "pytest",
                 "faq_title": title,
+                "question_1": "This is question 1",
+                "question_2": "This is question 2",
+                "question_3": "This is question 3",
+                "question_4": "This is question 4",
+                "question_5": "This is question 5",
                 "faq_weight": 1,
                 "faq_content_to_send": "Test Content Data",
                 "submit": "True",
@@ -390,6 +395,11 @@ class TestEditFAQ:
                 "tag_2": "World",
                 "faq_author": "pytest",
                 "faq_title": title,
+                "question_1": "This is question 1",
+                "question_2": "This is question 2",
+                "question_3": "This is question 3",
+                "question_4": "This is question 4",
+                "question_5": "This is question 5",
                 "faq_weight": 1,
                 "faq_content_to_send": "Test Content Data",
                 "submit": "True",
