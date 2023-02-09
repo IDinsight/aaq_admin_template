@@ -1,5 +1,5 @@
-$('.add').on('click', add_tag);
-$('.remove').on('click', remove_tag);
+$('.add_tag').on('click', add_tag);
+$('.remove_tag').on('click', remove_tag);
 
 // Adds tag field to page
 function add_tag() {
@@ -22,3 +22,4 @@ function remove_tag() {
         $('#total_tags').val(n_last_tag - 1);
     }
 }
+

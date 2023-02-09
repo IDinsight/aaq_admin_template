@@ -34,6 +34,7 @@ View FAQs
                         <th>Content to Send</th>
                         <th>Weight</th>
                         <th>Tags</th>
+                        <th>Questions</th>
                         <th>Last Updated</th>
                         <th>Edit</th>
                         <th>Delete</th>
@@ -52,13 +53,21 @@ View FAQs
                         <td>{{faq.faq_weight}}</td>
                         <td>
                             {% for tag in faq.faq_tags %}
-                                <span class="badge">{{ tag }}</span>
+                            <span class="badge">{{ tag }}</span>
                             {% endfor %}
                         </td>
+                        <td>
+                            {% if faq.faq_questions is not none %}
+                            {% for question in faq.faq_questions %}
+                            <span class="badge">{{ question }} </span>
+                            <br />
+                            {% endfor %}
+                            {% endif %}
+                        </td>
                         {% if faq.faq_updated_utc is none %}
-                        {%      set last_updated = faq.faq_added_utc %}
+                        {% set last_updated = faq.faq_added_utc %}
                         {% else %}
-                        {%      set last_updated = faq.faq_updated_utc %}
+                        {% set last_updated = faq.faq_updated_utc %}
                         {% endif %}
                         <td>{{ last_updated.strftime("%Y-%m-%d %H:%M:%S") }}</td>
                         <td>
@@ -69,7 +78,7 @@ View FAQs
                         <td>
                             <form method="GET" action="{{ url_for('.delete_faq', delete_faq_id=faq.faq_id) }}">
                                 <input class="btn btn-danger btn-sm" type="submit" value="✘">
-                            </form>                        
+                            </form>
                         </td>
                     </tr>
 
@@ -80,43 +89,41 @@ View FAQs
     </div>
     <nav aria-label="Page navigation">
         <ul class="pagination">
-        {% if faqs_page.has_prev %}
+            {% if faqs_page.has_prev %}
             <li>
                 <a class='page-number' href="{{ url_for('.view_faqs', page_num=faqs_page.prev_num) }}">
                     {{ '«' }}
                 </a>
             </li>
-        {% endif %}
-        {% for number in faqs_page.iter_pages() %}
+            {% endif %}
+            {% for number in faqs_page.iter_pages() %}
             {% if number is none %}
-                <li>
-                        <a class='page-number not-active'>
-                        ...
-                        </a>
-                </li>
-            
+            <li>
+                <a class='page-number not-active'>
+                    ...
+                </a>
+            </li>
+
             {% elif faqs_page.page != number %}
-                <li>
-                        <a class='page-number'
-                            href="{{ url_for('.view_faqs', page_num=number) }}">
-                        {{ number }}
-                        </a>
-                </li>
+            <li>
+                <a class='page-number' href="{{ url_for('.view_faqs', page_num=number) }}">
+                    {{ number }}
+                </a>
+            </li>
             {% else %}
             <li class='current-page-number'>
                 <a class='current-page-number' href="#" style="border:none !important;">{{ number }}</a>
             </li>
             {% endif %}
-        {% endfor %}
+            {% endfor %}
 
-        {% if faqs_page.has_next %}
+            {% if faqs_page.has_next %}
             <li>
-                <a class='page-number'
-                    href="{{ url_for('.view_faqs', page_num=faqs_page.next_num) }}">
+                <a class='page-number' href="{{ url_for('.view_faqs', page_num=faqs_page.next_num) }}">
                     {{ '»' }}
                 </a>
             </li>
-        {% endif %}
+            {% endif %}
         </ul>
     </nav>
 </div>

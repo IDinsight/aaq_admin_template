@@ -107,6 +107,7 @@ def edit_faq(edit_faq_id):
 
     form = AddFAQForm(obj=faq_to_edit)
     tag_data = faq_to_edit.faq_tags
+    question_data = faq_to_edit.faq_questions
 
     if form.validate_on_submit():
         if faq_validate_save_and_refresh(form, None, faq_to_edit):
@@ -117,6 +118,7 @@ def edit_faq(edit_faq_id):
         faq_to_edit=faq_to_edit,
         form=form,
         tag_data=tag_data,
+        question_data=question_data,
     )
 
 
@@ -146,7 +148,23 @@ def faq_validate_save_and_refresh(form, thresholds, faq_to_edit):
     It also flashes the result on the next page that is rendered
     """
 
+
+    current_ts = datetime.utcnow()
     bad_tags, tag_data = check_bad_tags(form)
+    question_data = [
+        form.question_1.data,
+        form.question_2.data,
+        form.question_3.data,
+        form.question_4.data,
+        form.question_5.data,
+        form.question_6.data,
+        form.question_7.data,
+        form.question_8.data,
+        form.question_9.data,
+        form.question_10.data,
+    ]
+    question_data = list(filter(None, question_data))
+    
     if len(bad_tags) > 0:
         flash(
             "The following tags are invalid: %s.\nPlease correct and resubmit."
@@ -166,7 +184,9 @@ def faq_validate_save_and_refresh(form, thresholds, faq_to_edit):
             "danger",
         )
         return False
-
+    if not is_question_valid(question_data):
+        return False
+        
     faq_id, action = upsert_faq(form, thresholds, faq_to_edit, tag_data)
     flash(f"Successfully {action} FAQ with ID: %s" % faq_id, "info")
 
@@ -211,6 +231,19 @@ def delete_faq(delete_faq_id):
         )
 
 
+
+def is_question_valid(questions):
+    """Make sure each question is valid before adding to DB (not empty )"""
+    bad_questions = [question for question in questions if not question.strip()]
+
+    if len(bad_questions) > 0:
+        flash(
+            "The following questions are invalid: %s.\nPlease correct and resubmit."
+            % str(bad_questions),
+            "danger",
+        )
+        return False
+    return True
 def check_bad_tags(form):
     """
     Check if there are bad tags

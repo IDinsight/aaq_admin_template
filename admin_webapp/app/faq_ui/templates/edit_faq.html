@@ -10,6 +10,8 @@ Edit FAQ
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script type=text/javascript src="{{
     url_for('.static', filename='js/add_tags.js') }}"></script>
+<script type=text/javascript src="{{
+        url_for('.static', filename='js/add_questions.js') }}"></script>
 </script>
 {% endblock %}
 
@@ -21,9 +23,9 @@ Edit FAQ
 
             <h1>Edit FAQ #{{ faq_to_edit.faq_id }}</h1>
             {% if faq_to_edit.faq_updated_utc is none %}
-            {%      set last_updated = faq_to_edit.faq_added_utc %}
+            {% set last_updated = faq_to_edit.faq_added_utc %}
             {% else %}
-            {%      set last_updated = faq_to_edit.faq_updated_utc %}
+            {% set last_updated = faq_to_edit.faq_updated_utc %}
             {% endif %}
 
             <div class="pb-4 text-muted">
@@ -63,9 +65,34 @@ Edit FAQ
 
                     <input type="hidden" value="{{ tag_data|length }}" id="total_tags">
 
-                    <input class="btn btn-secondary add" type="button" value="+ Tag"
+                    <input class="btn btn-secondary add_tag" type="button" value="+ Tag"
                         style="margin-right:5px; margin-bottom:5px;">
-                    <input class="btn btn-secondary remove" type="button" value="- Tag"
+                    <input class="btn btn-secondary remove_tag" type="button" value="- Tag"
+                        style="margin-right:5px; margin-bottom:5px;">
+                </div>
+
+                <div class="form-group"><label class="form-control-label">Old Questions:</label>
+                    {% for question in faq_to_edit.faq_questions %}
+                    <input class="form-control" style="margin-bottom:5px;" value="{{ question }}" disabled>
+                    {% endfor %}
+                </div>
+
+                <div class="form-group  required"><label class="form-control-label">New Questions:</label>
+                    {% for question in question_data %}
+
+                    <input class="form-control" placeholder="Question {{ loop.index }}" required type="text"
+                        style="margin-bottom:5px;" id="question_{{ loop.index }}" name="question_{{ loop.index }}"
+                        value="{{ question }}">
+
+                    {% endfor %}
+
+                    <div id="new_questions"></div>
+
+                    <input type="hidden" value="{{ question_data|length }}" id="total_questions">
+
+                    <input class="btn btn-secondary add_question" type="button" value="+ Question"
+                        style="margin-right:5px; margin-bottom:5px;">
+                    <input class="btn btn-secondary remove_question" type="button" value="- Question"
                         style="margin-right:5px; margin-bottom:5px;">
                 </div>
 
