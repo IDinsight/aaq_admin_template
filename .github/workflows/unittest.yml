@@ -10,7 +10,7 @@ jobs:
     outputs:
       env-name: ${{ steps.env-name.outputs.environment }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
       
@@ -23,7 +23,6 @@ jobs:
           pip install -r requirements.txt
           pip install -r requirements_dev.txt
 
-      # --------------- Comment out if using Github Actions Secrets ----------------- #
       - name: Configure AWS credentials
         id: creds
         uses: aws-actions/configure-aws-credentials@v1-node16
@@ -53,22 +52,7 @@ jobs:
         run: |
           coverage run -m pytest tests
           coverage lcov --include="admin_webapp/*"
-      # ----------------------------------------------------------------------------- #
 
-      # ----------------- Uncomment if using Github Actions Secrets ----------------- #
-      # - name: Run Unit Tests
-      #   env:
-      #     PG_ENDPOINT: ${{env.GLOBAL_PG_ENDPOINT}}
-      #     PG_PASSWORD: ${{env.GLOBAL_PG_PASSWORD}}
-      #     INBOUND_CHECK_TOKEN: ${{env.GLOBAL_INBOUND_CHECK_TOKEN}}
-      #     UD_INBOUND_CHECK_TOKEN: ${{env.GLOBAL_UD_INBOUND_CHECK_TOKEN}}
-      #     MODEL_HOST: ${{env.GLOBAL_MODEL_HOST}}
-      #     UD_HOST: ${{env.GLOBAL_UD_HOST}}
-      #   run: |
-      #     coverage run -m pytest tests
-      #     coverage lcov --include="admin_webapp/*"
-      # ----------------------------------------------------------------------------- #
-      
       - name: Coveralls Test Coverage
         uses: coverallsapp/github-action@master
         with:

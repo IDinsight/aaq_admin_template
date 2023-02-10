@@ -118,43 +118,22 @@ To run this project:
 
 ## Setting up secrets for Github Actions
 
-Github actions scripts in `.github` requires the same or similar secrets as in the
-`secrets` folder.
+Github actions scripts in the `.github` folder requires the same or similar secrets as
+in the `secrets` folder.
 
-You can either set them directly as Github Actions secrets, or store them in AWS Secrets
-Manager and dynamically load them during Github Actions.
+By default we assume the secrets are stored in AWS Secrets
+Manager and are dynamically loaded during Github Actions.
 
-For both options, you must set AWS credentials as Github Actions secrets:
+However, you must set your AWS credentials as Github Actions secrets:
 ```bash
 AWS_ACCESS_KEY_ID
 AWS_REGION
 AWS_SECRET_ACCESS_KEY
 ```
 
-### Option 1: Set Github Actions secrets
-If you would like to set Github Actions secrets directly, in addition to AWS credentials above, you must set the following secrets:
-```bash
-# From `secrets/databse_secrets.env`
-GA_PG_ENDPOINT
-GA_PG_PASSWORD
-
-# From `secrets/app_secrets.env`
-GA_READONLY_PASSWORD
-GA_FULLACCESS_PASSWORD
-GA_INBOUND_CHECK_TOKEN
-GA_UD_INBOUND_CHECK_TOKEN  # if UD is enabled
-
-# Host addresses of other apps
-GA_MODEL_HOST  # Core app
-GA_UD_HOST
-```
-
-Make sure to comment out the block of code that uses secrets from AWS, and uncomment the
-block that uses GA secrets in `.github/validation-test.yml` and `.github/docker-build-push.yml`.
-
-### Option 2: Load secrets from AWS Secrets Manger (default)
-If you would like to load secrets from AWS Secrets Manager, make sure that you have the
-following secrets stored on AWS:
+To use AWS Secrets Manager, make sure that you have the following secrets stored on AWS.
+(If you would like to use Github Actions secrets instead, you will need to set the same
+secrets on Github and modify the Github Actions scripts yourself.)
 
 1. Core secrets
     ```bash
