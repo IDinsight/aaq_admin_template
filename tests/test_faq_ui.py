@@ -44,15 +44,16 @@ def my_validate_tags(tag_list):
 class TestAddFAQ:
     insert_faq = (
         "INSERT INTO faqmatches ("
-        "faq_id, faq_tags, faq_questions,faq_author, faq_title, faq_content_to_send, "
+        "faq_id, faq_tags, faq_questions,faq_contexts,faq_author, faq_title, faq_content_to_send, "
         "faq_weight, faq_added_utc, faq_thresholds) "
-        "VALUES (:faq_id, :faq_tags,:faq_questions, :author, :title, :content, :weight, "
+        "VALUES (:faq_id, :faq_tags,:faq_questions, :faq_contexts,:author, :title, :content, :weight, "
         ":added_utc, :threshold)"
     )
     faq_other_params = {
         "faq_tags": """{"rock", "guitar", "melody", "chord"}""",
         "author": "pytest",
         "faq_questions": """{"This is question 1 ", "This is question 2", "This is question 3", "This is question 4","This is question 1"}""",
+        "faq_contexts": """{"design ", "test ", " maintain"}""",
         "added_utc": "2022-04-14",
         "content": "{}",
         "weight": 2,
@@ -278,15 +279,42 @@ class TestAddFAQ:
         )
         assert re.search(error_msg, response.get_data(as_text=True))
 
+    def test_add_faq_with_context(
+        self, client, credentials_fullaccess, clean_faq_table
+    ):
+        response = client.post(
+            "/faqs/add",
+            follow_redirects=True,
+            headers={"Authorization": "Basic " + credentials_fullaccess},
+            data={
+                "tag_1": "context",
+                "tag_2": "test",
+                "faq_author": "pytest",
+                "faq_title": "test_question",
+                "faq_weight": 12,
+                "faq_content_to_send": "Test Content Data",
+                "question_1": "This is question 1",
+                "question_2": "This is question 2",
+                "question_3": "This is question 3",
+                "question_4": "This is question 4",
+                "question_5": "This is question 5",
+                "context_1": "code",
+                "context_2": "deploy",
+                "submit": "True",
+            },
+        )
+        print(response.get_data(as_text=True))
+        assert re.search("Successfully added new FAQ", response.get_data(as_text=True))
+
 
 class TestEditFAQ:
 
     insert_faq = (
         "INSERT INTO faqmatches ("
-        "faq_id, faq_tags, faq_author, faq_title, faq_content_to_send, "
-        "faq_weight, faq_added_utc, faq_thresholds,faq_questions) "
-        "VALUES (:faq_id, :faq_tags, :author, :title, :content, :weight, "
-        ":added_utc, :threshold,:faq_questions)"
+        "faq_id, faq_tags,faq_questions,faq_contexts, faq_author, faq_title, faq_content_to_send, "
+        "faq_weight, faq_added_utc, faq_thresholds) "
+        "VALUES (:faq_id, :faq_tags,:faq_questions,:faq_contexts, :author, :title, :content, :weight, "
+        ":added_utc, :threshold)"
     )
     faq_tags = [
         """{"rock", "guitar", "melody", "chord"}""",
@@ -295,6 +323,14 @@ class TestEditFAQ:
         """{"trace", "vector", "length", "angle"}""",
         """{"draw", "sing", "exercise", "code"}""",
         """{"digest", "eat", "chew", "expel"}""",
+    ]
+    faq_contexts = [
+        """{"test"}""",
+        """{"design", "maintain"}""",
+        """{"code", "test", "deploy"}""",
+        """{"design", "deploy"}""",
+        """{"code", "test", "deploy"}""",
+        None,
     ]
     faq_other_params = {
         "added_utc": "2022-04-14",
@@ -314,6 +350,7 @@ class TestEditFAQ:
                     inbound_sql,
                     faq_id=1000 + i,
                     title=f"Pytest title #{i}",
+                    faq_contexts=self.faq_contexts[i],
                     faq_tags=tags,
                     **self.faq_other_params,
                 )
@@ -515,15 +552,72 @@ class TestEditFAQ:
         )
         assert re.search(error_msg, response.get_data(as_text=True))
 
+    def test_edit_faq_with_prior_context(
+        self, client, faq_data, credentials_fullaccess
+    ):
+        response = client.post(
+            "/faqs/edit/1001",
+            follow_redirects=True,
+            headers={"Authorization": "Basic " + credentials_fullaccess},
+            data={
+                "tag_1": "context",
+                "tag_2": "test",
+                "faq_author": "pytest",
+                "faq_title": "test_question_with_prior",
+                "faq_weight": 12,
+                "context_1": "code",
+                "context_2": "deploy",
+                "question_1": "This is question 1",
+                "question_2": "This is question 2",
+                "question_3": "This is question 3",
+                "question_4": "This is question 4",
+                "question_5": "This is question 5",
+                "faq_content_to_send": "Test Content Data",
+                "submit": "True",
+            },
+        )
+        print(response.get_data(as_text=True))
+        assert re.search(
+            "Successfully edited FAQ with ID: 1001", response.get_data(as_text=True)
+        )
+
+    def test_edit_faq_without_prior_context(
+        self, client, faq_data, credentials_fullaccess
+    ):
+        response = client.post(
+            "/faqs/edit/1005",
+            follow_redirects=True,
+            headers={"Authorization": "Basic " + credentials_fullaccess},
+            data={
+                "tag_1": "context",
+                "tag_2": "test",
+                "faq_author": "pytest",
+                "faq_title": "test_question_no_prior",
+                "faq_weight": 12,
+                "context_1": "design",
+                "question_1": "This is question 1",
+                "question_2": "This is question 2",
+                "question_3": "This is question 3",
+                "question_4": "This is question 4",
+                "question_5": "This is question 5",
+                "faq_content_to_send": "Test Content Data",
+                "submit": "True",
+            },
+        )
+        print(response.get_data(as_text=True))
+        assert re.search(
+            "Successfully edited FAQ with ID: 1005", response.get_data(as_text=True)
+        )
+
 
 class TestDeleteFAQ:
 
     insert_faq = (
         "INSERT INTO faqmatches ("
-        "faq_id, faq_tags, faq_author, faq_title, faq_content_to_send, "
-        "faq_weight, faq_added_utc, faq_thresholds,faq_questions) "
-        "VALUES (:faq_id, :faq_tags, :author, :title, :content, :weight, "
-        ":added_utc, :threshold,:faq_questions)"
+        "faq_id, faq_tags,faq_questions, faq_author, faq_title, faq_content_to_send, "
+        "faq_weight, faq_added_utc, faq_thresholds) "
+        "VALUES (:faq_id, :faq_tags,:faq_questions, :author, :title, :content, :weight, "
+        ":added_utc,:threshold)"
     )
     faq_tags = [
         """{"rock", "guitar", "melody", "chord"}""",
@@ -567,6 +661,7 @@ class TestDeleteFAQ:
             follow_redirects=True,
             headers={"Authorization": "Basic " + credentials_readonly},
         )
+
         assert response.status_code == 403
 
     def test_delete_page_loads_authorized(

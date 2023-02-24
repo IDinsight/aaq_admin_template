@@ -35,6 +35,7 @@ View FAQs
                         <th>Weight</th>
                         <th>Tags</th>
                         <th>Questions</th>
+                        <th>Contexts</th>
                         <th>Last Updated</th>
                         <th>Edit</th>
                         <th>Delete</th>
@@ -60,6 +61,14 @@ View FAQs
                             {% if faq.faq_questions is not none %}
                             {% for question in faq.faq_questions %}
                             <span class="badge">{{ question }} </span>
+                            <br />
+                            {% endfor %}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if faq.faq_contexts is not none %}
+                            {% for context in faq.faq_contexts %}
+                            <span class="badge">{{ context }} </span>
                             <br />
                             {% endfor %}
                             {% endif %}

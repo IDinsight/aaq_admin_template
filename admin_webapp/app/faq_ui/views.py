@@ -1,7 +1,15 @@
 from datetime import datetime
 
 import requests
-from flask import current_app, flash, redirect, render_template, request, url_for
+from flask import (
+    current_app,
+    flash,
+    jsonify,
+    redirect,
+    render_template,
+    request,
+    url_for,
+)
 
 from ..auth import auth
 from ..data_models import FAQModel
@@ -38,7 +46,7 @@ def view_faqs(page_num):
 def validate_tags(tag_list):
     """
     Validate the tags being added. See /validate-tags endpoint in
-    core all for more details on validation
+    core app for more details on validation
     """
     api_call_body = {"tags_to_check": tag_list}
     bad_tags_endpoint = "%s://%s:%s/tools/validate-tags" % (
@@ -52,6 +60,24 @@ def validate_tags(tag_list):
     ).json()
 
     return bad_tags
+
+
+def validate_contexts(context_list):
+    """
+    Validate the contexts being added. See /check-contexts endpoint in
+    core app for more details on validation
+    """
+    api_call_body = {"contexts_to_check": context_list}
+    bad_contexts_endpoint = "%s://%s:%s/tools/check-contexts" % (
+        current_app.MODEL_PROTOCOL,
+        current_app.MODEL_HOST,
+        current_app.MODEL_PORT,
+    )
+    headers = {"Authorization": "Bearer %s" % current_app.INBOUND_CHECK_TOKEN}
+    response = requests.post(bad_contexts_endpoint, json=api_call_body, headers=headers)
+    bad_contexts = response.json()
+
+    return bad_contexts
 
 
 def refresh_faqs_core():
@@ -108,7 +134,7 @@ def edit_faq(edit_faq_id):
     form = AddFAQForm(obj=faq_to_edit)
     tag_data = faq_to_edit.faq_tags
     question_data = faq_to_edit.faq_questions
-
+    context_data = faq_to_edit.faq_contexts
     if form.validate_on_submit():
         if faq_validate_save_and_refresh(form, None, faq_to_edit):
             return redirect(url_for(".view_faqs"))
@@ -119,6 +145,7 @@ def edit_faq(edit_faq_id):
         form=form,
         tag_data=tag_data,
         question_data=question_data,
+        context_data=context_data,
     )
 
 
@@ -148,9 +175,10 @@ def faq_validate_save_and_refresh(form, thresholds, faq_to_edit):
     It also flashes the result on the next page that is rendered
     """
 
-
     current_ts = datetime.utcnow()
     bad_tags, tag_data = check_bad_tags(form)
+    bad_contexts, context_data = check_bad_contexts(form)
+
     question_data = [
         form.question_1.data,
         form.question_2.data,
@@ -164,11 +192,20 @@ def faq_validate_save_and_refresh(form, thresholds, faq_to_edit):
         form.question_10.data,
     ]
     question_data = list(filter(None, question_data))
-    
+
     if len(bad_tags) > 0:
         flash(
             "The following tags are invalid: %s.\nPlease correct and resubmit."
             % str(bad_tags),
+            "danger",
+        )
+
+        return False
+
+    if len(bad_contexts) > 0:
+        flash(
+            "The following contexts are invalid: %s.\nPlease correct and resubmit."
+            % str(bad_contexts),
             "danger",
         )
 
@@ -186,8 +223,10 @@ def faq_validate_save_and_refresh(form, thresholds, faq_to_edit):
         return False
     if not is_question_valid(question_data):
         return False
-        
-    faq_id, action = upsert_faq(form, thresholds, faq_to_edit, tag_data)
+
+    faq_id, action = upsert_faq(
+        form, thresholds, faq_to_edit, tag_data, question_data, context_data
+    )
     flash(f"Successfully {action} FAQ with ID: %s" % faq_id, "info")
 
     refresh_faqs_core()
@@ -231,7 +270,6 @@ def delete_faq(delete_faq_id):
         )
 
 
-
 def is_question_valid(questions):
     """Make sure each question is valid before adding to DB (not empty )"""
     bad_questions = [question for question in questions if not question.strip()]
@@ -244,6 +282,8 @@ def is_question_valid(questions):
         )
         return False
     return True
+
+
 def check_bad_tags(form):
     """
     Check if there are bad tags
@@ -276,12 +316,49 @@ def check_bad_tags(form):
     ]
     tag_data = list(filter(None, tag_data))
 
-    # check if all tags are valid and there is not title duplicates
+    # check if all tags are valid
     bad_tags = validate_tags(tag_data)
     return bad_tags, tag_data
 
 
-def upsert_faq(form, thresholds, faq_to_edit, tag_data):
+def check_bad_contexts(form):
+    """
+    Check if there are bad contexts (contexts not existing in the app context list)
+    Parameters
+    ----------
+    form : AddFAQForm
+        A WTForm. Defined in app/faq_ui/form_models.py
+    Returns
+    -------
+
+    bad_contexts: List[str]
+        list of bad contexts
+    context_data: List[str]
+        list of all contexts
+
+
+    """
+
+    context_data = [
+        form.context_1.data,
+        form.context_2.data,
+        form.context_3.data,
+        form.context_4.data,
+        form.context_5.data,
+        form.context_6.data,
+        form.context_7.data,
+        form.context_8.data,
+        form.context_9.data,
+        form.context_10.data,
+    ]
+    context_data = list(filter(None, context_data))
+
+    # check if all contexts are valid
+    bad_contexts = validate_contexts(context_data)
+    return bad_contexts, context_data
+
+
+def upsert_faq(form, thresholds, faq_to_edit, tag_data, question_data, context_data):
     """
     save edit to FAQ or create new FAQ.
 
@@ -297,6 +374,10 @@ def upsert_faq(form, thresholds, faq_to_edit, tag_data):
         If creating a new none
     tag_data: list[str]
             List of faq tags
+    question_data: list[str]
+            List of faq questions
+    context_data: list[str]
+            List of faq context
 
     Returns
     -------
@@ -322,6 +403,8 @@ def upsert_faq(form, thresholds, faq_to_edit, tag_data):
             faq_content_to_send=form.faq_content_to_send.data,
             faq_weight=form.faq_weight.data,
             faq_tags=tag_data,
+            faq_questions=question_data,
+            faq_contexts=context_data,
             faq_thresholds=thresholds,
         )
         db.session.add(new_faq)
@@ -337,6 +420,8 @@ def upsert_faq(form, thresholds, faq_to_edit, tag_data):
         faq_to_edit.faq_content_to_send = form.faq_content_to_send.data
         faq_to_edit.faq_weight = form.faq_weight.data
         faq_to_edit.faq_tags = tag_data
+        faq_to_edit.faq_questions = question_data
+        faq_to_edit.faq_contexts = context_data
         faq_to_edit.faq_updated_utc = current_ts
 
         faq_id = faq_to_edit.faq_id
