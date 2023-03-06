@@ -21,10 +21,12 @@ def create_app(params=None, enable_ud=False):
     from .demo_ui import demo_ui as demo_blueprint
     from .faq_ui import faq_ui as dbui_blueprint
     from .main import main as main_blueprint
+    from .config_ui import config_ui as config_blueprint
 
     app.register_blueprint(main_blueprint)
     app.register_blueprint(dbui_blueprint)
     app.register_blueprint(demo_blueprint)
+    app.register_blueprint(config_blueprint)
 
     if enable_ud:
         from .ud_ui import ud_ui as ud_blueprint
