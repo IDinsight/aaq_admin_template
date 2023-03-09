@@ -19,7 +19,7 @@ from . import config_ui
 from .form_models import AddContextualizationForm
 
 ##############################################################################
-# Database management endpoints
+# Contextualization management endpoints
 ##############################################################################
 
 
@@ -35,9 +35,6 @@ def edit_contextualization_config():
         .first()
     )
     form = AddContextualizationForm(obj=contextualization)
-    if request.method == "POST":
-        print(form.custom_wvs.data)
-        print(type(form.custom_wvs.data))
 
     return render_template(
         "edit_contextualization.html",
