@@ -1,17 +1,4 @@
-from datetime import datetime
-import json
-import secrets
-import requests
-from flask import (
-    current_app,
-    flash,
-    jsonify,
-    redirect,
-    render_template,
-    request,
-    url_for,
-)
-
+from flask import render_template
 from ..auth import auth
 from ..data_models import ContextualizationModel
 from ..database_sqlalchemy import db
