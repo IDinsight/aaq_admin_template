@@ -134,6 +134,8 @@ Add FAQ
                 <label class="form-control-label">Version number</label>
                 <input class="form-control" style="margin-bottom:5px;" id="version" value="{{version_id}}" disabled>
                 <div id="custom-wvs-div">
+                    <p>Add <b>Custom wvs</b> : To allow mapping a specific word to a different word to add more context.
+                    </p>
                     {{ wtf.form_field(form.custom_wvs) }}
 
                     <button id="display-custom-wvs" class="btn btn-success" type="button">Validate WVS JSON</button>
@@ -141,12 +143,14 @@ Add FAQ
                 </div>
 
                 <div id="div-pairwise">
+                    <p>Add <b>pairwise triple wise entities</b> : To map two to three word as one word.</p>
                     {{ wtf.form_field(form.pairwise_triplewise_entities) }}
 
                     <button id="display-pairwise" class="btn btn-success" type="button">Validate pairwise/triplewise entities JSON</button>
                     <div id="pairwise-json"></div>
                 </div>
                 <div id="div-tag">
+                    <p>Add <b>Tag guiding typos</b> :o Help spell corrector to find a more relevant word.</p>
                     {{ wtf.form_field(form.tag_guiding_typos) }}
 
                     <button id="display-tag" class="btn btn-success" type="button">Validate Tag guiding typos JSON
