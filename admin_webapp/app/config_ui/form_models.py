@@ -1,10 +1,10 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, BooleanField
+from wtforms import BooleanField, StringField, SubmitField
 from wtforms.validators import DataRequired
 from wtforms.widgets import TextArea
 
 
-class AddContextualizationForm(FlaskForm):
+class AddLangCtxForm(FlaskForm):
     """Class for adding a contextualization form to template"""
 
     pairwise_triplewise_entities = StringField(
