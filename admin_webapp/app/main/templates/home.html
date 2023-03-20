@@ -24,6 +24,13 @@
     <div class="row">
         <div class="col-md-10 col-lg-10 mx-lg-auto mx-md-auto">
             <h1 class="pt-5 pb-2">ask a question app</h1>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}" role="success"> {{ message }}</div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
             <h2>Welcome</h2>
             <p>
                 This admin app can be used to manage and test the AAQ service. Please use the navigation bar to continue
