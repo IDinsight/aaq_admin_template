@@ -1,3 +1,5 @@
+from sqlalchemy.dialects.postgresql import JSONB
+
 from .database_sqlalchemy import db
 
 
@@ -38,3 +40,19 @@ class RulesModel(db.Model):
     urgency_rule_title = db.Column(db.String())
     urgency_rule_tags_include = db.Column(db.ARRAY(db.String()))
     urgency_rule_tags_exclude = db.Column(db.ARRAY(db.String()))
+
+
+class ContextualizationModel(db.Model):
+    """
+    SQLAlchemy data model for contextualization configurations
+    """
+
+    __tablename__ = "contextualization"
+    contextualization_id = db.Column(db.Integer, primary_key=True, nullable=False)
+    version_id = db.Column(db.String(), nullable=False)
+    config_added_utc = db.Column(db.DateTime(), nullable=False)
+    config_updated_utc = db.Column(db.DateTime())
+    custom_wvs = db.Column(JSONB, nullable=False)
+    pairwise_triplewise_entities = db.Column(JSONB, nullable=False)
+    tag_guiding_typos = db.Column(JSONB, nullable=False)
+    active = db.Column(db.Boolean, default=1)
