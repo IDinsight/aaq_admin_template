@@ -11,6 +11,9 @@ Add FAQ
     url_for('.static', filename='js/add_tags.js') }}"></script>
 <script type=text/javascript src="{{
         url_for('.static', filename='js/add_questions.js') }}"></script>
+
+<script type=text/javascript src="{{
+    url_for('.static', filename='js/add_contexts.js') }}"></script>
 </script>
 {% endblock %}
 
@@ -85,6 +88,22 @@ Add FAQ
                     <input class="btn btn-secondary add_question" type="button" value="+ Question"
                         style="margin-right:5px; margin-bottom:5px;">
                     <input class="btn btn-secondary remove_question" type="button" value="- Question"
+                        style="margin-right:5px; margin-bottom:5px;">
+                </div>
+
+                <div class="form-group  required"><label class="form-control-label">Contexts :</label>
+
+                    <input class="form-control" placeholder="Add context" type="text" style="margin-bottom:5px;"
+                        id="context_1" name="context_1" {% if form.context_1.data is not none %}
+                        value="{{ form.context_1.data }}" {% endif %}>
+
+
+                    <input type="hidden" value="1" id="total_contexts">
+                    <div id="new_contexts"></div>
+
+                    <input class="btn btn-secondary add_context" type="button" value="+ Context"
+                        style="margin-right:5px; margin-bottom:5px;">
+                    <input class="btn btn-secondary remove_context" type="button" value="- Context"
                         style="margin-right:5px; margin-bottom:5px;">
                 </div>
 

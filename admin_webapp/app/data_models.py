@@ -16,6 +16,7 @@ class FAQModel(db.Model):
     faq_content_to_send = db.Column(db.String())
     faq_tags = db.Column(db.ARRAY(db.String()))
     faq_questions = db.Column(db.ARRAY(db.String()), nullable=False)
+    faq_contexts = db.Column(db.ARRAY(db.String()))
     faq_thresholds = db.Column(db.ARRAY(db.Float()))
     faq_weight = db.Column(db.Integer())
 
