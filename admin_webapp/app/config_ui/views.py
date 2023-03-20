@@ -45,20 +45,24 @@ def edit_contextualization_config():
     )
 
 
-def is_json(myjson):
-    "Check if string is a valid JSON object"
-    try:
-        json.loads(myjson)
-    except ValueError as e:
-        return False
-    return True
+def is_custom_wvs_value_valid(value_dic):
+    """Check if custom wvs fields are valid """
+    all_values_float = all([isinstance(value, float) or isinstance(value,int) for value in value_dic.values()])
+    all_keys_str = all([isinstance(value, str) for value in value_dic.keys()])
+
+    if all_values_float and all_keys_str and sum(value_dic.values()) == 1:
+        return True
+   
+    return False
 
 
 def validate_custom_wvs(custom_wvs):
     """Validate Custom WVS JSON object"""
-    assert is_json(custom_wvs)
+
     custom_wvs = json.loads(custom_wvs)
     invalid_fields = [value for value in custom_wvs.values() if type(value) is not dict]
+    invalid_fields += [value for value in custom_wvs.values() if not is_custom_wvs_value_valid(value)]
+    invalid_fields = [dict(t) for t in {tuple(d.items()) for d in invalid_fields}]
     return invalid_fields, custom_wvs
 
 
@@ -69,14 +73,13 @@ def is_valid_pairwise_key(key):
         entities = key.strip("()").split(",")
     except ValueError as e:
         return False
-    if len(entities) == 2:
+    if len(entities) <= 3:
         return True
     return False
 
 
 def validate_pairwise_triplewise_entities(pairwise):
     """Check if pairwise triplewise entities JSON object is valid . """
-    assert is_json(pairwise)
     pairwise = json.loads(pairwise)
     invalid_keys = [
         value for value in pairwise.keys() if not is_valid_pairwise_key(value)
@@ -88,8 +91,8 @@ def validate_pairwise_triplewise_entities(pairwise):
 
 
 def validate_tag_guiding_typos(tags):
-    """"Validate tag guiding typos JSON object is valid  """
-    assert is_json(tags)
+    """" Validate tag guiding typos JSON object is valid  """
+
     tags = json.loads(tags)
 
     invalid = [value for value in tags if not isinstance(value, str)]
