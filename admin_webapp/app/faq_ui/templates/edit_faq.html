@@ -110,13 +110,15 @@ Edit FAQ
                     {%if context_data is not none%}
                     {% for context in context_data %}
 
-                    <input class="form-control" placeholder="Context {{ loop.index }}" required type="text"
+
+                    <input class="form-control" placeholder="Context {{ loop.index }}" type="text"
                         style="margin-bottom:5px;" id="context_{{ loop.index }}" name="context_{{ loop.index }}"
                         value="{{ context }}">
 
                     {% endfor %}
                     {% else %}
-                    <input class="form-control" placeholder="Context 1" required type="text" style="margin-bottom:5px;"
+
+                    <input class="form-control" placeholder="Context 1" type="text" style="margin-bottom:5px;"
                         id="context_1" name="context_1" value="">
                     {% endif %}
                     <div id="new_contexts"></div>
