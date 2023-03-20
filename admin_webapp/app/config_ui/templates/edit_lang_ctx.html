@@ -136,8 +136,9 @@ Add FAQ
                     <input class="form-control" style="margin-bottom:5px;" id="version" value="{{version_id}}" disabled>
                 </div>
                 <div class="mb-5" id="custom-wvs-div">
-                    <h5>Custom wvs</h5>
-                    <p>To allow mapping a context-specific word to a (combination of) more commonly understood word(s). If mapping to multiple words, ensure the weights add up to 1.
+                    <h5>Custom word mapping</h5>
+                    <p>To allow mapping a context-specific word to a (combination of) more commonly understood word(s).
+                        If mapping to multiple words, ensure the weights add up to 1.
                     </p>
                     {{ wtf.form_field(form.custom_wvs) }}
 
