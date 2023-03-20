@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from datetime import datetime
 import json
 import secrets
@@ -7,12 +8,19 @@ from flask import (
     render_template,
     url_for,
 )
+=======
+from flask import render_template
+>>>>>>> fe7bca902291b4b55c1331f17977e5cb903f0c6e
 
 from ..auth import auth
 from ..data_models import ContextualizationModel
 from ..database_sqlalchemy import db
 from . import config_ui
+<<<<<<< HEAD
 from .form_models import AddContextualizationForm
+=======
+from .form_models import AddLangCtxForm
+>>>>>>> fe7bca902291b4b55c1331f17977e5cb903f0c6e
 
 ##############################################################################
 # Contextualization management endpoints
@@ -21,15 +29,22 @@ from .form_models import AddContextualizationForm
 
 @config_ui.route("/edit-contextualization", methods=["GET", "POST"])
 @auth.login_required(role="add")
+<<<<<<< HEAD
 def edit_contextualization_config():
     """
     Handles form and POST to edit contextualization config
+=======
+def edit_lang_ctx_config():
+    """
+    Handles form and POST to add an FAQ
+>>>>>>> fe7bca902291b4b55c1331f17977e5cb903f0c6e
     """
     contextualization = (
         db.session.query(ContextualizationModel)
         .filter(ContextualizationModel.active == True)
         .first()
     )
+<<<<<<< HEAD
     form = AddContextualizationForm(obj=contextualization)
     if form.is_submitted():
         if validate_and_save_contextualization_config(form, contextualization):
@@ -37,12 +52,19 @@ def edit_contextualization_config():
 
     return render_template(
         "edit_contextualization.html",
+=======
+    form = AddLangCtxForm(obj=contextualization)
+
+    return render_template(
+        "edit_lang_ctx.html",
+>>>>>>> fe7bca902291b4b55c1331f17977e5cb903f0c6e
         version_id=contextualization.version_id,
         custom_wvs=contextualization.custom_wvs,
         pairwise_triplewise_entities=contextualization.pairwise_triplewise_entities,
         tag_guiding_typos=contextualization.tag_guiding_typos,
         form=form,
     )
+<<<<<<< HEAD
 
 
 def is_custom_wvs_value_valid(value_dic):
@@ -173,3 +195,5 @@ def validate_and_save_contextualization_config(form, old_config):
     db.session.commit()
     flash(f"Successfully updated contextualization config to config version:{str(version_id)}")
     return True
+=======
+>>>>>>> fe7bca902291b4b55c1331f17977e5cb903f0c6e

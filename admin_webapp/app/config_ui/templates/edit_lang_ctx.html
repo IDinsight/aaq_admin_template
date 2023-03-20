@@ -1,0 +1,175 @@
+{% extends 'base.html' %}
+{% block title %}
+Add FAQ
+{% endblock %}
+
+
+{% block scripts %}
+{{ super() }}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script type=text/javascript src="{{
+    url_for('.static', filename='js/json-viewer.js') }}"></script>
+</script>
+<script>
+    // Custom wvs JSON viewer
+    var customWvsJsonObj = {};
+    var customWvsJsonViewer = new JSONViewer();
+    document.querySelector("#custom-wvs-json").appendChild(customWvsJsonViewer.getContainer());
+    var wvsTextarea = document.getElementById("custom-wvs-div").querySelector("textarea");
+    wvsTextarea.value = JSON.stringify({{ custom_wvs| tojson | safe }});
+
+    //textarea value to JSON object
+    var setCustomWvsJSON = function () {
+        try {
+            var value = wvsTextarea.value;
+            customWvsJsonObj = JSON.parse(value);
+        }
+        catch (err) {
+            alert(err);
+        };
+    };
+    // load default value
+    setCustomWvsJSON();
+    var customWVSButton = document.getElementById("display-custom-wvs");
+    customWVSButton.addEventListener("click", function () {
+        setCustomWvsJSON();
+        customWvsJsonViewer.showJSON(customWvsJsonObj);
+    });
+
+    // pairwise_triplewise_entities JSON viewer
+    var pairwiseJsonObj = {};
+    var pairwiseJsonViewer = new JSONViewer();
+    document.querySelector("#pairwise-json").appendChild(pairwiseJsonViewer.getContainer());
+    var pairwiseTextarea = document.getElementById("div-pairwise").querySelector("textarea");
+    pairwiseTextarea.value = JSON.stringify({{ pairwise_triplewise_entities| tojson | safe }});
+
+    //textarea value to JSON object
+    var setpairwiseJSON = function () {
+        try {
+            var value = pairwiseTextarea.value;
+            pairwiseJsonObj = JSON.parse(value);
+        }
+        catch (err) {
+            alert(err);
+        };
+    };
+    // load default value
+    setpairwiseJSON();
+    var pairwiseButton = document.getElementById("display-pairwise");
+    pairwiseButton.addEventListener("click", function () {
+        setpairwiseJSON();
+        pairwiseJsonViewer.showJSON(pairwiseJsonObj);
+    });
+    // Tag JSON viewer
+
+    var tagJsonObj = {};
+    var tagJsonViewer = new JSONViewer();
+    document.querySelector("#tag-json").appendChild(tagJsonViewer.getContainer());
+    var tagTextarea = document.getElementById("div-tag").querySelector("textarea");
+    tagTextarea.value = JSON.stringify({{ tag_guiding_typos| tojson | safe }});
+
+    //textarea value to JSON object
+    var setTagJSON = function () {
+        try {
+            var value = tagTextarea.value;
+            tagJsonObj = JSON.parse(value);
+        }
+        catch (err) {
+            alert(err);
+        };
+    };
+    // load default value
+    setTagJSON();
+    var tagButton = document.getElementById("display-tag");
+    tagButton.addEventListener("click", function () {
+        setTagJSON();
+        tagJsonViewer.showJSON(tagJsonObj);
+    });
+</script>
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    {% if form.custom_wvs.errors %}
+    <ul class="errors">
+        {% for error in form.custom_wvs.errors %}
+        <li>{{ error }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    {% if form.pairwise_triplewise_entities.errors %}
+    <ul class="errors">
+        {% for error in form.pairwise_triplewise_entities.errors %}
+        <li>{{ error }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% if form.tag_guiding_typos.errors %}
+    <ul class="errors">
+        {% for error in form.tag_guiding_typos.errors %}
+        <li>{{ error }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    <div class="row">
+        <div class="col-md-10 col-lg-8 mx-lg-auto mx-md-auto">
+
+            <h1>Add Contextualization configuration </h1>
+
+            <p class="lead">This form should be used to add contextualization configuration to the matching database.
+            </p>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}" role="alert"> {{ message }}</div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+
+            <form style="padding-bottom: 50px;" action="" method="POST" role="form" class="form" autocomplete="off">
+                <div class="mb-5">
+                    <label class="form-control-label">Version number</label>
+                    <input class="form-control" style="margin-bottom:5px;" id="version" value="{{version_id}}" disabled>
+                </div>
+                <div class="mb-5" id="custom-wvs-div">
+                    <h5>Custom word mapping</h5>
+                    <p>To allow mapping a context-specific word to a (combination of) more commonly understood word(s).
+                        If mapping to multiple words, ensure the weights add up to 1.
+                    </p>
+                    {{ wtf.form_field(form.custom_wvs) }}
+
+                    <button id="display-custom-wvs" class="btn btn-success" type="button">Validate WVS JSON</button>
+                    <div id="custom-wvs-json"></div>
+                </div>
+
+                <div class="mb-5" id="div-pairwise">
+                    <h5>Pairwise or triple-wise entities</h5>
+                    <p> To treat two to three words as a single expression.</p>
+                    {{ wtf.form_field(form.pairwise_triplewise_entities) }}
+
+                    <button id="display-pairwise" class="btn btn-success" type="button">Validate pairwise/triplewise
+                        entities JSON</button>
+                    <div id="pairwise-json"></div>
+                </div>
+                <div class="mb-5" id="div-tag">
+                    <h5>Tag guiding typos</h5>
+                    <p> To Help spell corrector find a more relevant word.</p>
+                    {{ wtf.form_field(form.tag_guiding_typos) }}
+
+                    <button id="display-tag" class="btn btn-success" type="button">Validate Tag guiding typos JSON
+                    </button>
+                    <div id="tag-json"></div>
+                </div>
+
+
+                {{ wtf.form_field(form.submit) }}
+        </div>
+        </form>
+    </div>
+</div>
+</div>
+{% endblock %}
