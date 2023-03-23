@@ -1,4 +1,5 @@
 from jsonschema import validate
+from jsonschema.exceptions import ValidationError
 from datetime import datetime
 import json
 import secrets
@@ -47,74 +48,78 @@ def edit_lang_ctx_config():
     )
 
 
-def validate_custom_wvs(custom_wvs):
+def is_json_valid(json_string, field):
+    """Check if the value is a valid JSON string"""
+    try:
+        json.loads(json_string)
+    except ValueError as e:
+        flash(
+            f"{field} is not valid : {e.message}, please correct and validate value before submitting",
+            "danger",
+        )
+        return False
+    return True
+
+
+def is_custom_wvs_valid(custom_wvs):
     """Validate Custom WVS JSON object"""
     schema = {
         "type": "object",
         "patternProperties": {
             "^[a-zA-Z0-9_]+$": {
                 "type": "object",
-                "patternProperties":{
-                    "^[a-zA-Z0-9_]+$":{
-                    "type":"number"
-                        
-                    }
-                },
-                "additionalProperties": False
-
-            }
-            },
-            "additionalProperties": False
-        }   
-    custom_wvs = json.loads(custom_wvs)
-    try:
-        validate(custom_wvs, schema = schema)
-    except Exception as e:
-        flash(f" Failed to save custom word mapping :  {e.message}","danger")
-        return False
-
-    return custom_wvs
-
-
-def validate_pairwise_triplewise_entities(pairwise):
-    """Check if pairwise triplewise entities JSON object is valid . """
-    schema = schema = {
-        "type": "object",
-        "patternProperties": {
-            "^\(\w+(,\s\w+){1,2}\)$": {
-                "type": "string",
-                
+                "patternProperties": {"^[a-zA-Z0-9_]+$": {"type": "number"}},
+                "additionalProperties": False,
             }
         },
-        "additionalProperties": False
-    }   
-    pairwise = json.loads(pairwise)
+        "additionalProperties": False,
+    }
     try:
-        validate(pairwise, schema = schema)
-    except Exception as e:
-        flash(f" Failed to save Pairwise or triple-wise entities :  {e.message} ", "danger")
+        validate(custom_wvs, schema=schema)
+    except ValidationError as e:
+        flash(f"Failed to save custom word mapping :  {e.message}", "danger")
         return False
 
-    return pairwise
-def validate_tag_guiding_typos(tags):
-    """" Validate tag guiding typos JSON object is valid  """
+    return True
 
+
+def is_pairwise_triplewise_entities_valid(pairwise):
+    """Check if pairwise triplewise entities JSON object is valid ."""
     schema = {
-        "type": "array",
-        "items": {"type": "string"},
-        }
-    tags = json.loads(tags)
+        "type": "object",
+        "patternProperties": {"^\(\w+(,\s\w+){1,2}\)$": {"type": "string"}},
+        "additionalProperties": False,
+    }
 
     try:
-        validate(tags, schema = schema)
-    except Exception as e:
-        flash(f" Failed to save tag guiding typos :  {e.message}", "danger")
+        validate(pairwise, schema=schema)
+    except ValidationError as e:
+        flash(
+            f"Failed to save Pairwise or triple-wise entities :  {e.message} ",
+            "danger",
+        )
         return False
 
-    return tags
+    return True
+
+
+def is_tag_guiding_typos_valid(tags):
+    """Validate tag guiding typos JSON object is valid"""
+
+    schema = {"type": "array", "items": {"type": "string"}}
+
+    try:
+        validate(tags, schema=schema)
+    except ValidationError as e:
+        flash(f"Failed to save tag guiding typos :  {e.message}", "danger")
+        return False
+
+    return True
+
+
 def validate_and_save_contextualization_config(form, old_config):
     """
-    Check fields in the contextualization  form and save new config to DB. 
+    Check fields in the contextualization  form and save new config to DB.
 
     Parameters
     ----------
@@ -133,29 +138,44 @@ def validate_and_save_contextualization_config(form, old_config):
     -----
     It also flashes the result on the next page that is rendered
     """
-    custom_wvs = validate_custom_wvs(form.custom_wvs.data)  
-    
-    pairwise = validate_pairwise_triplewise_entities(
-        form.pairwise_triplewise_entities.data
-    )
+    if (
+        is_json_valid(form.custom_wvs.data, "custom_wvs")
+        and is_json_valid(
+            form.pairwise_triplewise_entities.data, "pairwise_triplewise_entities"
+        )
+        and is_json_valid(form.tag_guiding_typos.data, "tag_guiding_typos")
+    ):
+        custom_wvs = json.loads(form.custom_wvs.data)
 
-    tag_guiding_typos = validate_tag_guiding_typos(form.tag_guiding_typos.data)
+        pairwise = json.loads(form.pairwise_triplewise_entities.data)
 
-    if not custom_wvs or not pairwise or not tag_guiding_typos:
-        return False 
-    
-    version_id = secrets.token_hex(8)
-    config_added_utc = datetime.utcnow()
-    old_config.active = False
-    new_config = ContextualizationModel(
-        version_id=version_id,
-        custom_wvs=custom_wvs,
-        pairwise_triplewise_entities=pairwise,
-        tag_guiding_typos=tag_guiding_typos,
-        config_added_utc=config_added_utc,
-        active=True,
-    )
-    db.session.add(new_config)
-    db.session.commit()
-    flash(f"Successfully updated contextualization config to config version: {str(version_id)}","success")
-    return True
+        tag_guiding_typos = json.loads(form.tag_guiding_typos.data)
+
+        if (
+            is_custom_wvs_valid(custom_wvs)
+            and is_pairwise_triplewise_entities_valid(pairwise)
+            and is_tag_guiding_typos_valid(tag_guiding_typos)
+        ):
+
+            version_id = secrets.token_hex(8)
+            config_added_utc = datetime.utcnow()
+            old_config.active = False
+            new_config = ContextualizationModel(
+                version_id=version_id,
+                custom_wvs=custom_wvs,
+                pairwise_triplewise_entities=pairwise,
+                tag_guiding_typos=tag_guiding_typos,
+                config_added_utc=config_added_utc,
+                active=True,
+            )
+            db.session.add(new_config)
+            db.session.commit()
+            flash(
+                f"Successfully updated contextualization config to config version: {str(version_id)}",
+                "success",
+            )
+            return True
+        else:
+            return False
+    else:
+        return False
