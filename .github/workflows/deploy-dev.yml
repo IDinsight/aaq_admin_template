@@ -10,7 +10,7 @@ jobs:
   UpdateDevContainer:
     runs-on: ubuntu-latest
     env:
-      IMAGE_NAME: aaq_admin_tempalte
+      IMAGE_NAME: aaq_admin_template
       VERSION: dev
     steps:
       - uses: actions/checkout@v2
