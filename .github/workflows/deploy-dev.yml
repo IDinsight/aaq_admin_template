@@ -35,7 +35,7 @@ jobs:
           docker build --rm \
             --build-arg NAME=${{ github.event.repository.name }} \
             --build-arg PORT=9903 \
-            -t $IMAGE_NAME \
+            -t ${IMAGE_NAME}:${VERSION} \
             ./admin_webapp
       - name: Login to Amazon ECR
         id: login-ecr
