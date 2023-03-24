@@ -3,6 +3,7 @@ on:
   workflow_dispatch:
   push:
     branches:
+      - PNC-728-load-secrets
       - main
 
 jobs:
