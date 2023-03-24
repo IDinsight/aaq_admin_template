@@ -222,7 +222,7 @@ def faq_validate_save_and_refresh(form, thresholds, faq_to_edit):
         )
         return False
 
-    if not is_question_valid(questions_data):
+    if not is_question_valid(question_data):
         return False
 
     faq_id, action = upsert_faq(
