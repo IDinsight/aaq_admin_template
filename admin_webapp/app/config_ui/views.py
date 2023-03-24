@@ -1,14 +1,10 @@
-from jsonschema import validate
-from jsonschema.exceptions import ValidationError
-from datetime import datetime
 import json
 import secrets
-from flask import (
-    flash,
-    redirect,
-    render_template,
-    url_for,
-)
+from datetime import datetime
+
+from flask import flash, redirect, render_template, url_for
+from jsonschema import validate
+from jsonschema.exceptions import ValidationError
 
 from ..auth import auth
 from ..data_models import ContextualizationModel
@@ -29,7 +25,7 @@ def edit_lang_ctx_config():
     """
     contextualization = (
         db.session.query(ContextualizationModel)
-        .filter(ContextualizationModel.active == True)
+        .filter(ContextualizationModel.active)
         .first()
     )
 
@@ -54,7 +50,8 @@ def is_json_valid(json_string, field):
         json.loads(json_string)
     except ValueError as e:
         flash(
-            f"{field} is not valid : {e.message}, please correct and validate value before submitting",
+            f"{field} is not valid : {e.message}, please correct and "
+            "validate value before submitting",
             "danger",
         )
         return False
@@ -87,7 +84,7 @@ def is_pairwise_triplewise_entities_valid(pairwise):
     """Check if pairwise triplewise entities JSON object is valid ."""
     schema = {
         "type": "object",
-        "patternProperties": {"^\(\w+(,\s\w+){1,2}\)$": {"type": "string"}},
+        "patternProperties": {r"^\(\w+(,\s\w+){1,2}\)$": {"type": "string"}},
         "additionalProperties": False,
     }
 
@@ -171,7 +168,8 @@ def validate_and_save_contextualization_config(form, old_config):
             db.session.add(new_config)
             db.session.commit()
             flash(
-                f"Successfully updated contextualization config to config version: {str(version_id)}",
+                "Successfully updated contextualization config to config "
+                f"version: {str(version_id)}",
                 "success",
             )
             return True

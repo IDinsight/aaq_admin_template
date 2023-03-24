@@ -17,7 +17,7 @@ Add FAQ
     var customWvsJsonViewer = new JSONViewer();
     document.querySelector("#custom-wvs-json").appendChild(customWvsJsonViewer.getContainer());
     var wvsTextarea = document.getElementById("custom-wvs-div").querySelector("textarea");
-    wvsTextarea.value = JSON.stringify({{ custom_wvs| tojson | safe }});
+    wvsTextarea.value = JSON.stringify({{ custom_wvs| tojson | safe }}, undefined, 2);
 
     //textarea value to JSON object
     var setCustomWvsJSON = function () {
@@ -42,7 +42,7 @@ Add FAQ
     var pairwiseJsonViewer = new JSONViewer();
     document.querySelector("#pairwise-json").appendChild(pairwiseJsonViewer.getContainer());
     var pairwiseTextarea = document.getElementById("div-pairwise").querySelector("textarea");
-    pairwiseTextarea.value = JSON.stringify({{ pairwise_triplewise_entities| tojson | safe }});
+    pairwiseTextarea.value = JSON.stringify({{ pairwise_triplewise_entities| tojson | safe }}, undefined, 2);
 
     //textarea value to JSON object
     var setpairwiseJSON = function () {
@@ -67,7 +67,7 @@ Add FAQ
     var tagJsonViewer = new JSONViewer();
     document.querySelector("#tag-json").appendChild(tagJsonViewer.getContainer());
     var tagTextarea = document.getElementById("div-tag").querySelector("textarea");
-    tagTextarea.value = JSON.stringify({{ tag_guiding_typos| tojson | safe }});
+    tagTextarea.value = JSON.stringify({{ tag_guiding_typos| tojson | safe }}, undefined, 2);
 
     //textarea value to JSON object
     var setTagJSON = function () {
@@ -140,7 +140,7 @@ Add FAQ
                     <p>To allow mapping a context-specific word to a (combination of) more commonly understood word(s).
                         If mapping to multiple words, ensure the weights add up to 1.
                     </p>
-                    {{ wtf.form_field(form.custom_wvs) }}
+                    {{ wtf.form_field(form.custom_wvs, rows='50') }}
 
                     <button id="display-custom-wvs" class="btn btn-success" type="button">Validate WVS JSON</button>
                     <div id="custom-wvs-json"></div>
@@ -149,7 +149,7 @@ Add FAQ
                 <div class="mb-5" id="div-pairwise">
                     <h5>Pairwise or triple-wise entities</h5>
                     <p> To treat two to three words as a single expression.</p>
-                    {{ wtf.form_field(form.pairwise_triplewise_entities) }}
+                    {{ wtf.form_field(form.pairwise_triplewise_entities, rows='10') }}
 
                     <button id="display-pairwise" class="btn btn-success" type="button">Validate pairwise/triplewise
                         entities JSON</button>
@@ -157,8 +157,8 @@ Add FAQ
                 </div>
                 <div class="mb-5" id="div-tag">
                     <h5>Tag guiding typos</h5>
-                    <p> To Help spell corrector find a more relevant word.</p>
-                    {{ wtf.form_field(form.tag_guiding_typos) }}
+                    <p> To help spell corrector find a more relevant word.</p>
+                    {{ wtf.form_field(form.tag_guiding_typos, rows='10') }}
 
                     <button id="display-tag" class="btn btn-success" type="button">Validate Tag guiding typos JSON
                     </button>
