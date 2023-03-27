@@ -46,7 +46,7 @@ jobs:
           PG_ENDPOINT: ${{env.GLOBAL_PG_ENDPOINT}}
           PG_PASSWORD: ${{env.GLOBAL_PG_PASSWORD}}
           INBOUND_CHECK_TOKEN: ${{env.CORE_INBOUND_CHECK_TOKEN}}
-          UD_INBOUND_CHECK_TOKEN: ${{env.GLOBAL_UD_INBOUND_CHECK_TOKEN}}
+          UD_INBOUND_CHECK_TOKEN: ${{env.UD_UD_INBOUND_CHECK_TOKEN}}
           MODEL_HOST: ${{env.ADMIN_MODEL_HOST}}
           UD_HOST: ${{env.ADMIN_UD_HOST}}
         run: |
