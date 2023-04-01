@@ -42,14 +42,6 @@
 
       {% if config.get('UD_ENABLED') %}
       <li class="nav-item">
-        <a {% if request.path=="/ud/check-new-urgency-rules" %} class="nav-link active" {% else %} class="nav-link" {%
-          endif %} href="/ud/check-new-urgency-rules">Check New Urgency Rule
-          {% if request.path == "/ud/check-new-urgency-rules" %}
-          <span class="sr-only">(current)</span>
-          {% endif %}
-        </a>
-      </li>
-      <li class="nav-item">
         <a {% if request.path=="/ud/ud-rules/view" %} class="nav-link active" {% else %} class="nav-link" {% endif %}
           href="/ud/ud-rules/view">Manage Urgency Rules<span class="sr-only">(current)</span>
           {% if request.path == "/ud/ud-rules/view" %}
@@ -57,6 +49,15 @@
           {% endif %}
         </a>
       </li>
+      <li class="nav-item">
+        <a {% if request.path=="/ud/check-new-urgency-rules" %} class="nav-link active" {% else %} class="nav-link" {%
+          endif %} href="/ud/check-new-urgency-rules">Check New Urgency Rule
+          {% if request.path == "/ud/check-new-urgency-rules" %}
+          <span class="sr-only">(current)</span>
+          {% endif %}
+        </a>
+      </li>
+      {% endif %}
       <li class="nav-item">
         <a {% if request.path=="/config/edit-language-context" %} class="nav-link active" {% else %} class="nav-link"
           {% endif %} href="/config/edit-language-context">Manage Language Context<span
@@ -66,7 +67,6 @@
           {% endif %}
         </a>
       </li>
-      {% endif %}
     </ul>
   </div>
 </nav>

@@ -8,7 +8,7 @@ class APICallDemoForm(FlaskForm):
     """Demo API call form"""
 
     submission_content = StringField(
-        "Sample WhatsApp message:",
+        "Sample message:",
         validators=[DataRequired()],
         widget=TextArea(),
     )
