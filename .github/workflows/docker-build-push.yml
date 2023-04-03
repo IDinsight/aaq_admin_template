@@ -161,37 +161,6 @@ jobs:
           --create-log-groups \
           --deployment-min-healthy-percent 0 
 
-      # ----------------------------------------------------------------------------- #
-
-      # ----------------- Uncomment if using Github Actions Secrets ----------------- #
-      # - name: Deploy using ECS CLI
-      #   env:
-      #     PORT: 9903
-      #     AWS_REGION: ${{ secrets.AWS_REGION }}
-      #     IMAGE_NAME: ${{ steps.vars.outputs.IMAGE_NAME }}
-
-      #     MODEL_PROTOCOL: "http"
-      #     MODEL_HOST: "172.17.0.1"
-      #     MODEL_PORT: 9902
-      #     UD_PROTOCOL: "http"
-      #     UD_HOST: "172.17.0.1"
-      #     UD_PORT: 9904
-
-      #     # app secrets
-      #     READONLY_PASSWORD: ${{ secrets.GA_READONLY_PASSWORD }}
-      #     FULLACCESS_PASSWORD: ${{ secrets.GA_FULLACCESS_PASSWORD }}
-      #     INBOUND_CHECK_TOKEN: ${{ secrets.GA_INBOUND_CHECK_TOKEN }}
-      #     # database secrets
-      #     PG_ENDPOINT: ${{ secrets.GA_PG_ENDPOINT }}
-      #     PG_PORT: 5432
-      #     PG_USERNAME: "flask"
-      #     PG_PASSWORD: ${{ secrets.GA_PG_PASSWORD }}
-      #     # sentry config
-      #     SENTRY_DSN: ${{ secrets.GA_SENTRY_DSN }}
-      #     SENTRY_ENVIRONMENT: ${{ secrets.GA_SENTRY_ENVIRONMENT }}
-      #     SENTRY_TRACES_SAMPLE_RATE: ${{ secrets.GA_SENTRY_TRACES_SAMPLE_RATE }}
-      #     # ud secrets
-      #     UD_INBOUND_CHECK_TOKEN: ${{ secrets.GA_UD_INBOUND_CHECK_TOKEN }}
       #   run: |
       #     ecs-cli configure \
       #     --cluster ${PROJECT_SHORT_NAME}-cluster \
