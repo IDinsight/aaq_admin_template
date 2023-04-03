@@ -2,6 +2,7 @@ import requests
 from flask import current_app, flash, render_template
 
 from ..auth import auth
+from ..faq_ui.views import check_bad_contexts
 from . import demo_ui
 from .form_models import APICallDemoForm, CheckTagsForm
 
@@ -26,8 +27,16 @@ def demo_enduser():
     spell_corrected = None
 
     if form.validate_on_submit():
+        bad_contexts, context_data = check_bad_contexts(form)
+        if len(bad_contexts) > 0:
+            flash(
+                "Contexts %s are not valid. Please try again." % ", ".join(bad_contexts)
+            )
+            return render_template("demo_apicall.html", form=form)
+
         api_call_body = {
             "text_to_match": form.submission_content.data,
+            "context": context_data,
             "return_scoring": "true",
         }
         endpoint = "%s://%s:%s/inbound/check" % (

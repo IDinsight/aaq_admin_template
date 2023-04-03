@@ -33,7 +33,6 @@ View FAQs
                         <th>Title</th>
                         <th>Content to Send</th>
                         <th>Weight</th>
-                        <th>Tags</th>
                         <th>Questions</th>
                         <th>Contexts</th>
                         <th>Last Updated</th>
@@ -52,11 +51,6 @@ View FAQs
                             {% endfor %}
                         </td>
                         <td>{{faq.faq_weight}}</td>
-                        <td>
-                            {% for tag in faq.faq_tags %}
-                            <span class="badge">{{ tag }}</span>
-                            {% endfor %}
-                        </td>
                         <td>
                             {% if faq.faq_questions is not none %}
                             {% for question in faq.faq_questions %}
