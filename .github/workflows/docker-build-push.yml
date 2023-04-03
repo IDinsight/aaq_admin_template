@@ -106,7 +106,6 @@ jobs:
         run: sleep 300s
         shell: bash
 
-      # --------------- Comment out if using Github Actions Secrets ----------------- #
       - name: Get AWS secrets
         uses: aws-actions/aws-secretsmanager-get-secrets@v1
         with:
