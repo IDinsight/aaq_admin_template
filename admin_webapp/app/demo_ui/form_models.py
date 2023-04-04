@@ -8,10 +8,21 @@ class APICallDemoForm(FlaskForm):
     """Demo API call form"""
 
     submission_content = StringField(
-        "Sample WhatsApp message:",
+        "Sample message:",
         validators=[DataRequired()],
         widget=TextArea(),
     )
+
+    context_1 = StringField()
+    context_2 = StringField()
+    context_3 = StringField()
+    context_4 = StringField()
+    context_5 = StringField()
+    context_6 = StringField()
+    context_7 = StringField()
+    context_8 = StringField()
+    context_9 = StringField()
+    context_10 = StringField()
 
     submit = SubmitField("Submit")
 

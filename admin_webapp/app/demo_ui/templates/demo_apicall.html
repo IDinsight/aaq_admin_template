@@ -1,8 +1,15 @@
 {% extends 'base.html' %}
 {% block title %}
-[DEMO] Model Demo
+Model Demo
 {% endblock %}
 
+
+{% block scripts %}
+{{ super() }}
+<script type=text/javascript src="{{
+    url_for('.static', filename='js/add_contexts.js') }}"></script>
+</script>
+{% endblock %}
 {% block content %}
 <div class="container">
     <div class="row">
@@ -10,7 +17,7 @@
 
             <h1>Model Demo</h1>
 
-            <p class="lead">This demonstrates how the model responds to a sample message.</p>
+            <p class="lead">This demonstrates how the FAQ-matching model responds to a sample message.</p>
 
             <form action="" method="POST" role="form" class="form">
                 {{ form.hidden_tag() }}
