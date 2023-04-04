@@ -221,6 +221,7 @@ def faq_validate_save_and_refresh(form, thresholds, faq_to_edit):
             "danger",
         )
         return False
+
     if not is_question_valid(question_data):
         return False
 
@@ -381,7 +382,7 @@ def upsert_faq(form, thresholds, faq_to_edit, tag_data, question_data, context_d
 
     Returns
     -------
-    Boolean
+    (faq_id, action)
         faq_id:
             id of the new/modified faq
         action: str
@@ -407,6 +408,7 @@ def upsert_faq(form, thresholds, faq_to_edit, tag_data, question_data, context_d
             faq_contexts=context_data,
             faq_thresholds=thresholds,
         )
+
         db.session.add(new_faq)
         db.session.commit()
 
