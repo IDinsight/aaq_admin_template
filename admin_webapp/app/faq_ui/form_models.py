@@ -47,7 +47,10 @@ class AddFAQForm(FlaskForm):
     question_9 = StringField()
     question_10 = StringField()
 
-    context_1 = StringField()
+    context_1 = StringField(
+        description="""Reminder: If no context is added,
+      then the FAQ will be considered as relevant for all contexts and will have higher weights""",
+    )
     context_2 = StringField()
     context_3 = StringField()
     context_4 = StringField()

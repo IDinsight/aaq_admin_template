@@ -96,7 +96,9 @@ Add FAQ
                     <input class="form-control" placeholder="Add context" type="text" style="margin-bottom:5px;"
                         id="context_1" name="context_1" {% if form.context_1.data is not none %}
                         value="{{ form.context_1.data }}" {% endif %}>
-
+                    {% if form.context_1.description %}
+                    <p>{{ form.context_1.description }}</p>
+                    {% endif %}
 
                     <input type="hidden" value="1" id="total_contexts">
                     <div id="new_contexts"></div>
