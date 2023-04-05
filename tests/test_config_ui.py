@@ -5,8 +5,6 @@ import json
 import pytest
 from sqlalchemy import text
 
-from admin_webapp.app.config_ui import views
-
 
 @pytest.fixture
 def credentials_fullaccess():
@@ -23,6 +21,7 @@ def default_config(db_engine):
     with db_engine.connect() as db_connection:
         t = text("SELECT * FROM contextualization WHERE active=true")
         rs = db_connection.execute(t)
+        # return {key: json.dumps(value) for (key, value) in default_dict.items()}
         return rs.mappings().one()
 
 
@@ -42,23 +41,38 @@ def reset_config(db_engine, default_config):
 
 class TestEditConfig:
     @pytest.mark.parametrize(
-        "custom_wvs",
+        "custom_wvs,outcome",
         [
-            ({"5g": {"cellphone": 0.5, "radiation": "0.5"}}),
-            ({"5g": {"cellphone": 0.5, "radiation": "0.5"}, 666: {"devil": 1}},),
-            ({"666@": {"devil": 1}, "5g": {"cellphone": 0.5, "radiation": 0.5}}),
+            ("""{"5g": {"cellphone": 0.5, "radiation": "0.5"}}""", "error"),
+            ("""{"5g": {"cellphone": 0.5, "radiation": 0.5}}}""", "error"),
+            (
+                """{666: {"devil": 1}}""",
+                "error",
+            ),
+            (
+                """{"5g": {"cellphone": 0.5, "radiation": 0.5}, " ": {"devil": 1}}""",
+                "error",
+            ),
+            (
+                """{"666@": {"devil": 1}}""",
+                "error",
+            ),
+            (
+                """{"jab": {"vaccine": 1}, "5g": {"cellphone": 0.5, "radiation": 0.5}}""",
+                "valid",
+            ),
         ],
     )
-    def test_edit_config_incorrect_custom_wvs(
-        self, credentials_fullaccess, client, default_config, custom_wvs
+    def test_edit_custom_wvs_config(
+        self, credentials_fullaccess, client, default_config, custom_wvs, outcome
     ):
-        print(default_config)
+
         response = client.post(
             "/config/edit-contextualization",
             follow_redirects=True,
             headers={"Authorization": "Basic " + credentials_fullaccess},
             data={
-                "custom_wvs": json.dumps(custom_wvs),
+                "custom_wvs": custom_wvs,
                 "pairwise_triplewise_entities": json.dumps(
                     default_config["pairwise_triplewise_entities"]
                 ),
@@ -66,22 +80,41 @@ class TestEditConfig:
                 "submit": "True",
             },
         )
-
-        assert re.search(
-            "Failed to save custom word mapping", response.get_data(as_text=True)
-        )
+        if outcome == "error":
+            assert re.search(
+                "Failed to save Custom word mapping", response.get_data(as_text=True)
+            )
+        else:
+            assert re.search(
+                "Successfully updated contextualization config",
+                response.get_data(as_text=True),
+            )
 
     @pytest.mark.parametrize(
-        "pairwise",
+        "pairwise,outcome",
         [
-            ({"c, section": "c_section", "(heart, burn)": "heart_burn"}),
-            ({"(c, section)": "c_section", "(heart)": "heart_burn"}),
-            ({"c, section": "c_section", "(heart, burn)": "heart_burn"}),
-            ({"(c, section&)": "c_section", "(heart, burn)": "heart_burn"}),
+            ("""{"c, section": "c_section"}""", "error"),
+            ("""{"(heart)": "heart_burn"}""", "error"),
+            (
+                """{"(c, section)": "c_section",, "(heart, burn)": "heart_burn"}""",
+                "error",
+            ),
+            (
+                """{"(c, section&)": "c_section"}""",
+                "error",
+            ),
+            (
+                """{"(c, section)": "c_section"," ": "heart_burn"}""",
+                "error",
+            ),
+            (
+                """{"(medical, aid)": "medical_aid","(pain, killer)": "pain_killer"}""",
+                "valid",
+            ),
         ],
     )
-    def test_edit_config_incorrect_pairwise(
-        self, credentials_fullaccess, client, default_config, pairwise
+    def test_edit_pairwise_config(
+        self, credentials_fullaccess, client, default_config, pairwise, outcome
     ):
         response = client.post(
             "/config/edit-contextualization",
@@ -89,23 +122,38 @@ class TestEditConfig:
             headers={"Authorization": "Basic " + credentials_fullaccess},
             data={
                 "custom_wvs": json.dumps(default_config["custom_wvs"]),
-                "pairwise_triplewise_entities": json.dumps(pairwise),
+                "pairwise_triplewise_entities": pairwise,
                 "tag_guiding_typos": json.dumps(default_config["tag_guiding_typos"]),
                 "submit": "True",
             },
         )
 
-        assert re.search(
-            "Failed to save Pairwise or triple-wise entities",
-            response.get_data(as_text=True),
-        )
+        if outcome == "error":
+            assert re.search(
+                "Failed to save Pairwise entities",
+                response.get_data(as_text=True),
+            )
+        else:
+            assert re.search(
+                "Successfully updated contextualization config",
+                response.get_data(as_text=True),
+            )
 
     @pytest.mark.parametrize(
-        "tags",
-        [(["ingredients", 3, "labor", "miscarriage", "rash"]), ([1, 12, 23, 245])],
+        "tags,outcome",
+        [
+            (
+                """[{"ingredients", "effects", "labor", "miscarriage",, "rash"]""",
+                "error",
+            ),
+            ("""["ingredients", 3, "labor", "miscarriage", "rash"]""", "error"),
+            ("""[1, 12, 23, 245]""", "error"),
+            ("""{"ingredients", "effects", "labor", "miscarriage", "rash"}""", "error"),
+            ("""["bleed", "breast", "effects"]""", "valid"),
+        ],
     )
-    def test_edit_config_incorrect_tag_guiding_typos(
-        self, credentials_fullaccess, client, default_config, tags
+    def test_edit_tag_guiding_typos_config(
+        self, credentials_fullaccess, client, default_config, tags, outcome
     ):
         response = client.post(
             "/config/edit-contextualization",
@@ -116,104 +164,17 @@ class TestEditConfig:
                 "pairwise_triplewise_entities": json.dumps(
                     default_config["pairwise_triplewise_entities"]
                 ),
-                "tag_guiding_typos": json.dumps(tags),
+                "tag_guiding_typos": tags,
                 "submit": "True",
             },
         )
-
-        assert re.search(
-            "Failed to save tag guiding typos",
-            response.get_data(as_text=True),
-        )
-
-    def test_edit_config_correct_custom_wvs(
-        self, credentials_fullaccess, client, default_config, reset_config
-    ):
-        custom_wvs = {
-            "666": {"devil": 1},
-            "5g": {"cellphone": 0.5, "radiation": 0.5},
-            "jab": {"vaccine": 1},
-            "cord": {"umbilical_cord": 1},
-            "evds": {"database": 0.5, "vaccines": 0.5},
-        }
-        response = client.post(
-            "/config/edit-contextualization",
-            follow_redirects=True,
-            headers={"Authorization": "Basic " + credentials_fullaccess},
-            data={
-                "custom_wvs": json.dumps(custom_wvs),
-                "pairwise_triplewise_entities": json.dumps(
-                    default_config["pairwise_triplewise_entities"]
-                ),
-                "tag_guiding_typos": json.dumps(default_config["tag_guiding_typos"]),
-                "submit": "True",
-            },
-        )
-        assert re.search(
-            "Successfully updated contextualization config",
-            response.get_data(as_text=True),
-        )
-
-    def test_edit_config_correct_pairwise(
-        self, credentials_fullaccess, client, default_config, reset_config
-    ):
-        pairwise = {
-            "(c, section)": "c_section",
-            "(heart, burn)": "heart_burn",
-            "(acid, reflux)": "acid_reflux",
-            "(flu, vaccine)": "flu_vaccine",
-            "(medical, aid)": "medical_aid",
-            "(pain, killer)": "pain_killer",
-            "(second, dose)": "second_dose",
-            "(side, effect)": "side_effects",
-            "(side, effects)": "side_effects",
-        }
-        response = client.post(
-            "/config/edit-contextualization",
-            follow_redirects=True,
-            headers={"Authorization": "Basic " + credentials_fullaccess},
-            data={
-                "custom_wvs": json.dumps(default_config["custom_wvs"]),
-                "pairwise_triplewise_entities": json.dumps(pairwise),
-                "tag_guiding_typos": json.dumps(default_config["tag_guiding_typos"]),
-                "submit": "True",
-            },
-        )
-        assert re.search(
-            "Successfully updated contextualization config",
-            response.get_data(as_text=True),
-        )
-
-    def test_edit_config_correct_tag_guiding_typos(
-        self, credentials_fullaccess, client, default_config, reset_config
-    ):
-        tags = [
-            "bleed",
-            "breast",
-            "effects",
-            "fever",
-            "immunity",
-            "ingredients",
-            "jaundice",
-            "labor",
-            "miscarriage",
-            "rash",
-            "results",
-        ]
-        response = client.post(
-            "/config/edit-contextualization",
-            follow_redirects=True,
-            headers={"Authorization": "Basic " + credentials_fullaccess},
-            data={
-                "custom_wvs": json.dumps(default_config["custom_wvs"]),
-                "pairwise_triplewise_entities": json.dumps(
-                    default_config["pairwise_triplewise_entities"]
-                ),
-                "tag_guiding_typos": json.dumps(tags),
-                "submit": "True",
-            },
-        )
-        assert re.search(
-            "Successfully updated contextualization config",
-            response.get_data(as_text=True),
-        )
+        if outcome == "error":
+            assert re.search(
+                "Failed to save Tag guiding typos",
+                response.get_data(as_text=True),
+            )
+        else:
+            assert re.search(
+                "Successfully updated contextualization config",
+                response.get_data(as_text=True),
+            )

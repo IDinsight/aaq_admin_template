@@ -26,7 +26,7 @@ Add FAQ
             customWvsJsonObj = JSON.parse(value);
         }
         catch (err) {
-            alert(err);
+            alert("Invalid Custom word mapping data: ".concat(err));
         };
     };
     // load default value
@@ -51,7 +51,7 @@ Add FAQ
             pairwiseJsonObj = JSON.parse(value);
         }
         catch (err) {
-            alert(err);
+            alert("Invalid Pairwise triplewise entities data: ".concat(err));
         };
     };
     // load default value
@@ -76,7 +76,9 @@ Add FAQ
             tagJsonObj = JSON.parse(value);
         }
         catch (err) {
-            alert(err);
+
+            alert("Invalid Tag guiding typos data: ".concat(err));
+
         };
     };
     // load default value
@@ -86,6 +88,62 @@ Add FAQ
         setTagJSON();
         tagJsonViewer.showJSON(tagJsonObj);
     });
+
+    const configForm = document.querySelector('#config-form');
+    configForm.addEventListener('submit', function (event) {
+        event.preventDefault(); // Prevent the form from submitting
+
+        const promises = [
+            new Promise((resolve, reject) => {
+                try {
+                    setCustomWvsJSON();
+                    resolve();
+                } catch (error) {
+                    reject(error);
+                }
+            }),
+            new Promise((resolve, reject) => {
+                try {
+                    setpairwiseJSON();
+                    resolve();
+                } catch (error) {
+                    reject(error);
+                }
+            }),
+            new Promise((resolve, reject) => {
+                try {
+                    setTagJSON();
+                    resolve();
+                } catch (error) {
+                    reject(error);
+                }
+            })
+        ];
+
+
+        Promise.all(promises)
+            .then(() => {
+                // If all promises resolve successfully, submit the form
+                const formData = new FormData(configForm);
+                fetch(configForm.action, {
+                    method: configForm.method,
+                    body: formData
+                }).then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Redirect the user
+                            window.location.href = data.redirect;
+                        } else {
+                            alert(data.message);
+                        }
+                    })
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    });
+
+
 </script>
 {% endblock %}
 
@@ -130,7 +188,8 @@ Add FAQ
             {% endif %}
             {% endwith %}
 
-            <form style="padding-bottom: 50px;" action="" method="POST" role="form" class="form" autocomplete="off">
+            <form id="config-form" style="padding-bottom: 50px;" action="" method="POST" role="form" class="form"
+                autocomplete="off">
                 <div class="mb-5">
                     <label class="form-control-label">Version number</label>
                     <input class="form-control" style="margin-bottom:5px;" id="version" value="{{version_id}}" disabled>

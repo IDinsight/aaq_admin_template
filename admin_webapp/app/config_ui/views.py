@@ -2,7 +2,7 @@ import json
 import secrets
 from datetime import datetime
 
-from flask import flash, redirect, render_template, url_for
+from flask import flash, jsonify, redirect, render_template, url_for
 from jsonschema import validate
 from jsonschema.exceptions import ValidationError
 
@@ -32,7 +32,7 @@ def edit_lang_ctx_config():
     form = AddLangCtxForm(obj=contextualization)
     if form.is_submitted():
         if validate_and_save_contextualization_config(form, contextualization):
-            return redirect(url_for("main.home"))
+            return jsonify({"success": True, "redirect": url_for("main.home")})
 
     return render_template(
         "edit_lang_ctx.html",
@@ -44,18 +44,21 @@ def edit_lang_ctx_config():
     )
 
 
-def is_json_valid(json_string, field):
+def is_json_valid(json_string):
     """Check if the value is a valid JSON string"""
     try:
         json.loads(json_string)
-    except ValueError as e:
-        flash(
-            f"{field} is not valid : {e.message}, please correct and "
-            "validate value before submitting",
-            "danger",
-        )
-        return False
-    return True
+    except json.decoder.JSONDecodeError as e:
+        return False, e.msg
+    return True, None
+
+
+def flash_error(field, error_message):
+    """Return a flash error"""
+    flash(
+        f"Failed to save {field}  :  {error_message} ",
+        "danger",
+    )
 
 
 def is_custom_wvs_valid(custom_wvs):
@@ -74,10 +77,9 @@ def is_custom_wvs_valid(custom_wvs):
     try:
         validate(custom_wvs, schema=schema)
     except ValidationError as e:
-        flash(f"Failed to save custom word mapping :  {e.message}", "danger")
-        return False
+        return False, e.message
 
-    return True
+    return True, None
 
 
 def is_pairwise_triplewise_entities_valid(pairwise):
@@ -91,13 +93,9 @@ def is_pairwise_triplewise_entities_valid(pairwise):
     try:
         validate(pairwise, schema=schema)
     except ValidationError as e:
-        flash(
-            f"Failed to save Pairwise or triple-wise entities :  {e.message} ",
-            "danger",
-        )
-        return False
+        return False, e.message
 
-    return True
+    return True, None
 
 
 def is_tag_guiding_typos_valid(tags):
@@ -108,10 +106,9 @@ def is_tag_guiding_typos_valid(tags):
     try:
         validate(tags, schema=schema)
     except ValidationError as e:
-        flash(f"Failed to save tag guiding typos :  {e.message}", "danger")
-        return False
+        return False, e.message
 
-    return True
+    return True, None
 
 
 def validate_and_save_contextualization_config(form, old_config):
@@ -135,45 +132,56 @@ def validate_and_save_contextualization_config(form, old_config):
     -----
     It also flashes the result on the next page that is rendered
     """
-    if (
-        is_json_valid(form.custom_wvs.data, "custom_wvs")
-        and is_json_valid(
-            form.pairwise_triplewise_entities.data, "pairwise_triplewise_entities"
-        )
-        and is_json_valid(form.tag_guiding_typos.data, "tag_guiding_typos")
-    ):
-        custom_wvs = json.loads(form.custom_wvs.data)
-
-        pairwise = json.loads(form.pairwise_triplewise_entities.data)
-
-        tag_guiding_typos = json.loads(form.tag_guiding_typos.data)
-
-        if (
-            is_custom_wvs_valid(custom_wvs)
-            and is_pairwise_triplewise_entities_valid(pairwise)
-            and is_tag_guiding_typos_valid(tag_guiding_typos)
-        ):
-
-            version_id = secrets.token_hex(8)
-            config_added_utc = datetime.utcnow()
-            old_config.active = False
-            new_config = ContextualizationModel(
-                version_id=version_id,
-                custom_wvs=custom_wvs,
-                pairwise_triplewise_entities=pairwise,
-                tag_guiding_typos=tag_guiding_typos,
-                config_added_utc=config_added_utc,
-                active=True,
-            )
-            db.session.add(new_config)
-            db.session.commit()
-            flash(
-                "Successfully updated contextualization config to config "
-                f"version: {str(version_id)}",
-                "success",
-            )
-            return True
-        else:
-            return False
-    else:
+    is_valid, error_message = is_json_valid(form.custom_wvs.data)
+    if not is_valid:
+        flash_error("Custom word mapping", error_message)
         return False
+
+    is_valid, error_message = is_json_valid(form.pairwise_triplewise_entities.data)
+    if not is_valid:
+        flash_error("Pairwise entities", error_message)
+        return False
+
+    is_valid, error_message = is_json_valid(form.tag_guiding_typos.data)
+    if not is_valid:
+        flash_error("Tag guiding typos", error_message)
+        return False
+
+    custom_wvs = json.loads(form.custom_wvs.data)
+    pairwise = json.loads(form.pairwise_triplewise_entities.data)
+    tag_guiding_typos = json.loads(form.tag_guiding_typos.data)
+
+    is_valid, error_message = is_custom_wvs_valid(custom_wvs)
+    if not is_valid:
+        flash_error("Custom word mapping", error_message)
+        return False
+
+    is_valid, error_message = is_pairwise_triplewise_entities_valid(pairwise)
+    if not is_valid:
+        flash_error("Pairwise entities", error_message)
+        return False
+
+    is_valid, error_message = is_tag_guiding_typos_valid(tag_guiding_typos)
+    if not is_valid:
+        flash_error("Tag guiding typos", error_message)
+        return False
+
+    version_id = secrets.token_hex(8)
+    config_added_utc = datetime.utcnow()
+    old_config.active = False
+    new_config = ContextualizationModel(
+        version_id=version_id,
+        custom_wvs=custom_wvs,
+        pairwise_triplewise_entities=pairwise,
+        tag_guiding_typos=tag_guiding_typos,
+        config_added_utc=config_added_utc,
+        active=True,
+    )
+    db.session.add(new_config)
+    db.session.commit()
+    flash(
+        "Successfully updated contextualization config to config "
+        f"version: {str(version_id)}",
+        "success",
+    )
+    return True
