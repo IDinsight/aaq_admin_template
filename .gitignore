@@ -143,4 +143,5 @@ dmypy.json
 .DS_Store
 *.swp
 
-
+# flake8
+.flake8
