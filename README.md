@@ -116,6 +116,73 @@ To run this project:
 2. Run `make image` from the root folder.
 3. Run the Docker container by calling `make container` from the root folder.
 
+## Setting up secrets for Github Actions
+
+Github actions scripts in the `.github` folder requires the same or similar secrets as
+in the `secrets` folder.
+
+By default we assume the secrets are stored in AWS Secrets
+Manager and are dynamically loaded during Github Actions.
+
+However, you must set your AWS credentials as Github Actions secrets:
+```bash
+AWS_ACCESS_KEY_ID
+AWS_REGION
+AWS_SECRET_ACCESS_KEY
+```
+
+To use AWS Secrets Manager, make sure that you have the following secrets stored on AWS.
+(If you would like to use Github Actions secrets instead, you will need to set the same
+secrets on Github and modify the Github Actions scripts yourself.)
+
+1. Core secrets
+    ```bash
+    # From `secrets/app_secrets.env`
+    INBOUND_CHECK_TOKEN
+    ```
+
+2. Urgency detection secrets (if enabled)
+    ```bash
+    # From `secrets/app_secrets.env`
+    UD_INBOUND_CHECK_TOKEN  
+    ```
+
+3. Admin secrets
+    ```bash
+    # From `secrets/app_secrets.env`
+    READONLY_PASSWORD
+    FULLACCESS_PASSWORD
+
+    # Host addresses for other AAQ apps
+    MODEL_HOST  # Core app
+    UD_HOST  # UD app, if exists
+    ```
+
+4. Global secrets (to be used also by the core and admin apps)
+    ```bash
+    # From `secrets/databse_secrets.env`
+    PG_ENDPOINT
+    PG_PASSWORD
+    PG_PORT
+    PG_USERNAME
+    PG_DATABASE
+
+    # From `secrets/sentry_config.env`
+    SENTRY_DSN
+    SENTRY_ENVIRONMENT
+    SENTRY_TRACES_SAMPLE_RATE
+    ```
+
+5. Staging DB secrets -- this should be automatically created under the secret named `<PROJECT_SHORT_NAME>-db` if you used terraform.
+    ```bash
+    db_endpoint
+    db_password
+    db_username
+    ```
+
+Make sure to modify the secrets ARNs in `.github/unittest.yml` and
+`.github/docker-build-push.yml` to your own ARNs.
+
 ## Troubleshooting
 
 It is possible that users may encounter bugs while using the Admin app. Upon encountering a bug, the best way to identify the issue is to go through the following steps:

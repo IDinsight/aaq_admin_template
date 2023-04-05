@@ -10,28 +10,49 @@ jobs:
     outputs:
       env-name: ${{ steps.env-name.outputs.environment }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: Install Dependencies with Apt Get
-        run: |
-          sudo apt-get update
-          sudo apt-get install python3.9 jq -y
+      
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
       - name: Install libraries
         run: |
           pip install -r requirements.txt
           pip install -r requirements_dev.txt
+
+      - name: Configure AWS credentials
+        id: creds
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      
+      - name: Get AWS secrets
+        uses: aws-actions/aws-secretsmanager-get-secrets@v1
+        with:
+          secret-ids: |  # Replace ARNs with your own
+            CORE, arn:aws:secretsmanager:af-south-1:678681925278:secret:aaq-template-core-secrets-F64A4Z
+            UD, arn:aws:secretsmanager:af-south-1:678681925278:secret:aaq-template-ud-secrets-KQ82bP
+            ADMIN, arn:aws:secretsmanager:af-south-1:678681925278:secret:aaq-template-admin-secrets-dAEyBT
+            GLOBAL, arn:aws:secretsmanager:af-south-1:678681925278:secret:aaq-template-global-secrets-HEQCSO
+          parse-json-secrets: true
+
       - name: Run Unit Tests
         env:
-          PG_ENDPOINT: ${{secrets.GA_PG_ENDPOINT}}
-          PG_PASSWORD: ${{secrets.GA_PG_PASSWORD}}
-          INBOUND_CHECK_TOKEN: ${{secrets.GA_INBOUND_CHECK_TOKEN}}
-          UD_INBOUND_CHECK_TOKEN: ${{secrets.GA_UD_INBOUND_CHECK_TOKEN}}
-          MODEL_HOST: ${{secrets.GA_MODEL_HOST}}
-          UD_HOST: ${{secrets.GA_UD_HOST}}
+          PG_ENDPOINT: ${{env.GLOBAL_PG_ENDPOINT}}
+          PG_PASSWORD: ${{env.GLOBAL_PG_PASSWORD}}
+          INBOUND_CHECK_TOKEN: ${{env.CORE_INBOUND_CHECK_TOKEN}}
+          UD_INBOUND_CHECK_TOKEN: ${{env.UD_UD_INBOUND_CHECK_TOKEN}}
+          MODEL_HOST: ${{env.ADMIN_MODEL_HOST}}
+          UD_HOST: ${{env.ADMIN_UD_HOST}}
         run: |
           coverage run -m pytest tests
           coverage lcov --include="admin_webapp/*"
+
       - name: Coveralls Test Coverage
         uses: coverallsapp/github-action@master
         with:

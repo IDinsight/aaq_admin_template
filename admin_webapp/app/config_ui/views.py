@@ -17,7 +17,7 @@ from .form_models import AddLangCtxForm
 ##############################################################################
 
 
-@config_ui.route("/edit-contextualization", methods=["GET", "POST"])
+@config_ui.route("/edit-language-context", methods=["GET", "POST"])
 @auth.login_required(role="add")
 def edit_lang_ctx_config():
     """

@@ -8,17 +8,22 @@ class AddLangCtxForm(FlaskForm):
     """Class for adding a contextualization form to template"""
 
     pairwise_triplewise_entities = StringField(
-        "Pairwise triplewise entities JSON data",
+        label="Pairwise or triple-wise entities",
+        description="To treat two to three words as a single expression.",
         validators=[DataRequired()],
         widget=TextArea(),
     )
     custom_wvs = StringField(
-        "Custom WVS JSON data",
+        label="Custom word mapping",
+        description="""To allow mapping a context-specific word to a (combination of)
+                    more commonly understood word(s).
+        If mapping to multiple words, ensure the weights add up to 1.""",
         validators=[DataRequired()],
         widget=TextArea(),
     )
     tag_guiding_typos = StringField(
-        "Tag guiding typos JSON data",
+        label="Spell guides",
+        description="When running spell-correction, the following words will be chosen before any other spell correction candidates.",
         validators=[DataRequired()],
         widget=TextArea(),
     )
