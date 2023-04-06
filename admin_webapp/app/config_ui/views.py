@@ -10,7 +10,7 @@ from ..auth import auth
 from ..data_models import ContextualizationModel
 from ..database_sqlalchemy import db
 from . import config_ui
-from .form_models import AddLangCtxForm
+from .form_models import AddLanguageContextForm
 
 ##############################################################################
 # Contextualization management endpoints
@@ -19,7 +19,7 @@ from .form_models import AddLangCtxForm
 
 @config_ui.route("/edit-language-context", methods=["GET", "POST"])
 @auth.login_required(role="add")
-def edit_lang_ctx_config():
+def edit_language_context_config():
     """
     Handles form and POST to add an FAQ
     """
@@ -29,13 +29,14 @@ def edit_lang_ctx_config():
         .first()
     )
 
-    form = AddLangCtxForm(obj=contextualization)
+    form = AddLanguageContextForm(obj=contextualization)
+
     if form.is_submitted():
         if validate_and_save_contextualization_config(form, contextualization):
-            return jsonify({"success": True, "redirect": url_for("main.home")})
+            return redirect(url_for("config_ui.edit_language_context_config"))
 
     return render_template(
-        "edit_lang_ctx.html",
+        "edit_language_context.html",
         version_id=contextualization.version_id,
         custom_wvs=contextualization.custom_wvs,
         pairwise_triplewise_entities=contextualization.pairwise_triplewise_entities,
@@ -117,7 +118,7 @@ def validate_and_save_contextualization_config(form, old_config):
 
     Parameters
     ----------
-    form : AddLangCtxForm
+    form : AddLanguageContextForm
         A WTForm. Defined in app/config_ui/form_models.py
     old_config: ContextualizationModel
         The old Contextualization config that is being replaced

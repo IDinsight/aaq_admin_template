@@ -68,7 +68,7 @@ class TestEditConfig:
     ):
 
         response = client.post(
-            "/config/edit-contextualization",
+            "/config//edit-language-context",
             follow_redirects=True,
             headers={"Authorization": "Basic " + credentials_fullaccess},
             data={
@@ -117,7 +117,7 @@ class TestEditConfig:
         self, credentials_fullaccess, client, default_config, pairwise, outcome
     ):
         response = client.post(
-            "/config/edit-contextualization",
+            "/config/edit-language-context",
             follow_redirects=True,
             headers={"Authorization": "Basic " + credentials_fullaccess},
             data={
@@ -156,7 +156,7 @@ class TestEditConfig:
         self, credentials_fullaccess, client, default_config, tags, outcome
     ):
         response = client.post(
-            "/config/edit-contextualization",
+            "/config/edit-language-context",
             follow_redirects=True,
             headers={"Authorization": "Basic " + credentials_fullaccess},
             data={

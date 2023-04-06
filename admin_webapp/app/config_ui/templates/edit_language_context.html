@@ -22,11 +22,17 @@ Manage language context
     //textarea value to JSON object
     var setCustomWvsJSON = function () {
         try {
+
             var value = wvsTextarea.value;
             customWvsJsonObj = JSON.parse(value);
+            is_value = true;
         }
         catch (err) {
             alert("Invalid Custom word mapping data: ".concat(err));
+            is_value = false;
+        }
+        finally {
+            return is_value
         };
     };
     // load default value
@@ -49,9 +55,14 @@ Manage language context
         try {
             var value = pairwiseTextarea.value;
             pairwiseJsonObj = JSON.parse(value);
+            is_value = true;
         }
         catch (err) {
+            is_value = false;
             alert("Invalid Pairwise triplewise entities data: ".concat(err));
+        }
+        finally {
+            return is_value
         };
     };
     // load default value
@@ -74,11 +85,15 @@ Manage language context
         try {
             var value = tagTextarea.value;
             tagJsonObj = JSON.parse(value);
+            is_valid = true;
         }
         catch (err) {
 
             alert("Invalid Tag guiding typos data: ".concat(err));
-
+            is_valid = false;
+        }
+        finally {
+            return is_valid
         };
     };
     // load default value
@@ -89,59 +104,54 @@ Manage language context
         tagJsonViewer.showJSON(tagJsonObj);
     });
 
-    const configForm = document.querySelector('#config-form');
-    configForm.addEventListener('submit', function (event) {
-        event.preventDefault(); // Prevent the form from submitting
-
-        const promises = [
-            new Promise((resolve, reject) => {
-                try {
-                    setCustomWvsJSON();
-                    resolve();
-                } catch (error) {
-                    reject(error);
-                }
-            }),
-            new Promise((resolve, reject) => {
-                try {
-                    setpairwiseJSON();
-                    resolve();
-                } catch (error) {
-                    reject(error);
-                }
-            }),
-            new Promise((resolve, reject) => {
-                try {
-                    setTagJSON();
-                    resolve();
-                } catch (error) {
-                    reject(error);
-                }
-            })
-        ];
 
 
-        Promise.all(promises)
-            .then(() => {
-                // If all promises resolve successfully, submit the form
-                const formData = new FormData(configForm);
-                fetch(configForm.action, {
-                    method: configForm.method,
-                    body: formData
-                }).then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            // Redirect the user
-                            window.location.href = data.redirect;
-                        } else {
-                            alert(data.message);
-                        }
-                    })
-            })
-            .catch((error) => {
-                console.error(error);
-            });
+    const submitButton = document.querySelector('#submit');
+    let defaultActionCalled = false;
+
+    submitButton.addEventListener('click', function (event) {
+        if (!defaultActionCalled) {
+            event.preventDefault(); // Prevent the form from submitting
+
+            const promises = [
+                new Promise((resolve, reject) => {
+                    if (setCustomWvsJSON()) {
+                        resolve();
+                    } else {
+                        reject();
+                    }
+                }),
+                new Promise((resolve, reject) => {
+                    if (setpairwiseJSON()) {
+                        resolve();
+                    } else {
+                        reject();
+                    }
+                }),
+                new Promise((resolve, reject) => {
+                    if (setTagJSON()) {
+                        resolve();
+                    }
+                    else {
+                        reject();
+                    }
+                })
+            ];
+
+
+            Promise.all(promises)
+                .then(() => {
+                    defaultActionCalled = true;
+                    submitButton.click();
+
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        }
     });
+
+
 
 
 </script>
@@ -178,7 +188,7 @@ Manage language context
             <h1>Manage Language Context</h1>
 
             <p class="lead">Manage language or domain-specific contextualization
-            configuration.
+                configuration.
             </p>
 
             {% with messages = get_flashed_messages(with_categories=true) %}
@@ -196,20 +206,20 @@ Manage language context
                     <input class="form-control" style="margin-bottom:5px;" id="version" value="{{version_id}}" disabled>
                 </div>
                 <div class="mb-5" id="custom-wvs-div">
-                    {{ wtf.form_field(form.custom_wvs) }}
+                    {{ wtf.form_field(form.custom_wvs,rows = 50) }}
 
                     <button id="display-custom-wvs" class="btn btn-success" type="button">Validate JSON</button>
                     <div id="custom-wvs-json"></div>
                 </div>
 
                 <div class="mb-5" id="div-pairwise">
-                    {{ wtf.form_field(form.pairwise_triplewise_entities) }}
+                    {{ wtf.form_field(form.pairwise_triplewise_entities,rows = 10) }}
 
                     <button id="display-pairwise" class="btn btn-success" type="button">Validate JSON</button>
                     <div id="pairwise-json"></div>
                 </div>
                 <div class="mb-5" id="div-tag">
-                    {{ wtf.form_field(form.tag_guiding_typos) }}
+                    {{ wtf.form_field(form.tag_guiding_typos,rows = 10) }}
                     <button id="display-tag" class="btn btn-success" type="button">Validate JSON
                     </button>
                     <div id="tag-json"></div>
