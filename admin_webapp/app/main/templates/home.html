@@ -23,17 +23,10 @@
 <div class="container">
     <div class="row">
         <div class="col-md-10 col-lg-10 mx-lg-auto mx-md-auto">
-            {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-            {% for category, message in messages %}
-            <div class="alert alert-{{ category }}" role="success"> {{ message }}</div>
-            {% endfor %}
-            {% endif %}
-            {% endwith %}
-        <h1 class="pt-5 pb-2">Ask-a-Question (AAQ)</h1>
+            <h1 class="pt-5 pb-2">Ask-a-Question (AAQ)</h1>
             <h2>Welcome</h2>
             <p>
-            This admin app can be used to manage and test the AAQ service. 
+                This admin app can be used to manage and test the AAQ service.
             </p>
 
             <div class="row">
