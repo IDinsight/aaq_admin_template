@@ -2,7 +2,7 @@ import json
 import secrets
 from datetime import datetime
 
-from flask import flash, jsonify, redirect, render_template, url_for
+from flask import flash, redirect, render_template, url_for
 from jsonschema import validate
 from jsonschema.exceptions import ValidationError
 
