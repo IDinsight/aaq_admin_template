@@ -114,6 +114,9 @@ Edit FAQ
                     <input class="form-control" placeholder="Context {{ loop.index }}" type="text"
                         style="margin-bottom:5px;" id="context_{{ loop.index }}" name="context_{{ loop.index }}"
                         value="{{ context }}">
+                    {% if form.context_1.description %}
+                    <p>{{ form.context_1.description }}</p>
+                    {% endif %}
 
                     {% endfor %}
                     {% else %}
