@@ -68,7 +68,7 @@ class TestEditConfig:
     ):
 
         response = client.post(
-            "/config//edit-language-context",
+            "/config/edit-language-context",
             follow_redirects=True,
             headers={"Authorization": "Basic " + credentials_fullaccess},
             data={
