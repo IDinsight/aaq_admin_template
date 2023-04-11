@@ -5,7 +5,7 @@
 {% block styles %}
 {{ super() }}
 <style>
-    
+
 </style>
 {% endblock %}
 
@@ -23,35 +23,42 @@
 <div class="container">
     <div class="row">
         <div class="col-md-10 col-lg-10 mx-lg-auto mx-md-auto">
-        <h1 class="pt-5 pb-2">Ask-a-Question (AAQ)</h1>
+            <h1 class="pt-5 pb-2">Ask-a-Question (AAQ)</h1>
             <h2>Welcome</h2>
             <p>
-            This admin app can be used to manage and test the AAQ service. 
+                This admin app can be used to manage and test the AAQ service.
             </p>
+
             <div class="row">
                 <div class="col-md-12">
                     <hr>
                     <h2>Where would you like to start?<br /></h2>
                     <div class="row" style="margin-top:30px;">
                         <div class="col-md-4" style="text-align-last: center; align-self: center; height: 210px;">
-                            <a href="/demo/" style="text-decoration: none;"><div id="box">
-                                {% include "hover-click.svg" %}
-                                <h3><br />Core Demo</h3>
-                            </div></a>
-                       </div>
-                        <div class="col-md-4" style="text-align-last: center; align-self: center; height: 210px;">
-                            <a href="/faqs/" style="text-decoration: none;"><div id="box">
-                                {% include "question.svg" %}
-                                <h3><br />Manage FAQs</h3>
-                            </div></a>
+                            <a href="/demo/" style="text-decoration: none;">
+                                <div id="box">
+                                    {% include "hover-click.svg" %}
+                                    <h3><br />Core Demo</h3>
+                                </div>
+                            </a>
                         </div>
                         <div class="col-md-4" style="text-align-last: center; align-self: center; height: 210px;">
-                            <a href="/demo/check-new-faq-tags" style="text-decoration: none;"><div id="box">
-                                {% include "right-file.svg" %}
-                                <h3><br />Check FAQs</h3>
-                            </div></a>
+                            <a href="/faqs/" style="text-decoration: none;">
+                                <div id="box">
+                                    {% include "question.svg" %}
+                                    <h3><br />Manage FAQs</h3>
+                                </div>
+                            </a>
                         </div>
-                    </div>    
+                        <div class="col-md-4" style="text-align-last: center; align-self: center; height: 210px;">
+                            <a href="/demo/check-new-faq-tags" style="text-decoration: none;">
+                                <div id="box">
+                                    {% include "right-file.svg" %}
+                                    <h3><br />Check FAQs</h3>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
             {% if config.get('UD_ENABLED') %}
@@ -59,27 +66,32 @@
                 <div class="col-md-12">
                     <div class="row" style="margin-top:30px;">
                         <div class="col-md-6" style="text-align-last: center; align-self: center; height: 210px;">
-                            <a href="/ud/check-new-urgency-rules" style="text-decoration: none;"><div id="box">
-                                {% include "check_urgency.svg" %}
-                                <h3><br />Check Urgency Rules</h3>
-                            </div></a>
+                            <a href="/ud/check-new-urgency-rules" style="text-decoration: none;">
+                                <div id="box">
+                                    {% include "check_urgency.svg" %}
+                                    <h3><br />Check Urgency Rules</h3>
+                                </div>
+                            </a>
                         </div>
                         <div class="col-md-6" style="text-align-last: center; align-self: center; height: 210px;">
-                            <a href="/ud/ud-rules/view" style="text-decoration: none;"><div id="box">
-                                {% include "manage_urgency.svg" %}
-                                <h3><br />Manage Urgency Rules</h3>
-                            </div></a>
+                            <a href="/ud/ud-rules/view" style="text-decoration: none;">
+                                <div id="box">
+                                    {% include "manage_urgency.svg" %}
+                                    <h3><br />Manage Urgency Rules</h3>
+                                </div>
+                            </a>
                         </div>
                     </div>
                 </div>
             </div>
             {% endif %}
-               <div class="col-12"><p><br />
+            <div class="col-12">
+                <p><br />
                 </p>
-                </div>
-            
+            </div>
+
         </div>
     </div>
-        
+
 </div>
 {% endblock %}

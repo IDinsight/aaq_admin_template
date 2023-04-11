@@ -17,16 +17,22 @@ Manage language context
     var customWvsJsonViewer = new JSONViewer();
     document.querySelector("#custom-wvs-json").appendChild(customWvsJsonViewer.getContainer());
     var wvsTextarea = document.getElementById("custom-wvs-div").querySelector("textarea");
-    wvsTextarea.value = JSON.stringify({{ custom_wvs| tojson | safe }});
+    wvsTextarea.value = JSON.stringify({{ custom_wvs| tojson | safe }}, undefined, 2);
 
     //textarea value to JSON object
     var setCustomWvsJSON = function () {
         try {
+
             var value = wvsTextarea.value;
             customWvsJsonObj = JSON.parse(value);
+            is_value = true;
         }
         catch (err) {
-            alert(err);
+            alert("Invalid Custom word mapping data: ".concat(err));
+            is_value = false;
+        }
+        finally {
+            return is_value
         };
     };
     // load default value
@@ -42,16 +48,21 @@ Manage language context
     var pairwiseJsonViewer = new JSONViewer();
     document.querySelector("#pairwise-json").appendChild(pairwiseJsonViewer.getContainer());
     var pairwiseTextarea = document.getElementById("div-pairwise").querySelector("textarea");
-    pairwiseTextarea.value = JSON.stringify({{ pairwise_triplewise_entities| tojson | safe }});
+    pairwiseTextarea.value = JSON.stringify({{ pairwise_triplewise_entities| tojson | safe }}, undefined, 2);
 
     //textarea value to JSON object
     var setpairwiseJSON = function () {
         try {
             var value = pairwiseTextarea.value;
             pairwiseJsonObj = JSON.parse(value);
+            is_value = true;
         }
         catch (err) {
-            alert(err);
+            is_value = false;
+            alert("Invalid Pairwise triplewise entities data: ".concat(err));
+        }
+        finally {
+            return is_value
         };
     };
     // load default value
@@ -67,16 +78,22 @@ Manage language context
     var tagJsonViewer = new JSONViewer();
     document.querySelector("#tag-json").appendChild(tagJsonViewer.getContainer());
     var tagTextarea = document.getElementById("div-tag").querySelector("textarea");
-    tagTextarea.value = JSON.stringify({{ tag_guiding_typos| tojson | safe }});
+    tagTextarea.value = JSON.stringify({{ tag_guiding_typos| tojson | safe }}, undefined, 2);
 
     //textarea value to JSON object
     var setTagJSON = function () {
         try {
             var value = tagTextarea.value;
             tagJsonObj = JSON.parse(value);
+            is_valid = true;
         }
         catch (err) {
-            alert(err);
+
+            alert("Invalid Tag guiding typos data: ".concat(err));
+            is_valid = false;
+        }
+        finally {
+            return is_valid
         };
     };
     // load default value
@@ -86,6 +103,57 @@ Manage language context
         setTagJSON();
         tagJsonViewer.showJSON(tagJsonObj);
     });
+
+
+
+    const submitButton = document.querySelector('#submit');
+    let defaultActionCalled = false;
+
+    submitButton.addEventListener('click', function (event) {
+        if (!defaultActionCalled) {
+            event.preventDefault(); // Prevent the form from submitting
+
+            const promises = [
+                new Promise((resolve, reject) => {
+                    if (setCustomWvsJSON()) {
+                        resolve();
+                    } else {
+                        reject();
+                    }
+                }),
+                new Promise((resolve, reject) => {
+                    if (setpairwiseJSON()) {
+                        resolve();
+                    } else {
+                        reject();
+                    }
+                }),
+                new Promise((resolve, reject) => {
+                    if (setTagJSON()) {
+                        resolve();
+                    }
+                    else {
+                        reject();
+                    }
+                })
+            ];
+
+
+            Promise.all(promises)
+                .then(() => {
+                    defaultActionCalled = true;
+                    submitButton.click();
+
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        }
+    });
+
+
+
+
 </script>
 {% endblock %}
 
@@ -119,9 +187,7 @@ Manage language context
 
             <h1>Manage Language Context</h1>
 
-            <p class="lead">Manage language or domain-specific contextualization
-            configuration.
-            </p>
+            <p class="lead">Manage language or domain-specific contextualization configuration.</p>
 
             {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
@@ -131,27 +197,27 @@ Manage language context
             {% endif %}
             {% endwith %}
 
-            <form style="padding-bottom: 50px;" action="" method="POST" role="form" class="form" autocomplete="off">
+            <form id="config-form" style="padding-bottom: 50px;" action="" method="POST" role="form" class="form"
+                autocomplete="off">
                 <div class="mb-5">
                     <label class="form-control-label">Version number</label>
                     <input class="form-control" style="margin-bottom:5px;" id="version" value="{{version_id}}" disabled>
                 </div>
                 <div class="mb-5" id="custom-wvs-div">
-                    {{ wtf.form_field(form.custom_wvs) }}
+                    {{ wtf.form_field(form.custom_wvs,rows = 50) }}
 
                     <button id="display-custom-wvs" class="btn btn-success" type="button">Validate JSON</button>
                     <div id="custom-wvs-json"></div>
                 </div>
 
                 <div class="mb-5" id="div-pairwise">
-                    {{ wtf.form_field(form.pairwise_triplewise_entities) }}
+                    {{ wtf.form_field(form.pairwise_triplewise_entities,rows = 10) }}
 
                     <button id="display-pairwise" class="btn btn-success" type="button">Validate JSON</button>
                     <div id="pairwise-json"></div>
                 </div>
                 <div class="mb-5" id="div-tag">
-                    {{ wtf.form_field(form.tag_guiding_typos) }}
-
+                    {{ wtf.form_field(form.tag_guiding_typos,rows = 10) }}
                     <button id="display-tag" class="btn btn-success" type="button">Validate JSON
                     </button>
                     <div id="tag-json"></div>
