@@ -2,9 +2,10 @@ import json
 import secrets
 from datetime import datetime
 
-from flask import flash, redirect, render_template, url_for
+from flask import current_app, flash, redirect, render_template, url_for
 from jsonschema import validate
 from jsonschema.exceptions import ValidationError
+import requests
 
 from ..auth import auth
 from ..data_models import ContextualizationModel
@@ -167,9 +168,11 @@ def validate_and_save_contextualization_config(form, old_config):
         flash_error("Tag guiding typos", error_message)
         return False
 
+    if old_config:
+        old_config.active = False
+
     version_id = secrets.token_hex(8)
     config_added_utc = datetime.utcnow()
-    old_config.active = False
     new_config = ContextualizationModel(
         version_id=version_id,
         custom_wvs=custom_wvs,
@@ -180,9 +183,28 @@ def validate_and_save_contextualization_config(form, old_config):
     )
     db.session.add(new_config)
     db.session.commit()
-    flash(
-        "Successfully updated contextualization config to config "
-        f"version: {str(version_id)}",
-        "success",
-    )
+    update_language_context(str(version_id))
     return True
+
+
+def update_language_context(version_id):
+    """
+    Calls the core app's /config/edit-language-context endpoint
+    """
+    refresh_faqs_endpoint = "%s://%s:%s/config/edit-language-context" % (
+        current_app.MODEL_PROTOCOL,
+        current_app.MODEL_HOST,
+        current_app.MODEL_PORT,
+    )
+    headers = {"Authorization": "Bearer %s" % current_app.INBOUND_CHECK_TOKEN}
+    response = requests.get(refresh_faqs_endpoint, headers=headers)
+
+    if response.status_code != 200:
+        message = f"Request to update the language contexts config in the core app failed: {response.text}"
+        flash(message, "warning")
+    else:
+        message = f"Successfully updated language context to version: {version_id}"
+        flash(
+            message,
+            "success",
+        )
