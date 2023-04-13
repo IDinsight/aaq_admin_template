@@ -11,35 +11,35 @@ def credentials_fullaccess():
     return base64.b64encode(b"fullaccess_user:testfullaccess123").decode("utf-8")
 
 
-@pytest.fixture
-def credentials_readonly():
-    return base64.b64encode(b"readonly_user:testread123").decode("utf-8")
-
-
-@pytest.fixture
-def default_config(db_engine):
-    with db_engine.connect() as db_connection:
-        t = text("SELECT * FROM contextualization WHERE active=true")
-        rs = db_connection.execute(t)
-        # return {key: json.dumps(value) for (key, value) in default_dict.items()}
-        return rs.mappings().one()
-
-
-@pytest.fixture
-def reset_config(db_engine, default_config):
-    yield
-    query = text("UPDATE contextualization SET active = false WHERE active = true")
-    db_engine.execute(query)
-    set_default_query = text(
-        "UPDATE contextualization SET active = true WHERE contextualization_id = :config_id"
-    )
-    db_engine.execute(
-        set_default_query, config_id=default_config["contextualization_id"]
-    )
-    db_engine.execute("DELETE FROM contextualization WHERE active = false")
-
-
 class TestEditConfig:
+    insert_query = (
+        "INSERT INTO aaq.contextualization("
+        "version_id,config_added_utc,custom_wvs,"
+        "pairwise_triplewise_entities, tag_guiding_typos, active)"
+        "VALUES (:version_id, :date_added,:custom_wvs, :pairwise, :tags, :active);"
+    )
+
+    config_params = {
+        "custom_wvs": """{"shots": {"vaccines": 1},"deliver": {"birth": 1}}""",
+        "pairwise": """{"(flu, vaccine)": "flu_vaccine","(medical, aid)": "medical_aid"}""",
+        "tags": """["side","sneeze","teeth","test", "vaccine"]""",
+    }
+
+    @pytest.fixture(scope="class")
+    def add_default_config(self, db_engine):
+        with db_engine.connect() as db_connection:
+            inbound_sql = text(self.insert_query)
+            db_connection.execute(
+                inbound_sql,
+                date_added=datetime.now(),
+                version_id=secrets.token_hex(8),
+                active=True,
+                **self.config_params,
+            )
+        yield
+        with db_engine.connect() as db_connection:
+            db_connection.execute("DELETE FROM contextualization")
+
     @pytest.mark.parametrize(
         "custom_wvs,outcome",
         [
@@ -64,19 +64,16 @@ class TestEditConfig:
         ],
     )
     def test_edit_custom_wvs_config(
-        self, credentials_fullaccess, client, default_config, custom_wvs, outcome
+        self, credentials_fullaccess, client, custom_wvs, outcome
     ):
-
         response = client.post(
             "/config/edit-language-context",
             follow_redirects=True,
             headers={"Authorization": "Basic " + credentials_fullaccess},
             data={
                 "custom_wvs": custom_wvs,
-                "pairwise_triplewise_entities": json.dumps(
-                    default_config["pairwise_triplewise_entities"]
-                ),
-                "tag_guiding_typos": json.dumps(default_config["tag_guiding_typos"]),
+                "pairwise_triplewise_entities": self.config_params["pairwise"],
+                "tag_guiding_typos": self.config_params["tags"],
                 "submit": "True",
             },
         )
@@ -86,7 +83,7 @@ class TestEditConfig:
             )
         else:
             assert re.search(
-                "Successfully updated contextualization config",
+                "Successfully updated language context to version:",
                 response.get_data(as_text=True),
             )
 
@@ -114,16 +111,16 @@ class TestEditConfig:
         ],
     )
     def test_edit_pairwise_config(
-        self, credentials_fullaccess, client, default_config, pairwise, outcome
+        self, credentials_fullaccess, client, pairwise, outcome
     ):
         response = client.post(
             "/config/edit-language-context",
             follow_redirects=True,
             headers={"Authorization": "Basic " + credentials_fullaccess},
             data={
-                "custom_wvs": json.dumps(default_config["custom_wvs"]),
+                "custom_wvs": self.config_params["custom_wvs"],
                 "pairwise_triplewise_entities": pairwise,
-                "tag_guiding_typos": json.dumps(default_config["tag_guiding_typos"]),
+                "tag_guiding_typos": self.config_params["tags"],
                 "submit": "True",
             },
         )
@@ -135,7 +132,7 @@ class TestEditConfig:
             )
         else:
             assert re.search(
-                "Successfully updated contextualization config",
+                "Successfully updated language context to version:",
                 response.get_data(as_text=True),
             )
 
@@ -153,17 +150,15 @@ class TestEditConfig:
         ],
     )
     def test_edit_tag_guiding_typos_config(
-        self, credentials_fullaccess, client, default_config, tags, outcome
+        self, credentials_fullaccess, client, tags, outcome
     ):
         response = client.post(
             "/config/edit-language-context",
             follow_redirects=True,
             headers={"Authorization": "Basic " + credentials_fullaccess},
             data={
-                "custom_wvs": json.dumps(default_config["custom_wvs"]),
-                "pairwise_triplewise_entities": json.dumps(
-                    default_config["pairwise_triplewise_entities"]
-                ),
+                "custom_wvs": self.config_params["custom_wvs"],
+                "pairwise_triplewise_entities": self.config_params["pairwise"],
                 "tag_guiding_typos": tags,
                 "submit": "True",
             },
@@ -175,6 +170,6 @@ class TestEditConfig:
             )
         else:
             assert re.search(
-                "Successfully updated contextualization config",
+                "Successfully updated language context to version:",
                 response.get_data(as_text=True),
             )
