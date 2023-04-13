@@ -13,7 +13,7 @@ def credentials_fullaccess():
 
 class TestEditConfig:
     insert_query = (
-        "INSERT INTO aaq.contextualization("
+        "INSERT INTO contextualization("
         "version_id,config_added_utc,custom_wvs,"
         "pairwise_triplewise_entities, tag_guiding_typos, active)"
         "VALUES (:version_id, :date_added,:custom_wvs, :pairwise, :tags, :active);"
