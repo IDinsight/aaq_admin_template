@@ -204,7 +204,7 @@ def update_language_context(version_id):
         flash(message, "warning")
     else:
         if version_id != response.text:
-            message = f" Version id {response.text} doesn't match {version_id}"
+            message = f"Version id '{response.text}' doesn't match {version_id}"
             flash(
                 message,
                 "warning",
