@@ -191,18 +191,25 @@ def update_language_context(version_id):
     """
     Calls the core app's /config/edit-language-context endpoint
     """
-    refresh_faqs_endpoint = "%s://%s:%s/config/edit-language-context" % (
+    refresh_config_endpoint = "%s://%s:%s/config/edit-language-context" % (
         current_app.MODEL_PROTOCOL,
         current_app.MODEL_HOST,
         current_app.MODEL_PORT,
     )
     headers = {"Authorization": "Bearer %s" % current_app.INBOUND_CHECK_TOKEN}
-    response = requests.get(refresh_faqs_endpoint, headers=headers)
+    response = requests.get(refresh_config_endpoint, headers=headers)
 
     if response.status_code != 200:
         message = f"Request to update the language contexts config in the core app failed: {response.text}"
         flash(message, "warning")
     else:
+        if version_id != response.text:
+            message = f"Version id '{response.text}' doesn't match {version_id}"
+            flash(
+                message,
+                "warning",
+            )
+
         message = f"Successfully updated language context to version: {version_id}"
         flash(
             message,

@@ -1,6 +1,10 @@
 import base64
+from collections import namedtuple
+from datetime import datetime
 import re
+import secrets
 import json
+import requests
 
 import pytest
 from sqlalchemy import text
@@ -25,7 +29,7 @@ class TestEditConfig:
         "tags": """["side","sneeze","teeth","test", "vaccine"]""",
     }
 
-    @pytest.fixture(scope="class")
+    @pytest.fixture(scope="class", autouse=True)
     def add_default_config(self, db_engine):
         with db_engine.connect() as db_connection:
             inbound_sql = text(self.insert_query)
@@ -173,3 +177,28 @@ class TestEditConfig:
                 "Successfully updated language context to version:",
                 response.get_data(as_text=True),
             )
+
+    def test_update_language_context_endpoint(
+        self, monkeypatch, credentials_fullaccess, client
+    ):
+        response_tuple = namedtuple("response", ["status_code", "text"])
+        monkeypatch.setattr(
+            requests, "get", lambda *x, **y: response_tuple(200, "bad_version")
+        )
+
+        response = client.post(
+            "/config/edit-language-context",
+            follow_redirects=True,
+            headers={"Authorization": "Basic " + credentials_fullaccess},
+            data={
+                "custom_wvs": self.config_params["custom_wvs"],
+                "pairwise_triplewise_entities": self.config_params["pairwise"],
+                "tag_guiding_typos": self.config_params["tags"],
+                "submit": "True",
+            },
+        )
+
+        assert re.search(
+            f"Version id &#39;bad_version&#39; doesn&#39;t match",
+            response.get_data(as_text=True),
+        )
