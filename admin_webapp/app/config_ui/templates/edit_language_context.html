@@ -8,14 +8,32 @@ Manage language context
 {{ super() }}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
+    crossorigin="anonymous"></script>
 <script type=text/javascript src="{{
     url_for('.static', filename='js/json-viewer.js') }}"></script>
 </script>
 <script>
+    //Function to display alert
+    const appendAlert = (message, type, alertPlaceholder) => {
+        const wrapper = document.createElement('div')
+        wrapper.innerHTML = [
+            `<div class="alert alert-${type} alert-dismissible" role="alert">`,
+            `   <div>${message}</div>`,
+            '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+            '</div>'
+        ].join('')
+
+        alertPlaceholder.innerHTML = "";
+        alertPlaceholder.append(wrapper)
+    }
+    const customAlertPlaceholder = document.getElementById('custom-wvs-json')
+
     // Custom wvs JSON viewer
     var customWvsJsonObj = {};
     var customWvsJsonViewer = new JSONViewer();
-    document.querySelector("#custom-wvs-json").appendChild(customWvsJsonViewer.getContainer());
+    //document.querySelector("#custom-wvs-json").appendChild(customWvsJsonViewer.getContainer());
     var wvsTextarea = document.getElementById("custom-wvs-div").querySelector("textarea");
     wvsTextarea.value = JSON.stringify({{ custom_wvs| tojson | safe }}, undefined, 2);
 
@@ -26,9 +44,10 @@ Manage language context
             var value = wvsTextarea.value;
             customWvsJsonObj = JSON.parse(value);
             is_value = true;
+            appendAlert("Custom word mapping data is valid", 'success', customAlertPlaceholder);
         }
         catch (err) {
-            alert("Invalid Custom word mapping data: ".concat(err));
+            appendAlert("Invalid Custom word mapping data: ".concat(err), 'danger', customAlertPlaceholder);
             is_value = false;
         }
         finally {
@@ -36,17 +55,17 @@ Manage language context
         };
     };
     // load default value
-    setCustomWvsJSON();
+    //setCustomWvsJSON();
     var customWVSButton = document.getElementById("display-custom-wvs");
     customWVSButton.addEventListener("click", function () {
         setCustomWvsJSON();
-        customWvsJsonViewer.showJSON(customWvsJsonObj);
+        //customWvsJsonViewer.showJSON(customWvsJsonObj);
     });
 
+    //Placeholder for pairwise_triplewise_entities
+    const pairwiseAlertPlaceholder = document.getElementById('pairwise-json')
     // pairwise_triplewise_entities JSON viewer
     var pairwiseJsonObj = {};
-    var pairwiseJsonViewer = new JSONViewer();
-    document.querySelector("#pairwise-json").appendChild(pairwiseJsonViewer.getContainer());
     var pairwiseTextarea = document.getElementById("div-pairwise").querySelector("textarea");
     pairwiseTextarea.value = JSON.stringify({{ pairwise_triplewise_entities| tojson | safe }}, undefined, 2);
 
@@ -56,27 +75,26 @@ Manage language context
             var value = pairwiseTextarea.value;
             pairwiseJsonObj = JSON.parse(value);
             is_value = true;
+            appendAlert("Pairwise, triplewise entities data is valid", 'success', pairwiseAlertPlaceholder);
         }
         catch (err) {
             is_value = false;
-            alert("Invalid Pairwise triplewise entities data: ".concat(err));
+            appendAlert("Invalid Pairwise triplewise entities data: ".concat(err), 'danger', pairwiseAlertPlaceholder);
         }
         finally {
             return is_value
         };
     };
     // load default value
-    setpairwiseJSON();
     var pairwiseButton = document.getElementById("display-pairwise");
     pairwiseButton.addEventListener("click", function () {
         setpairwiseJSON();
-        pairwiseJsonViewer.showJSON(pairwiseJsonObj);
     });
     // Tag JSON viewer
 
+    //Placeholder for pairwise_triplewise_entities
+    const tagAlertPlaceholder = document.getElementById('tag-json')
     var tagJsonObj = {};
-    var tagJsonViewer = new JSONViewer();
-    document.querySelector("#tag-json").appendChild(tagJsonViewer.getContainer());
     var tagTextarea = document.getElementById("div-tag").querySelector("textarea");
     tagTextarea.value = JSON.stringify({{ tag_guiding_typos| tojson | safe }}, undefined, 2);
 
@@ -86,10 +104,11 @@ Manage language context
             var value = tagTextarea.value;
             tagJsonObj = JSON.parse(value);
             is_valid = true;
+            appendAlert("Spell guide data is valid", 'success', tagAlertPlaceholder);
         }
         catch (err) {
 
-            alert("Invalid Tag guiding typos data: ".concat(err));
+            appendAlert("Invalid Tag guiding typos data: ".concat(err), 'danger', tagAlertPlaceholder);
             is_valid = false;
         }
         finally {
@@ -97,11 +116,9 @@ Manage language context
         };
     };
     // load default value
-    setTagJSON();
     var tagButton = document.getElementById("display-tag");
     tagButton.addEventListener("click", function () {
         setTagJSON();
-        tagJsonViewer.showJSON(tagJsonObj);
     });
 
 
@@ -208,6 +225,7 @@ Manage language context
 
                     <button id="display-custom-wvs" class="btn btn-success" type="button">Validate JSON</button>
                     <div id="custom-wvs-json"></div>
+
                 </div>
 
                 <div class="mb-5" id="div-pairwise">
